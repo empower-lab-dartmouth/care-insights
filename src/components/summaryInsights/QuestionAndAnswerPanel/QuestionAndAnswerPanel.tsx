@@ -48,9 +48,15 @@ const QuestionAndAnswerPanel: React.FC = () => {
                     }}
                 />
                 <SuggestedText textSuggestions={pageContext.suggestedQueries}
-                    onSelected={(option) => makeQuery(
-                        option, pageContext,
-                        setPageContext, setLoadingResponse)}
+                    onSelected={(option) => {
+                        setPageContext({
+                            ...pageContext,
+                            insightsQuery: option,
+                        });
+                        makeQuery(
+                            option, pageContext,
+                            setPageContext, setLoadingResponse);
+                        }}
                 />
                 <Button variant="contained"
                     sx={{ width: '100%' }} color="success"

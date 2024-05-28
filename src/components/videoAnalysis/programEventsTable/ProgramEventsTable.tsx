@@ -1,6 +1,6 @@
 /* eslint-disable require-jsdoc */
 import React from 'react';
-import { EventUUID, ProgramEvent } from "../../../state/types";
+import { CRInfo, EventUUID, ProgramEvent } from "../../../state/types";
 import DataTable, { TableColumn } from 'react-data-table-component';
 import {
     NO_CR_SELECTED, allCRInfoState,
@@ -14,6 +14,7 @@ import { ExpandableRowsComponent } from
 type Row = {
     type: 'music-event',
     label: string,
+    CRName: string,
     uuid: EventUUID,
     description: string,
     data: string,
@@ -26,6 +27,11 @@ const columns: TableColumn<Row>[] = [
     {
         name: 'Event type',
         selector: (row: Row) => row.label,
+        sortable: true,
+    },
+    {
+        name: 'Care recipient',
+        selector: (row: Row) => row.CRName,
         sortable: true,
     },
     {
@@ -53,20 +59,23 @@ const ExpandedComponent: ExpandableRowsComponent<Row> = (
 };
 
 
-const programEventsToRows: (v: ProgramEvent[]) => Row[] = (v) =>
-    v.map((l) => ({
-        ...l,
-        date: (new Date(l.date)).toString(),
-        id: l.uuid,
-        defaultExpanded: false,
-    }));
+const programEventsToRows: (v: ProgramEvent[],
+    cRInfo: Record<string, CRInfo>) => Row[] = (v, CRInfo) =>
+        v.map((l) => ({
+            ...l,
+            date: (new Date(l.date)).toString(),
+            CRName: CRInfo[l.CRUUID].name,
+            id: l.uuid,
+            defaultExpanded: false,
+        }));
 
 
 const ProgramEventsTable: React.FC = () => {
     const pageContext = useRecoilValue(pageContextState);
     const CRInfo = useRecoilValue(allCRInfoState);
     const data: Row[] = programEventsToRows(
-        Object.values(pageContext.selectedCRProgramEvents));
+        Object.values(pageContext.selectedCRProgramEvents),
+        CRInfo);
     const title = pageContext.selectedCR === NO_CR_SELECTED ?
         'Showing recent events for ' +
         'all care recipients' :

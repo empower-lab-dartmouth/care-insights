@@ -36,6 +36,7 @@ export type ProgramEvent = {
     label: string,
     date: number,
     uuid: EventUUID,
+    CRUUID: UserUUID,
     description: string,
     data: string,
 }

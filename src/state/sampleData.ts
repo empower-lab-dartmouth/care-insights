@@ -38,6 +38,7 @@ export const fetchSampleProgramData = (v: string) => {
 export const sampleProgramData: CRProgramEvents = {
     'e1': {
         type: 'music-event',
+        CRUUID: 'abby',
         label: 'Program event',
         date: 10000090,
         uuid: 'e1',
@@ -46,6 +47,7 @@ export const sampleProgramData: CRProgramEvents = {
     },
     'e2': {
         type: 'music-event',
+        CRUUID: 'abby',
         data: 'expanded data',
         label: 'Program event',
         date: 10000050,
@@ -54,6 +56,7 @@ export const sampleProgramData: CRProgramEvents = {
     },
     'e3': {
         type: 'music-event',
+        CRUUID: 'abby',
         data: 'expanded data',
         label: 'Program event',
         date: 10000010,
@@ -65,6 +68,7 @@ export const sampleProgramData: CRProgramEvents = {
 export const sampleProgramData2: CRProgramEvents = {
     'b1': {
         type: 'music-event',
+        CRUUID: 'bart',
         data: 'expanded data',
         label: 'Program event of type 2',
         date: 10030010,
@@ -74,6 +78,7 @@ export const sampleProgramData2: CRProgramEvents = {
     'b2': {
         type: 'music-event',
         data: 'expanded data',
+        CRUUID: 'bart',
         label: 'Program event of type 2',
         date: 10030010,
         uuid: 'b2',
@@ -86,6 +91,7 @@ export const commonProgramEvents: CRProgramEvents = {
         type: 'music-event',
         data: 'expanded data',
         label: 'Doctor note PCC',
+        CRUUID: 'abby',
         date: 10030010,
         uuid: 'e1',
         description: 'Memory care program event 1',
@@ -94,6 +100,7 @@ export const commonProgramEvents: CRProgramEvents = {
         type: 'music-event',
         data: 'expanded data',
         label: 'Program event',
+        CRUUID: 'abby',
         date: 10030010,
         uuid: 'e2',
         description: 'Memory care program event 2',
@@ -101,6 +108,7 @@ export const commonProgramEvents: CRProgramEvents = {
     'e3': {
         type: 'music-event',
         data: 'expanded data',
+        CRUUID: 'abby',
         label: 'Program event',
         date: 10033010,
         uuid: 'e3',
@@ -109,6 +117,7 @@ export const commonProgramEvents: CRProgramEvents = {
     'b1': {
         type: 'music-event',
         data: 'expanded data',
+        CRUUID: 'bart',
         label: 'Program event of type 2',
         date: 10030014,
         uuid: 'b1',
@@ -117,6 +126,7 @@ export const commonProgramEvents: CRProgramEvents = {
     'b2': {
         type: 'music-event',
         data: 'expanded data',
+        CRUUID: 'bart',
         label: 'Program event of type 2',
         date: 10031110,
         uuid: 'b2',
