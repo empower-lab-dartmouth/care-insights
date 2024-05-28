@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable require-jsdoc */
-import React, {useState} from 'react';
-import {handleSignUp} from '../../state/firebase/firebase';
+import React, { useState } from 'react';
+import { handleSignUp } from '../../state/firebase/firebase';
 import './modal.css';
+import Button from '@mui/base/Button';
 
 export default function SignUp(props: any) {
   const [appear, setAppear] = React.useState(false);
@@ -17,7 +18,8 @@ export default function SignUp(props: any) {
   } = props;
 
   const [event, setEvent] = useState({
-    email: '', password: '', confirm: ''});
+    email: '', password: '', confirm: ''
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> |
     React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -37,7 +39,7 @@ export default function SignUp(props: any) {
 
     if (name === '') {
       console.log('must enter a name');
-      setMessage('Must enter a name');
+      setMessage('Please enter your name');
       handleAppear();
       return;
     } else {
@@ -47,12 +49,12 @@ export default function SignUp(props: any) {
 
     if (password === confirm) {
       const res = await handleSignUp(email, password, name);
-      if (typeof(res) === 'string') {
+      if (typeof (res) === 'string') {
         setMessage(res);
         handleAppear();
       }
     } else {
-      console.log('passwords do not match');
+      console.log('The passwords do not match');
     }
   };
 
@@ -67,27 +69,27 @@ export default function SignUp(props: any) {
           <div>
             <input placeholder='Email' type="text" name="email"
               onChange={handleChange}
-              style={{backgroundColor: 'white', color: 'black'}}
-              autoComplete="off"/>
+              style={{ backgroundColor: 'white', color: 'black' }}
+              autoComplete="off" />
           </div>
 
           <div>
             <input placeholder='Password' type="password" name="password"
               onChange={handleChange}
-              style={{backgroundColor: 'white', color: 'black'}}
-              autoComplete="off"/>
+              style={{ backgroundColor: 'white', color: 'black' }}
+              autoComplete="off" />
           </div>
 
           <div>
             <input placeholder='Confirm Password' type="password" name="confirm"
               onChange={handleChange}
-              style={{backgroundColor: 'white', color: 'black'}}/>
+              style={{ backgroundColor: 'white', color: 'black' }} />
           </div>
           <div>
             <input placeholder='Name' type="text" name="name"
               onChange={handleChange}
-              style={{backgroundColor: 'white', color: 'black'}}
-              autoComplete="off"/>
+              style={{ backgroundColor: 'white', color: 'black' }}
+              autoComplete="off" />
           </div>
 
           {appear && (
@@ -96,10 +98,20 @@ export default function SignUp(props: any) {
 
           <div>
             <input id='signup'
-              style={{backgroundColor: 'white', color: 'black'}}
-              type="submit" />
-            <button onClick={() => closeModal()}
-              style={{backgroundColor: 'gray', color: 'white'}}> Back </button>
+              style={{
+                cursor: 'pointer',
+                backgroundColor: 'white',
+                fontWeight: 'bold',
+                height: '60px', color: 'black'
+              }}
+              type="submit" /><Button style={{
+                cursor: 'pointer',
+                fontWeight: 'normal',
+                color: 'gray',
+                backgroundColor: 'white',
+                height: '60px'
+              }} onClick={
+                () => closeModal()}> Back </Button>
           </div>
         </form>
       </div>

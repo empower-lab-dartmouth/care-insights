@@ -23,6 +23,7 @@
   }
 
   span.error-msg {
+    background-color: white;
     color: rgba(211, 42, 42, 0.892);
     flex-shrink: inherit;
     font-size: 15px;

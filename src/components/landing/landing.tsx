@@ -1,14 +1,14 @@
 /* eslint-disable require-jsdoc */
 
 import React from 'react';
-import {ChangeEvent, FormEvent, useState} from 'react';
-import {signInUser} from '../../state/firebase/firebase';
-import {useNavigate} from 'react-router-dom';
+import { ChangeEvent, FormEvent, useState } from 'react';
+import { signInUser } from '../../state/firebase/firebase';
+import { useNavigate } from 'react-router-dom';
 import '../../App.css';
 import './landing.css';
 import SignUp from './signup';
-import {doc, getDoc} from 'firebase/firestore';
-import {db} from '../../state/firebase/firebase-config';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../state/firebase/firebase-config';
 
 const defaultFormFields = {
   email: '',
@@ -16,13 +16,13 @@ const defaultFormFields = {
 };
 
 export const loadLastUserServerValues: (username: string) => Promise<void> =
-    async (username) => {
-      const ref = doc(db, 'LastUserServer', username);
-      const docSnap = await getDoc(ref);
-      if (docSnap.exists()) {
-        // const data = docSnap.data() as LastUserServer;
-      }
-    };
+  async (username) => {
+    const ref = doc(db, 'LastUserServer', username);
+    const docSnap = await getDoc(ref);
+    if (docSnap.exists()) {
+      // const data = docSnap.data() as LastUserServer;
+    }
+  };
 
 
 function Home() {
@@ -36,7 +36,7 @@ function Home() {
     setOpen(true);
   };
   const [formFields, setFormFields] = useState(defaultFormFields);
-  const {email, password} = formFields;
+  const { email, password } = formFields;
   const navigate = useNavigate();
 
   const resetFormFields = () => {
@@ -56,22 +56,24 @@ function Home() {
         resetFormFields();
         navigate('/summaryInsights');
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.log('User Sign In Failed', error.message);
     }
   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const {name, value} = event.target;
-    setFormFields({...formFields, [name]: value});
+    const { name, value } = event.target;
+    setFormFields({ ...formFields, [name]: value });
   };
 
   return (
     <div className='login-container'>
       <div className="App-header">
         <div className='login-header-img'
-          style={{marginTop: '-200px', marginBottom: '5px',
-            height: '150px', width: '600px'}}
+          style={{
+            marginTop: '-200px', marginBottom: '5px',
+            height: '150px', width: '600px'
+          }}
         />
         <button className='sign-up'
           onClick={() => handleOpen()}>
@@ -83,8 +85,10 @@ function Home() {
           >
             <div>
               <input
-                style={{backgroundColor: 'white',
-                  color: 'black'}}
+                style={{
+                  backgroundColor: 'white',
+                  color: 'black'
+                }}
                 type="email"
                 name="email"
                 value={email}
@@ -95,8 +99,10 @@ function Home() {
             </div>
             <div>
               <input
-                style={{backgroundColor: 'white',
-                  color: 'black'}}
+                style={{
+                  backgroundColor: 'white',
+                  color: 'black'
+                }}
                 type='password'
                 name='password'
                 value={password}
@@ -107,7 +113,10 @@ function Home() {
             </div>
             <div>
               <input id='login'
-                style={{backgroundColor: 'white', color: 'black'}}
+                style={{
+                  backgroundColor: 'white',
+                  color: 'black', cursor: 'pointer'
+                }}
                 type="submit" />
             </div>
           </form>
