@@ -14,7 +14,6 @@ import VideoAnalysis from './components/videoAnalysis/VideoAnalysis';
 import SummaryInsights from './components/summaryInsights/SummaryInsights';
 import Landing from './components/landing/landing';
 
-
 const App = () => {
   // eslint-disable-next-line no-unused-vars
   const {currentUser} = useContext(AuthContext);

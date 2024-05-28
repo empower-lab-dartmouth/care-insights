@@ -1,5 +1,5 @@
 import { atom, selector } from 'recoil';
-import { CRInfo, PageState, CRAutoselectOptions } from './types';
+import { CRInfo, PageState, CRAutoselectOptions, CGInfo } from './types';
 import { SAMPLE_SUGGESTED_QUERIES,
   commonProgramEvents, sampleCRInfo } from './sampleData';
 
@@ -24,6 +24,11 @@ export const pageContextState = atom<PageState>({
 export const allCRInfoState = atom<Record<string, CRInfo>>({
   key: 'all-CR-info',
   default: sampleCRInfo,
+});
+
+export const allCGInfoState = atom<Record<string, CGInfo>>({
+  key: 'all-CG-info',
+  default: {},
 });
 
 export const NO_CR_SELECTED = 'NONE';

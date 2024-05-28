@@ -1,5 +1,5 @@
 /* eslint-disable require-jsdoc */
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import LiveHelpIcon from '@mui/icons-material/LiveHelp';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
@@ -11,9 +11,13 @@ import Stack from '@mui/material/Stack';
 import SessionTracker from '../../Tracker';
 import Modal from '@mui/material/Modal';
 import LogoutModal from './LogoutModal/LogoutModal';
+import { AuthContext } from '../../state/context/auth-context';
+import { Typography } from '@mui/material';
 
 export default function Nav() {
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+  const { currentUser } = useContext(AuthContext);
+
   return (
     <AppBar component="nav">
       <Modal
@@ -35,6 +39,8 @@ export default function Nav() {
       >
         {/* <div className="navbar"> */}
         <img src={logo} style={{ height: '40px' }} />
+        <Typography variant='body1' sx={{ paddingBottom: '5px' }}>
+          {currentUser?.email}</Typography>
         <Stack
           direction="row"
           justifyContent="flex-end"
@@ -53,7 +59,7 @@ export default function Nav() {
             <Stack direction="column" justifyContent="flex-start"
               alignItems="center">
               <VideoLibraryIcon />
-              Video Analysis
+              Program events
             </Stack>
           </NavLink>
           <div

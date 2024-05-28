@@ -24,6 +24,11 @@ export type CRInfo = {
     uuid: UserUUID,
 }
 
+export type CGInfo = {
+    name: string,
+    email: string,
+}
+
 export type CRProgramEvents = Record<EventUUID, ProgramEvent>
 
 export type ProgramEvent = {
