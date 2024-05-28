@@ -1,6 +1,6 @@
 /* eslint-disable require-jsdoc */
 import React from 'react';
-import { ProgramEvent } from "../../../state/types";
+import { EventUUID, ProgramEvent } from "../../../state/types";
 import DataTable, { TableColumn } from 'react-data-table-component';
 import {
     ExpandableRowsComponent
@@ -10,8 +10,14 @@ import { pageContextState } from '../../../state/recoil';
 import { useRecoilValue } from 'recoil';
 
 
-type Row = ProgramEvent & {
+type Row = {
+    type: 'music-event',
+    label: string,
+    uuid: EventUUID,
+    description: string,
+    data: string,
     defaultExpanded: boolean,
+    date: string,
     id: string,
 }
 
@@ -49,6 +55,7 @@ const ExpandedComponent: ExpandableRowsComponent<Row> = (
 const programEventsToRows: (v: ProgramEvent[]) => Row[] = (v) =>
     v.map((l) => ({
         ...l,
+        date: (new Date(l.date)).toString(),
         id: l.uuid,
         defaultExpanded: false,
     }));

@@ -30,13 +30,17 @@ const LogoutModal: React.FC<LogalModalProps> = (props) => {
                 <Paper elevation={1}>
                     <h2> Logout? </h2>
                     <NavLink to="/" className="nav-item">
-                        <Button sx={{
-                            width: '100%'
-                        }}>Yes, log out</Button>
+                        <Button
+                            variant='contained'
+                            sx={{
+                                width: '100%'
+                            }}>Yes, log out</Button>
                     </NavLink >
-                    <Button onClick={closeModal} sx={{
-                        width: '100%'
-                    }}>Stay logged in</Button>
+                    <Button onClick={closeModal}
+                        variant='outlined'
+                        sx={{
+                            width: '100%'
+                        }}>Stay logged in</Button>
                 </ Paper>
             </Box>
         </>
