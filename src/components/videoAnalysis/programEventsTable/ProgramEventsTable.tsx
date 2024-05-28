@@ -4,7 +4,8 @@ import { EventUUID, ProgramEvent } from "../../../state/types";
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { pageContextState } from '../../../state/recoil';
 import { useRecoilValue } from 'recoil';
-import { ExpandableRowsComponent } from 'react-data-table-component/dist/DataTable/types';
+import { ExpandableRowsComponent } from
+    'react-data-table-component/dist/DataTable/types';
 
 
 type Row = {
