@@ -2,7 +2,10 @@
 import React from 'react';
 import { EventUUID, ProgramEvent } from "../../../state/types";
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { pageContextState } from '../../../state/recoil';
+import {
+    NO_CR_SELECTED, allCRInfoState,
+    pageContextState
+} from '../../../state/recoil';
 import { useRecoilValue } from 'recoil';
 import { ExpandableRowsComponent } from
     'react-data-table-component/dist/DataTable/types';
@@ -61,14 +64,20 @@ const programEventsToRows: (v: ProgramEvent[]) => Row[] = (v) =>
 
 const ProgramEventsTable: React.FC = () => {
     const pageContext = useRecoilValue(pageContextState);
+    const CRInfo = useRecoilValue(allCRInfoState);
     const data: Row[] = programEventsToRows(
         Object.values(pageContext.selectedCRProgramEvents));
+    const title = pageContext.selectedCR === NO_CR_SELECTED ?
+        'Showing recent events for ' +
+        'all care recipients' :
+        `Showing events for ${CRInfo[
+            pageContext.selectedCR].name}`;
     return (
         <>
             <DataTable
                 columns={columns}
                 data={data}
-                title="Events"
+                title={title}
                 pagination
                 expandableRows
                 expandableRowExpanded={(row: Row) => row.defaultExpanded}
