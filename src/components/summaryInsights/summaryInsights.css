@@ -1,0 +1,9 @@
+.container {
+    /* color: white; */
+    background-image: url("../../assets/login_background.webp");
+    background-size: auto 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* background-color: white; */
+    min-height: 100vh;
+}

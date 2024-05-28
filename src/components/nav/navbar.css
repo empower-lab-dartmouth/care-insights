@@ -1,0 +1,41 @@
+/* .navbar {
+    background-image: url('../../assets/orange\ background.png');
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    background-size: auto 100%;
+    padding: 1em;
+} */
+
+.sticky {
+    display: flex;
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+.inner-navbar {
+    display: flex;
+    gap: 0.5em;
+    padding: 0.5em;
+    font-size: 24px;
+}
+
+
+.active, .active:visited {
+    color: #46c6ea;
+    background-color: darkgoldenrod;
+    padding-left: 5px;
+    padding-right: 5px;
+    color: white;
+    text-decoration: none;
+}
+
+.nav-item {
+    text-decoration: none;
+    color: white;
+}
+
+li {
+    list-style: none;
+}
