@@ -28,7 +28,8 @@ const CommonCRActions = () => {
                     Viewing care recepient:
                 </Typography>
                 <AutocompleteCRSearch />
-                <Button onClick={handleOpen} disabled={
+                <Button onClick={handleOpen}
+                disabled={
                         pageContext.selectedCR === NO_CR_SELECTED}>
                     <Fab color="primary" disabled={
                         pageContext.selectedCR === NO_CR_SELECTED}

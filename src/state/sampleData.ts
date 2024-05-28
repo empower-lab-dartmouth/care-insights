@@ -137,7 +137,7 @@ export const commonProgramEvents: CRProgramEvents = {
 export const SAMPLE_SUGGESTED_QUERIES = [
     'what is the most important info I should know about this care recepient?',
     'what are some tips for sundowning?',
-    'does this care recepeint respond well to physical contact?'
+    'does this care recepient respond well to physical contact?'
 ];
 
 export const SAMPLE_SUGGESTED_RECORD_EVENT_RESPONSES = [
