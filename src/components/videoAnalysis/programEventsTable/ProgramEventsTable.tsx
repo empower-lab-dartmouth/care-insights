@@ -2,12 +2,9 @@
 import React from 'react';
 import { EventUUID, ProgramEvent } from "../../../state/types";
 import DataTable, { TableColumn } from 'react-data-table-component';
-import {
-    ExpandableRowsComponent
-} from
-    'react-data-table-component/dist/src/DataTable/types';
 import { pageContextState } from '../../../state/recoil';
 import { useRecoilValue } from 'recoil';
+import { ExpandableRowsComponent } from 'react-data-table-component/dist/DataTable/types';
 
 
 type Row = {
