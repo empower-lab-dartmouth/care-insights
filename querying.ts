@@ -6,7 +6,7 @@ type CGUUID = UUID
 type ActionUUID = UUID
 type Timestamp = number
 
-type GRRecord = {
+type CRRecord = {
     description: string
     date: Timestamp
     CGUUID: CGUUID
@@ -16,10 +16,10 @@ type GRRecord = {
 
 type CRRecordAction = {
     type: 'CR-record-created'
-    record: GRRecord
+    record: CRRecord
 } | {
     type: 'CR-record-updated'
-    record: GRRecord
+    record: CRRecord
 } | {
     type: 'CR-record-deleted'
     recordUUID: RecordUUID
@@ -63,12 +63,12 @@ type CareRecepientInfo = {
 }
 
 // Firebase collections
-type CRRecordCollection = Record<RecordUUID, GRRecord> 
-type QueryCollection = Record<RecordUUID, GRRecord> 
+type CRRecordCollection = Record<RecordUUID, CRRecord> 
+type QueryCollection = Record<RecordUUID, CRRecord> 
 type ActionCollection = Record<ActionUUID, Action>
 type CareRecepientInfoCollection = Record<ActionUUID, Action>
 
-const storeEvent: (record: GRRecord) => void  = (record) => {
+const storeEvent: (record: CRRecord) => void  = (record) => {
 // - save GRRecord to CRRecordCollection
 // - log a CRRecordAction action to ActionCollection
 }
@@ -81,7 +81,7 @@ const getRelevantQueries: (inputQuery: string) => QueryRecord[] = (query) => {
     return null as any
 }
 
-const getRelevantRecords: (id: CRUUID, inputQuery: string) => GRRecord[] = (query, inputQuery) => {
+const getRelevantRecords: (id: CRUUID, inputQuery: string) => CRRecord[] = (query, inputQuery) => {
     // CRSpecificRecords = query CRRecordCollection for all queries related to care recepient with the same CRUUID
     // For each record r in CRSpecificRecords, ask ChatGPT if inputQuery is relevant to r.description
     // Return all the records that are relevant.
