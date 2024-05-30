@@ -1,6 +1,9 @@
 /* eslint-disable require-jsdoc */
 import React from 'react';
-import { CRInfo, EventUUID, ProgramEvent } from "../../../state/types";
+import {
+    CRInfo, EventUUID,
+    MeaningfulMoment, ProgramEvent
+} from "../../../state/types";
 import DataTable, { TableColumn } from 'react-data-table-component';
 import {
     NO_CR_SELECTED, allCRInfoState,
@@ -9,19 +12,23 @@ import {
 import { useRecoilValue } from 'recoil';
 import { ExpandableRowsComponent } from
     'react-data-table-component/dist/DataTable/types';
+import VideoPlayer from '../VideoPlayer/VideoPlayer';
 
-
-type Row = {
+type MusicEventRow = {
     type: 'music-event',
     label: string,
     CRName: string,
     uuid: EventUUID,
     description: string,
-    data: string,
+    videoUrl: string,
+    meaningfulMoments?: MeaningfulMoment[]
+    transcript?: string,
     defaultExpanded: boolean,
     date: string,
     id: string,
 }
+
+type Row = MusicEventRow
 
 const columns: TableColumn<Row>[] = [
     {
@@ -50,12 +57,15 @@ const columns: TableColumn<Row>[] = [
 
 const ExpandedComponent: ExpandableRowsComponent<Row> = (
     d) => {
-    const { data } = d.data;
+    const { videoUrl, meaningfulMoments } = d.data;
     return <pre style={{
         borderWidth: '30px',
         borderStyle: 'none none none solid',
         borderColor: 'lightgray'
-    }}>{JSON.stringify(data, null, 2)}</pre>;
+    }}>
+        <VideoPlayer videoSrc={videoUrl}
+            meaningfulMoments={meaningfulMoments} />
+    </pre>;
 };
 
 

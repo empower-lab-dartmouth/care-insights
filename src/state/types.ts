@@ -11,6 +11,12 @@ export type PageState = {
     loadingCRInfo: boolean,
 }
 
+export type MeaningfulMoment = {
+    startTime: number
+    description: string,
+    type: 'positiveMusic' | 'negative' | 'memory'
+}
+
 export type CRAutoselectOption = {
     label: string,
     uuid: UserUUID,
@@ -31,12 +37,16 @@ export type CGInfo = {
 
 export type CRProgramEvents = Record<EventUUID, ProgramEvent>
 
-export type ProgramEvent = {
+export type ProgramEvent = MusicProgramEvent;
+
+export type MusicProgramEvent = {
     type: 'music-event',
     label: string,
     date: number,
     uuid: EventUUID,
     CRUUID: UserUUID,
     description: string,
-    data: string,
+    videoUrl: string,
+    meaningfulMoments?: MeaningfulMoment[]
+    transcript?: string
 }

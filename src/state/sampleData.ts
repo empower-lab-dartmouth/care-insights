@@ -1,4 +1,4 @@
-import { CRInfo, CRProgramEvents } from "./types";
+import { CRInfo, CRProgramEvents, MeaningfulMoment } from "./types";
 
 export const sampleCRInfo: Record<string, CRInfo> = {
     'abby': {
@@ -23,6 +23,27 @@ export const sampleCRInfo: Record<string, CRInfo> = {
     }
 };
 
+
+export const sampleMeaningfulMoments: MeaningfulMoment[] = [
+    {
+        startTime: 400,
+        description: 'Abby acted violently.',
+        type: 'negative'
+    },
+    {
+    startTime: 4000,
+    description: 'Abby had an above average positive reaction to ' +
+    'the song "Autumn leaves."',
+    type: 'positiveMusic'
+},
+{
+    startTime: 10000,
+    description: 'Abby recalled memories of her experiences in ' +
+    'marching band in high school.',
+    type: 'memory'
+},
+];
+
 export const fetchSampleProgramData = (v: string) => {
     if (v === 'abby') {
         return sampleProgramData;
@@ -43,25 +64,28 @@ export const sampleProgramData: CRProgramEvents = {
         date: 10000090,
         uuid: 'e1',
         description: 'Memory care program event 1',
-        data: 'expanded data',
+        videoUrl: 'https://www.youtube.com/watch?v=LXb3EKWsInQ',
+        meaningfulMoments: sampleMeaningfulMoments,
     },
     'e2': {
         type: 'music-event',
         CRUUID: 'abby',
-        data: 'expanded data',
+        videoUrl: 'https://www.youtube.com/watch?v=LXb3EKWsInQ',
         label: 'Program event',
         date: 10000050,
         uuid: 'e2',
         description: 'Memory care program event 2',
+        meaningfulMoments: sampleMeaningfulMoments,
     },
     'e3': {
         type: 'music-event',
         CRUUID: 'abby',
-        data: 'expanded data',
+        videoUrl: 'https://www.youtube.com/watch?v=LXb3EKWsInQ',
         label: 'Program event',
         date: 10000010,
         uuid: 'e3',
         description: 'Memory care program event 3',
+        meaningfulMoments: sampleMeaningfulMoments,
     },
 };
 
@@ -69,68 +93,75 @@ export const sampleProgramData2: CRProgramEvents = {
     'b1': {
         type: 'music-event',
         CRUUID: 'bart',
-        data: 'expanded data',
+        videoUrl: 'https://www.youtube.com/watch?v=LXb3EKWsInQ',
         label: 'Program event of type 2',
         date: 10030010,
         uuid: 'b1',
         description: 'Memory care other program event 1',
+        meaningfulMoments: sampleMeaningfulMoments,
     },
     'b2': {
         type: 'music-event',
-        data: 'expanded data',
+        videoUrl: 'https://www.youtube.com/watch?v=LXb3EKWsInQ',
         CRUUID: 'bart',
         label: 'Program event of type 2',
         date: 10030010,
         uuid: 'b2',
         description: 'Memory care other program event 2',
+        meaningfulMoments: sampleMeaningfulMoments,
     }
 };
 
 export const commonProgramEvents: CRProgramEvents = {
     'e1': {
         type: 'music-event',
-        data: 'expanded data',
+        videoUrl: 'https://www.youtube.com/watch?v=LXb3EKWsInQ',
         label: 'Doctor note PCC',
         CRUUID: 'abby',
         date: 10030010,
         uuid: 'e1',
         description: 'Memory care program event 1',
+        meaningfulMoments: sampleMeaningfulMoments,
     },
     'e2': {
         type: 'music-event',
-        data: 'expanded data',
+        videoUrl: 'https://www.youtube.com/watch?v=LXb3EKWsInQ',
         label: 'Program event',
         CRUUID: 'abby',
         date: 10030010,
         uuid: 'e2',
         description: 'Memory care program event 2',
+        meaningfulMoments: sampleMeaningfulMoments,
     },
     'e3': {
         type: 'music-event',
-        data: 'expanded data',
+        videoUrl: 'https://www.youtube.com/watch?v=LXb3EKWsInQ',
         CRUUID: 'abby',
         label: 'Program event',
         date: 10033010,
         uuid: 'e3',
         description: 'Memory care program event 3',
+        meaningfulMoments: sampleMeaningfulMoments,
     },
     'b1': {
         type: 'music-event',
-        data: 'expanded data',
+        videoUrl: 'https://www.youtube.com/watch?v=LXb3EKWsInQ',
         CRUUID: 'bart',
         label: 'Program event of type 2',
         date: 10030014,
         uuid: 'b1',
         description: 'Memory care other program event 1',
+        meaningfulMoments: sampleMeaningfulMoments,
     },
     'b2': {
         type: 'music-event',
-        data: 'expanded data',
+        videoUrl: 'https://www.youtube.com/watch?v=LXb3EKWsInQ',
         CRUUID: 'bart',
         label: 'Program event of type 2',
         date: 10031110,
         uuid: 'b2',
         description: 'Memory care other program event 2',
+        meaningfulMoments: sampleMeaningfulMoments,
     }
 };
 

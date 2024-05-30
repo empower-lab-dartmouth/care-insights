@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { handleSignUp } from '../../state/firebase/firebase';
 import './modal.css';
-import Button from '@mui/base/Button';
+import Button from '@mui/material/Button';
 
 export default function SignUp(props: any) {
   const [appear, setAppear] = React.useState(false);
@@ -104,13 +104,15 @@ export default function SignUp(props: any) {
                 fontWeight: 'bold',
                 height: '60px', color: 'black'
               }}
-              type="submit" /><Button style={{
-                cursor: 'pointer',
-                fontWeight: 'normal',
-                color: 'gray',
-                backgroundColor: 'white',
-                height: '60px'
-              }} onClick={
+              type="submit" />
+            <Button style={{
+              cursor: 'pointer',
+              fontWeight: 'normal',
+              color: 'gray',
+              backgroundColor: 'white',
+              height: '60px'
+            }}
+              onClick={
                 () => closeModal()}> Back </Button>
           </div>
         </form>
