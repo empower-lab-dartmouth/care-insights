@@ -1,79 +1,11 @@
-type UUID = string
-type RecordUUID = UUID
-type QueryUUID = UUID
-type CRUUID = UUID
-type CGUUID = UUID
-type ActionUUID = UUID
-type Timestamp = number
+import { CRRecord, CRUUID, QueryFeedback, QueryRecord } from "./queryingTypes"
 
-type CRRecord = {
-    description: string
-    date: Timestamp
-    CGUUID: CGUUID
-    CRUUID: CRUUID
-    recordUUID: RecordUUID
-}
-
-type CRRecordAction = {
-    type: 'CR-record-created'
-    record: CRRecord
-} | {
-    type: 'CR-record-updated'
-    record: CRRecord
-} | {
-    type: 'CR-record-deleted'
-    recordUUID: RecordUUID
-}
-
-type QueryRecord = {
-    query: string
-    date: Timestamp
-    queryResponse: string
-    queryUUID: QueryUUID
-}
-
-type QueryFeedback = {
-    type: 'looks-good'
-} | {
-    type: 'incorrect'
-    suggestion: string
-} | {
-    type: 'missing-info'
-    suggestion: string
-}
-
-type QueryAction = {
-    type: 'query-created'
-    query: QueryRecord
-} | {
-    type: 'query-cpdated'
-    query: QueryRecord
-    feedback: QueryFeedback
-}
-
-type Action = {
-    actionTimestamp: Timestamp
-    actionUUID: ActionUUID
-} & (QueryAction | CRRecordAction)
-
-type CareRecepientInfo = {
-    name: string
-    pronouns: string
-    fakeName: string
-}
-
-// Firebase collections
-type CRRecordCollection = Record<RecordUUID, CRRecord> 
-type QueryCollection = Record<RecordUUID, CRRecord> 
-type ActionCollection = Record<ActionUUID, Action>
-type CareRecepientInfoCollection = Record<ActionUUID, Action>
-
-const storeEvent: (record: CRRecord) => void  = (record) => {
+export const storeEvent: (record: CRRecord) => void  = (record) => {
 // - save GRRecord to CRRecordCollection
 // - log a CRRecordAction action to ActionCollection
 }
 
-const getRelevantQueries: (inputQuery: string) => QueryRecord[] = (query) => {
+export const getRelevantQueries: (inputQuery: string) => QueryRecord[] = (query) => {
     // CRSpecificQueries = query QueryCollection for all queries related to care recepient with the same CRUUID
     // For each query q in CRSpecificQueries, ask ChatGPT if inputQuery is relevant to q.query and q.queryResponse
     // TODO: figure out a good prompt to do the above
@@ -81,14 +13,14 @@ const getRelevantQueries: (inputQuery: string) => QueryRecord[] = (query) => {
     return null as any
 }
 
-const getRelevantRecords: (id: CRUUID, inputQuery: string) => CRRecord[] = (query, inputQuery) => {
+export const getRelevantRecords: (id: CRUUID, inputQuery: string) => CRRecord[] = (query, inputQuery) => {
     // CRSpecificRecords = query CRRecordCollection for all queries related to care recepient with the same CRUUID
     // For each record r in CRSpecificRecords, ask ChatGPT if inputQuery is relevant to r.description
     // Return all the records that are relevant.
     return null as any
 }
 
-const askQuery: (inputQuery: string) => QueryRecord = (inputQuery) => {
+export const askQuery: (inputQuery: string) => QueryRecord = (inputQuery) => {
 // relevantQueries = getRelevantQueries(inputQuery)
 // relevantRecords = getRelevantRecords(inputQuery)
 // const fakeName = CareRecepientInfoCollection[CRUUID] # get this from firebase
@@ -100,7 +32,7 @@ const askQuery: (inputQuery: string) => QueryRecord = (inputQuery) => {
     return null as any
 }
 
-const respondToFeedback: (query: QueryRecord, feedback: QueryFeedback) => QueryRecord = (inputQuery) => {
+export const respondToFeedback: (query: QueryRecord, feedback: QueryFeedback) => QueryRecord = (inputQuery) => {
     // if feedback is positive, save query to QueryRecordCollection. Then return query
     // 
     // otherwise:

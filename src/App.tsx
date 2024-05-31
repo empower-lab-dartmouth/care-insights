@@ -7,17 +7,21 @@ import {
 } from 'react-router-dom';
 import './App.css';
 import SignUp from './components/landing/signup';
-import {useContext, useEffect} from 'react';
-import {AuthContext} from './state/context/auth-context';
+import { useContext, useEffect } from 'react';
+import { AuthContext } from './state/context/auth-context';
 import RequireAuth from './state/context/require-auth';
 import VideoAnalysis from './components/videoAnalysis/VideoAnalysis';
 import SummaryInsights from './components/summaryInsights/SummaryInsights';
 import Landing from './components/landing/landing';
+import { queryingTests } from './state/queryingTests';
 
 const App = () => {
   // eslint-disable-next-line no-unused-vars
-  const {currentUser} = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  console.log('running tests');
+  queryingTests();
 
   useEffect(() => {
     if (currentUser) {
