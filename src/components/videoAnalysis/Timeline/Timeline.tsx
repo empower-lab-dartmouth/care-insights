@@ -15,6 +15,8 @@ import { MeaningfulMoment } from '../../../state/types';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import EditIcon from '@mui/icons-material/Edit';
+import { Fab } from '@mui/material';
 
 type TimelineProps = {
     events: MeaningfulMoment[]
@@ -56,47 +58,67 @@ const EventsTimeline: React.FC<TimelineProps> = (props) => {
     const { events } = props;
 
     return (
-        <Timeline sx={{
-            [`& .${timelineOppositeContentClasses.root}`]: {
-                flex: 0.2,
-            },
-        }}>
-            {
-                events.map((e) =>
-                    <TimelineItem key={e.startTime}>
-                        <TimelineOppositeContent
-                            sx={{
-                                'm': 'auto 0',
-                                'width': '50px',
-                                'text-wrap': 'wrap',
-                            }}
-                            align="right"
-                            variant="body2"
-                            color="text.secondary"
-                        >
-                            {prettyMilliseconds(e.startTime)}
-                        </TimelineOppositeContent>
-                        <TimelineSeparator>
-                            <TimelineConnector />
-                            {icon(e)}
-                            <TimelineConnector />
-                        </TimelineSeparator>
-                        <TimelineContent sx={{ py: '12px', px: 2 }}>
-                            <Typography variant="h6" component="span">
-                                {
-                                    eventHeader(e)
-                                }
-                            </Typography>
-                            <Typography variant="body2" sx={{
-                                'width': '200px',
-                                'text-wrap': 'wrap',
-                            }}>
-                                {e.description}</Typography>
-                        </TimelineContent>
-                    </TimelineItem>
-                )
-            }
-        </Timeline>
+        <>
+            <Timeline sx={{
+                [`& .${timelineOppositeContentClasses.root}`]: {
+                    flex: 0.2,
+                },
+            }}>
+                <TimelineItem>
+                    <TimelineOppositeContent
+                        sx={{
+                            'm': 'auto 0',
+                            'width': '50px',
+                            'text-wrap': 'wrap',
+                        }}
+                        align="right"
+                        variant="body2"
+                        color="text.secondary"
+                    >
+                        <Fab variant="extended"
+                            aria-label="edit">
+                            <EditIcon />
+                            Edit
+                        </Fab>
+                    </TimelineOppositeContent>
+                </TimelineItem>
+                {
+                    events.map((e) =>
+                        <TimelineItem key={e.startTime}>
+                            <TimelineOppositeContent
+                                sx={{
+                                    'm': 'auto 0',
+                                    'width': '50px',
+                                    'text-wrap': 'wrap',
+                                }}
+                                align="right"
+                                variant="body2"
+                                color="text.secondary"
+                            >
+                                {prettyMilliseconds(e.startTime)}
+                            </TimelineOppositeContent>
+                            <TimelineSeparator>
+                                <TimelineConnector />
+                                {icon(e)}
+                                <TimelineConnector />
+                            </TimelineSeparator>
+                            <TimelineContent sx={{ py: '12px', px: 2 }}>
+                                <Typography variant="h6" component="span">
+                                    {
+                                        eventHeader(e)
+                                    }
+                                </Typography>
+                                <Typography variant="body2" sx={{
+                                    'width': '200px',
+                                    'text-wrap': 'wrap',
+                                }}>
+                                    {e.description}</Typography>
+                            </TimelineContent>
+                        </TimelineItem>
+                    )
+                }
+            </Timeline>
+        </>
     );
 };
 
