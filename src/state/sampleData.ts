@@ -1,4 +1,7 @@
-import { CRInfo, CRProgramEvents, MeaningfulMoment } from "./types";
+import {
+    CRInfo, CRProgramEvents,
+    HeatmapData, MeaningfulMoment
+} from "./types";
 
 export const sampleCRInfo: Record<string, CRInfo> = {
     'abby': {
@@ -23,6 +26,10 @@ export const sampleCRInfo: Record<string, CRInfo> = {
     }
 };
 
+export const sampleHeatMapData: HeatmapData = {
+    attention: Array.from({ length: 200 },
+        () => Math.floor(Math.random() * 40))
+};
 
 export const sampleMeaningfulMoments: MeaningfulMoment[] = [
     {
@@ -31,17 +38,17 @@ export const sampleMeaningfulMoments: MeaningfulMoment[] = [
         type: 'negative'
     },
     {
-    startTime: 4000,
-    description: 'Abby had an above average positive reaction to ' +
-    'the song "Autumn leaves."',
-    type: 'positiveMusic'
-},
-{
-    startTime: 10000,
-    description: 'Abby recalled memories of her experiences in ' +
-    'marching band in high school.',
-    type: 'memory'
-},
+        startTime: 4000,
+        description: 'Abby had an above average positive reaction to ' +
+            'the song "Autumn leaves."',
+        type: 'positiveMusic'
+    },
+    {
+        startTime: 10000,
+        description: 'Abby recalled memories of her experiences in ' +
+            'marching band in high school.',
+        type: 'memory'
+    },
 ];
 
 export const fetchSampleProgramData = (v: string) => {
@@ -178,5 +185,5 @@ export const SAMPLE_SUGGESTED_RECORD_EVENT_RESPONSES = [
 ];
 
 export function timeout(delay: number) {
-    return new Promise( (res) => setTimeout(res, delay) );
+    return new Promise((res) => setTimeout(res, delay));
 }

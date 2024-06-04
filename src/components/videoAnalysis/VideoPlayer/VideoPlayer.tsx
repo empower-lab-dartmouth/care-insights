@@ -4,6 +4,7 @@ import ReactPlayer from 'react-player';
 import { MeaningfulMoment } from '../../../state/types';
 import EventsTimeline from '../Timeline/Timeline';
 import Stack from '@mui/material/Stack';
+import HeatMap from '../HeatMap/HeatMap';
 
 type VideoPlayerProps = {
     videoSrc: string,
@@ -20,7 +21,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
                 alignItems="stretch"
                 spacing={2}
             >
-                <ReactPlayer url={videoSrc} />
+                <div>
+                    <ReactPlayer url={videoSrc} />
+                    <br />
+                    <HeatMap />
+                </div>
                 {
                     meaningfulMoments === undefined ?
                         <p>Video analysis is running.</p> :

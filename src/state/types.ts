@@ -11,6 +11,12 @@ export type PageState = {
     loadingCRInfo: boolean,
 }
 
+export type HeatMapDataPoint = number
+
+export type HeatmapData = {
+    attention: HeatMapDataPoint[]
+}
+
 export type MeaningfulMoment = {
     startTime: number
     description: string,
