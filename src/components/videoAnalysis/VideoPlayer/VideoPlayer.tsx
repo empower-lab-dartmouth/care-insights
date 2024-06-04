@@ -5,6 +5,7 @@ import { MeaningfulMoment } from '../../../state/types';
 import EventsTimeline from '../Timeline/Timeline';
 import Stack from '@mui/material/Stack';
 import HeatMap from '../HeatMap/HeatMap';
+import Transcript from '../Transcript/Transcript';
 
 type VideoPlayerProps = {
     videoSrc: string,
@@ -32,6 +33,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
                         <EventsTimeline events={meaningfulMoments} />
                 }
             </Stack>
+            <Transcript />
         </>
     );
 };
