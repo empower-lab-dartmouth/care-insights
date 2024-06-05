@@ -88,7 +88,7 @@ type OptionsProps = {
     moment: MeaningfulMoment;
 }
 
-const Options: React.FC<OptionsProps> = ({ moment: e }) => {
+const Options: React.FC<OptionsProps> = () => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -205,7 +205,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ updateTime, time }) => {
                             onChange={handleChange}
                             min={0}
                             max={10800000} // Three hours
-                            valueLabelFormat={(value, index) => {
+                            valueLabelFormat={(value) => {
                                 return prettyMilliseconds(value);
                             }
                             } /> : <></>
@@ -252,6 +252,7 @@ const EventsTimeline: React.FC<TimelineProps> = (props) => {
         moment: MeaningfulMoment) => () => {
             // eslint-disable-next-line no-unused-vars
             const { [moment.uuid]: omit, ...res } = localEvents;
+            console.log(omit); // Useless log to avoid unused var error
             setLocalEvents(res);
         };
 
