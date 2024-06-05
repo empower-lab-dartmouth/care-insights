@@ -31,25 +31,28 @@ export const sampleHeatMapData: HeatmapData = {
         () => Math.floor(Math.random() * 40))
 };
 
-export const sampleMeaningfulMoments: MeaningfulMoment[] = [
-    {
+export const sampleMeaningfulMoments: Record<string, MeaningfulMoment> = {
+    'a': {
         startTime: 400,
+        uuid: 'a',
         description: 'Abby acted violently.',
         type: 'negative'
     },
-    {
+    'b': {
         startTime: 4000,
+        uuid: 'b',
         description: 'Abby had an above average positive reaction to ' +
             'the song "Autumn leaves."',
         type: 'positiveMusic'
     },
-    {
+    'c': {
         startTime: 10000,
+        uuid: 'c',
         description: 'Abby recalled memories of her experiences in ' +
             'marching band in high school.',
         type: 'memory'
     },
-];
+};
 
 export const fetchSampleProgramData = (v: string) => {
     if (v === 'abby') {

@@ -19,8 +19,9 @@ export type HeatmapData = {
 
 export type MeaningfulMoment = {
     startTime: number
+    uuid: string,
     description: string,
-    type: 'positiveMusic' | 'negative' | 'memory'
+    type: 'positiveMusic' | 'negative' | 'memory' | 'note'
 }
 
 export type CRAutoselectOption = {
@@ -53,6 +54,6 @@ export type MusicProgramEvent = {
     CRUUID: UserUUID,
     description: string,
     videoUrl: string,
-    meaningfulMoments?: MeaningfulMoment[]
+    meaningfulMoments: Record<string, MeaningfulMoment>
     transcript?: string
 }

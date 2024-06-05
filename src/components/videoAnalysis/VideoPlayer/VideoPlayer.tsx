@@ -9,11 +9,13 @@ import Transcript from '../Transcript/Transcript';
 
 type VideoPlayerProps = {
     videoSrc: string,
-    meaningfulMoments?: MeaningfulMoment[]
+    meaningfulMoments: Record<string, MeaningfulMoment>
+    setMeaningfulMoments: (meaningfulMoments:
+        Record<string, MeaningfulMoment>) => void
 };
 
 const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
-    const { videoSrc, meaningfulMoments } = props;
+    const { videoSrc, meaningfulMoments, setMeaningfulMoments } = props;
     return (
         <>
             <Stack
@@ -28,9 +30,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
                     <HeatMap />
                 </div>
                 {
-                    meaningfulMoments === undefined ?
-                        <p>Video analysis is running.</p> :
-                        <EventsTimeline events={meaningfulMoments} />
+                    <EventsTimeline setEvents={setMeaningfulMoments}
+                        events={meaningfulMoments} />
                 }
             </Stack>
             <Transcript />

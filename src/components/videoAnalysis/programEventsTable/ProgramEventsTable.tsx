@@ -9,7 +9,7 @@ import {
     NO_CR_SELECTED, allCRInfoState,
     pageContextState
 } from '../../../state/recoil';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { ExpandableRowsComponent } from
     'react-data-table-component/dist/DataTable/types';
 import VideoPlayer from '../VideoPlayer/VideoPlayer';
@@ -21,7 +21,9 @@ type MusicEventRow = {
     uuid: EventUUID,
     description: string,
     videoUrl: string,
-    meaningfulMoments?: MeaningfulMoment[]
+    meaningfulMoments: Record<string, MeaningfulMoment>
+    setMeaningfulMoments: (
+        meaningfulMoments: Record<string, MeaningfulMoment>) => void
     transcript?: string,
     defaultExpanded: boolean,
     date: string,
@@ -57,34 +59,56 @@ const columns: TableColumn<Row>[] = [
 
 const ExpandedComponent: ExpandableRowsComponent<Row> = (
     d) => {
-    const { videoUrl, meaningfulMoments } = d.data;
+    const { videoUrl,
+        meaningfulMoments, setMeaningfulMoments } = d.data;
     return <pre style={{
         borderWidth: '30px',
         borderStyle: 'none none none solid',
         borderColor: 'lightgray'
     }}>
         <VideoPlayer videoSrc={videoUrl}
+            setMeaningfulMoments={setMeaningfulMoments}
             meaningfulMoments={meaningfulMoments} />
     </pre>;
 };
 
 
 const programEventsToRows: (v: ProgramEvent[],
-    cRInfo: Record<string, CRInfo>) => Row[] = (v, CRInfo) =>
+    updateMeaningfulMoments: (id: string) =>
+        (v: Record<string, MeaningfulMoment>) => void,
+    cRInfo: Record<string, CRInfo>) => Row[] = (v,
+        updateMeaningfulMoments, CRInfo) =>
         v.map((l) => ({
             ...l,
             date: (new Date(l.date)).toString(),
             CRName: CRInfo[l.CRUUID].name,
             id: l.uuid,
+            meaningfulMoments: l.meaningfulMoments,
+            setMeaningfulMoments: updateMeaningfulMoments(l.uuid),
             defaultExpanded: false,
         }));
 
 
 const ProgramEventsTable: React.FC = () => {
-    const pageContext = useRecoilValue(pageContextState);
+    const [pageContext, setPageContext] = useRecoilState(pageContextState);
     const CRInfo = useRecoilValue(allCRInfoState);
+
+    // TODO: also update remote.
+    const updateMeaningfulMoments: (id: string) => (
+        moments: Record<string, MeaningfulMoment>) => void = (id) =>
+            (moments) => setPageContext({
+                ...pageContext,
+                selectedCRProgramEvents: {
+                    ...pageContext.selectedCRProgramEvents,
+                    [id]: {
+                        ...pageContext.selectedCRProgramEvents[id],
+                        meaningfulMoments: moments,
+                    }
+                }
+            });
     const data: Row[] = programEventsToRows(
         Object.values(pageContext.selectedCRProgramEvents),
+        updateMeaningfulMoments,
         CRInfo);
     const title = pageContext.selectedCR === NO_CR_SELECTED ?
         'Showing recent events for ' +
