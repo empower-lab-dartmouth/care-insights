@@ -5,6 +5,8 @@ import AutocompleteCRSearch from '../AutocompleteCRSearch/AutocompleteCRSearch';
 import { NO_CR_SELECTED, pageContextState } from '../../../state/recoil';
 import { useRecoilState } from 'recoil';
 import AddIcon from '@mui/icons-material/Add';
+import { setRemoteProgramEvent } from '../../../state/setting';
+import { commonProgramEvents } from '../../../state/sampleData';
 
 
 const CommonCRActions = () => {
@@ -38,6 +40,9 @@ const CommonCRActions = () => {
                         Record event
                     </Fab>
                 </Button>
+                <Button onClick={() =>
+                    setRemoteProgramEvent(commonProgramEvents['e2'])
+                }>Degugging tool: Push sample event</Button>
             </Stack>
             <Modal
                 open={pageContext.addEventModalOpen}

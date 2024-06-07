@@ -44,7 +44,7 @@ type TranscriptSegment = { // On the frontend, I don't care about what the durat
 }
 
 
-export type MusicProgramEvent = {
+export type MusicProgramEventSpec = {
    type: 'music-event', // Hardcode this, on the frontend it's necessary, since we are also allowing for manually generated events, which have a different type.
    videoUrl: string, // This will be the MUX link, not the Google cloud bucket url. Figuring out what this is is a TODO.
    meaningfulMoments: Record<string, MeaningfulMoment>, // A uuid -> meaningfulMoment mapping of the meaningful moments in the video. Let's require 2-6 meaningful moments per video.
@@ -57,5 +57,4 @@ export type MusicProgramEvent = {
    description: string, // Reformulate text from the meaningful moments into a single string, either just through concatenation or with merge help from ChatGPT. This representation is necessary for supporting our frontend querying.
    engagement: EngagementLevel, // Predict engagement level of user. Let's do a rules based approach to this for now based on meaningful moments data (i.e. are there lots of positive moments?). This is not a priority. Once we have user labels (from caregivers editing these values) we can retrain on those
    redirection: RedirectionLevel, // were there moments of redirection in the video? Let's do a rules based approach to this for now based on meaningful moments (i.e. is there a redirection moment?) This is not a priority. Once we have user labels (from caregivers editing these values) we can retrain on those
-  
 }
