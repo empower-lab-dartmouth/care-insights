@@ -1,6 +1,6 @@
 import { atom, selector } from 'recoil';
 import { CRInfo, PageState, CRAutoselectOptions, CGInfo } from './types';
-import { SAMPLE_SUGGESTED_QUERIES, sampleCRInfo } from './sampleData';
+import { sampleCRInfo } from './sampleData';
 import { QueryRecord } from './queryingTypes';
 
 export const trackingTimeUntilNextPush = atom<number>({
@@ -29,7 +29,7 @@ export const samplePageState: PageState = {
   selectedCRProgramEvents: {},
   insightsQuery: defaultQueryEmpty,
   addEventModalOpen: false,
-  suggestedQueries: SAMPLE_SUGGESTED_QUERIES,
+  suggestedQueries: [],
   loadingCRInfo: false,
 };
 

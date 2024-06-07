@@ -7,7 +7,7 @@ import {
     where
 } from "firebase/firestore";
 import { db } from "./firebase/firebase-config";
-import { samplePageState } from "./recoil";
+import { defaultQueryEmpty, samplePageState } from "./recoil";
 import { QueryRecord } from "./queryingTypes";
 
 export function getSelectedCRProgramEvents(v: string) {
@@ -97,26 +97,36 @@ export const loadQueriesForCR = async (pageState: PageState,
     const querySnapshot = await getDocs(q);
     console.log(querySnapshot.docs);
     console.log('Firebase collection read <queries>');
-    const docs: QueryRecord[] = querySnapshot.docs
-        .map((doc: any) => {
-            const d = doc.data() as any as QueryRecord;
-            return d;
-        }).sort(
-            (a, b) => b.dateApproved as number -
-                (a.dateApproved as number));
-    const temp: Record<string, QueryRecord> = {};
-    const queries: Record<string, QueryRecord> = docs
-        .reduce((acc, curr) => ({
-            ...acc,
-            [curr.query]: curr,
-        }), temp);
-    setLocalQueries(queries);
-    setPageContext({
-        ...pageState,
-        suggestedQueries: docs.slice(0, 5),
-        insightsQuery: docs[0],
-        loadingCRInfo: false,
-    });
+    if (querySnapshot.empty) {
+        setLocalQueries({});
+        setPageContext({
+            ...pageState,
+            suggestedQueries: [],
+            insightsQuery: defaultQueryEmpty,
+            loadingCRInfo: false,
+        });
+    } else {
+        const docs: QueryRecord[] = querySnapshot.docs
+            .map((doc: any) => {
+                const d = doc.data() as any as QueryRecord;
+                return d;
+            }).sort(
+                (a, b) => b.dateApproved as number -
+                    (a.dateApproved as number));
+        const temp: Record<string, QueryRecord> = {};
+        const queries: Record<string, QueryRecord> = docs
+            .reduce((acc, curr) => ({
+                ...acc,
+                [curr.query]: curr,
+            }), temp);
+        setLocalQueries(queries);
+        setPageContext({
+            ...pageState,
+            suggestedQueries: docs.slice(0, 5),
+            insightsQuery: docs[0],
+            loadingCRInfo: false,
+        });
+    }
 };
 
 export const loadPageDataFromFB = async (username: string,

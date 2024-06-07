@@ -46,11 +46,7 @@ export async function askQuery(inputQuery: string,
     allCRQueries: Record<string, QueryRecord>) {
     console.log(inputQuery);
     const existingQueryMatchesExactly = allCRQueries[inputQuery];
-    console.log('!!!!!!');
     if (existingQueryMatchesExactly !== undefined) {
-        console.log('!!!!!!Query exactly matches an existing one');
-        console.log(existingQueryMatchesExactly.queryResponse);
-        console.log(existingQueryMatchesExactly);
         handleLocalResponse(existingQueryMatchesExactly);
     }
     const relevantQueries = getRelevantQueries(inputQuery, allCRQueries);
