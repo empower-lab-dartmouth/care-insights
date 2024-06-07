@@ -7,7 +7,7 @@ import {
 } from '../../../state/recoil';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import {
-    fetchCRInfo,
+    loadCRProgramEvents,
     getSelectedCRProgramEvents
 } from '../../../state/fetching';
 
@@ -35,18 +35,15 @@ const AutocompleteUserSearch = () => {
             isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
             onChange={(event, newValue) => {
                 const newUUID = newValue === null ? 'NONE' : newValue.uuid;
-                if (newUUID === NO_CR_SELECTED) {
-                    setPageContext({
-                        ...pageContext,
-                        selectedCR: NO_CR_SELECTED,
-                        selectedCRProgramEvents:
-                            getSelectedCRProgramEvents(
-                                NO_CR_SELECTED),
-                        loadingCRInfo: false,
-                    });
-                } else {
-                    fetchCRInfo(newUUID, pageContext, setPageContext);
-                }
+                const newPageState = {
+                    ...pageContext,
+                    selectedCR: newUUID,
+                    selectedCRProgramEvents:
+                        getSelectedCRProgramEvents(
+                            NO_CR_SELECTED),
+                    loadingCRInfo: false,
+                };
+                loadCRProgramEvents(newPageState, setPageContext);
             }}
             // inputValue={{label: inputValue, uuid: 'test'}}
             renderInput={(params) => <TextField {...params} label="Name" />}

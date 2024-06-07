@@ -1,7 +1,7 @@
 /* eslint-disable require-jsdoc */
 import React from 'react';
 import ReactPlayer from 'react-player';
-import { MeaningfulMoment } from '../../../state/types';
+import { MeaningfulMoment, MusicProgramEvent } from '../../../state/types';
 import EventsTimeline from '../Timeline/Timeline';
 import Stack from '@mui/material/Stack';
 import HeatMap from '../HeatMap/HeatMap';
@@ -9,13 +9,13 @@ import Transcript from '../Transcript/Transcript';
 
 type VideoPlayerProps = {
     videoSrc: string,
-    meaningfulMoments: Record<string, MeaningfulMoment>
+    programEvent: MusicProgramEvent
     setMeaningfulMoments: (meaningfulMoments:
         Record<string, MeaningfulMoment>) => void
 };
 
 const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
-    const { videoSrc, meaningfulMoments, setMeaningfulMoments } = props;
+    const { videoSrc, programEvent, setMeaningfulMoments } = props;
     return (
         <>
             <Stack
@@ -31,7 +31,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
                 </div>
                 {
                     <EventsTimeline setEvents={setMeaningfulMoments}
-                        events={meaningfulMoments} />
+                        programEvent={programEvent} />
                 }
             </Stack>
             <Transcript />

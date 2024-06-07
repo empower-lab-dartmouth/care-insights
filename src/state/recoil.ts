@@ -1,25 +1,28 @@
 import { atom, selector } from 'recoil';
 import { CRInfo, PageState, CRAutoselectOptions, CGInfo } from './types';
-import { SAMPLE_SUGGESTED_QUERIES,
-  commonProgramEvents, sampleCRInfo } from './sampleData';
+import { SAMPLE_SUGGESTED_QUERIES, sampleCRInfo } from './sampleData';
 
 export const trackingTimeUntilNextPush = atom<number>({
   key: 'tracking-elapsed-time',
   default: 30000, // 30 sec
 });
 
+export const samplePageState: PageState = {
+  selectedCR: 'NONE',
+  selectedCRProgramEvents: {},
+  insightsQuery: '',
+  insightsResponse: '',
+  addEventModalOpen: false,
+  suggestedQueries: SAMPLE_SUGGESTED_QUERIES,
+  loadingCRInfo: false,
+};
+
 export const pageContextState = atom<PageState>({
   key: 'page-state',
   default: {
-    selectedCR: 'NONE',
-    selectedCRProgramEvents: commonProgramEvents,
-    insightsQuery: '',
-    insightsResponse: '',
-    addEventModalOpen: false,
-    suggestedQueries: SAMPLE_SUGGESTED_QUERIES,
-    loadingCRInfo: false,
-  },
-});
+    ...samplePageState,
+    insightsResponse: 'loading'
+}});
 
 export const allCRInfoState = atom<Record<string, CRInfo>>({
   key: 'all-CR-info',

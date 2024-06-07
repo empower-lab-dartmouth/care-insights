@@ -1,5 +1,4 @@
-/* eslint-disable require-jsdoc */
-
+/* eslint-disable require-jsdoc, no-unused-vars */
 import React from 'react';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { signInUser } from '../../state/firebase/firebase';
@@ -7,23 +6,11 @@ import { useNavigate } from 'react-router-dom';
 import '../../App.css';
 import './landing.css';
 import SignUp from './signup';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../../state/firebase/firebase-config';
 
 const defaultFormFields = {
   email: '',
   password: '',
 };
-
-export const loadLastUserServerValues: (username: string) => Promise<void> =
-  async (username) => {
-    const ref = doc(db, 'LastUserServer', username);
-    const docSnap = await getDoc(ref);
-    if (docSnap.exists()) {
-      // const data = docSnap.data() as LastUserServer;
-    }
-  };
-
 
 function Home() {
   const [open, setOpen] = React.useState(false);

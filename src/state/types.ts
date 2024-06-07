@@ -44,16 +44,30 @@ export type CGInfo = {
 
 export type CRProgramEvents = Record<EventUUID, ProgramEvent>
 
-export type ProgramEvent = MusicProgramEvent;
+export type ProgramEvent = MusicProgramEvent | ManualEntryEvent;
 
-export type MusicProgramEvent = {
-    type: 'music-event',
+export type EngagementLevel = 'low' | 'average' | 'high' | 'none' | 'na'
+export type RedirectionLevel = 'success' | 'none' | 'unsuccessful' | 'na'
+
+export type CommonEventFields = {
     label: string,
     date: number,
     uuid: EventUUID,
     CRUUID: UserUUID,
+    CGUUID: UserUUID,
     description: string,
+    engagement: EngagementLevel,
+    redirection: RedirectionLevel,
+    deleted?: 'true'
+}
+
+export type MusicProgramEvent = {
+    type: 'music-event',
     videoUrl: string,
     meaningfulMoments: Record<string, MeaningfulMoment>
     transcript?: string
-}
+} & CommonEventFields
+
+export type ManualEntryEvent = {
+    type: 'manual-entry-event',
+} & CommonEventFields

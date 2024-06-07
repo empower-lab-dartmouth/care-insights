@@ -13,7 +13,7 @@ import TimelineOppositeContent, {
 import TimelineDot from '@mui/lab/TimelineDot';
 import prettyMilliseconds from 'pretty-ms';
 import Typography from '@mui/material/Typography';
-import { MeaningfulMoment } from '../../../state/types';
+import { MeaningfulMoment, MusicProgramEvent } from '../../../state/types';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
@@ -30,6 +30,7 @@ import StyleIcon from '@mui/icons-material/Style';
 import { v4 as uuidv4 } from 'uuid';
 import NotesIcon from '@mui/icons-material/Notes';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { setRemoteProgramEvent } from '../../../state/setting';
 
 const inputStyles = {
     'width': '100%',
@@ -40,7 +41,7 @@ const inputStyles = {
 };
 
 type TimelineProps = {
-    events: Record<string, MeaningfulMoment>
+    programEvent: MusicProgramEvent
     setEvents: (events: Record<string, MeaningfulMoment>) => void
 }
 
@@ -188,7 +189,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ updateTime, time }) => {
                 >
                     {
                         showSlider ?
-                            <SaveIcon color='primary'/> :
+                            <SaveIcon color='primary' /> :
                             <AccessTimeIcon />
                     }
 
@@ -216,7 +217,8 @@ const TimePicker: React.FC<TimePickerProps> = ({ updateTime, time }) => {
 };
 
 const EventsTimeline: React.FC<TimelineProps> = (props) => {
-    const { events, setEvents } = props;
+    const { programEvent, setEvents } = props;
+    const events = programEvent.meaningfulMoments;
     const [localEvents, setLocalEvents] = React.useState(events);
     const [editModeOn, setEditModeOn] = React.useState(false);
 
@@ -283,6 +285,10 @@ const EventsTimeline: React.FC<TimelineProps> = (props) => {
                                     aria-label="save"
                                     onClick={() => {
                                         setEvents(localEvents);
+                                        setRemoteProgramEvent({
+                                            ...programEvent,
+                                            meaningfulMoments: localEvents,
+                                        });
                                         setEditModeOn(false);
                                     }
                                     }>

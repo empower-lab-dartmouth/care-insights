@@ -14,17 +14,24 @@ import VideoAnalysis from './components/videoAnalysis/VideoAnalysis';
 import SummaryInsights from './components/summaryInsights/SummaryInsights';
 import Landing from './components/landing/landing';
 import { queryingTests } from './state/queryingTests';
+import { useRecoilState } from 'recoil';
+import { pageContextState } from './state/recoil';
+import { loadPageDataFromFB } from './state/fetching';
 
 const App = () => {
   // eslint-disable-next-line no-unused-vars
   const { currentUser } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [pageState, setPageState] = useRecoilState(pageContextState);
 
   console.log('running tests');
   queryingTests();
 
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser &&
+      pageState.insightsResponse === 'loading') {
+      loadPageDataFromFB(currentUser?.email as string,
+        setPageState);
       navigate('/summaryInsights');
     }
   }, [currentUser]);

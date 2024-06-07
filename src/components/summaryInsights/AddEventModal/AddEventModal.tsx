@@ -5,6 +5,10 @@ import TextField from '@mui/material/TextField';
 import { allCRInfoState, pageContextState } from '../../../state/recoil';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import Button from '@mui/material/Button';
+import { v4 as uuidv4 } from 'uuid';
+import { AuthContext } from '../../../state/context/auth-context';
+import { ProgramEvent } from '../../../state/types';
+import { setRemoteProgramEvent } from '../../../state/setting';
 
 const style = {
   position: 'absolute',
@@ -22,14 +26,37 @@ const style = {
 
 const AddEvent: React.FC = () => {
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
+  const { currentUser } = React.useContext(AuthContext);
   const CRInfo = useRecoilValue(allCRInfoState);
   const CRname = CRInfo[pageContext.selectedCR].name;
   const [eventDescription, setEventDescription] = React.useState('');
-  const handleClose = () => {
+
+  const id = uuidv4();
+
+  const submit = () => {
+    console.log('update page context');
+    const newProgramEvent: ProgramEvent = {
+      type: 'manual-entry-event',
+      date: (new Date()).getTime(),
+      label: 'Note',
+      uuid: id,
+      redirection: 'na',
+      engagement: 'na',
+      CGUUID: currentUser?.email as string,
+      CRUUID: pageContext.selectedCR,
+      description: eventDescription,
+    };
+    console.log(newProgramEvent);
+    setRemoteProgramEvent(newProgramEvent);
     setPageContext({
       ...pageContext,
-      addEventModalOpen: false
+      selectedCRProgramEvents: {
+        ...pageContext.selectedCRProgramEvents,
+        [id]: newProgramEvent,
+      },
+      addEventModalOpen: false,
     });
+    console.log(pageContext);
   };
   return (
     <>
@@ -47,7 +74,7 @@ const AddEvent: React.FC = () => {
               'input:focus, input:valid, textarea:valid': {
                 'outline': 'none',
                 'border': 'none'
-            }
+              }
             }}
             rows={4}
             value={eventDescription}
@@ -56,7 +83,7 @@ const AddEvent: React.FC = () => {
             }}
           />
           <br />
-          <Button onClick={handleClose} sx={{
+          <Button onClick={submit} sx={{
             width: '100%'
           }}>Submit</Button>
         </ Paper>

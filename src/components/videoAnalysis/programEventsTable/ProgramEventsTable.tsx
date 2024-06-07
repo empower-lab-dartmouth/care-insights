@@ -1,8 +1,10 @@
 /* eslint-disable require-jsdoc */
 import React from 'react';
 import {
-    CRInfo, EventUUID,
-    MeaningfulMoment, ProgramEvent
+    CRInfo, EngagementLevel, EventUUID,
+    ManualEntryEvent,
+    MeaningfulMoment, MusicProgramEvent, ProgramEvent,
+    RedirectionLevel
 } from "../../../state/types";
 import DataTable, { TableColumn } from 'react-data-table-component';
 import {
@@ -13,26 +15,91 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { ExpandableRowsComponent } from
     'react-data-table-component/dist/DataTable/types';
 import VideoPlayer from '../VideoPlayer/VideoPlayer';
+import ManualEntryExpandedView from
+    '../ManualEntryExpandedView/ManualEntryExpandedView';
 
-type MusicEventRow = {
-    type: 'music-event',
+type CommonRowFields = {
     label: string,
     CRName: string,
+    CGName: string,
+    setProgramEvent: (e: ProgramEvent) => void
     uuid: EventUUID,
     description: string,
+    defaultExpanded: boolean,
+    date: string,
+    engagement: EngagementLevel,
+    redirection: RedirectionLevel,
+}
+
+type MusicEventRow = CommonRowFields & {
+    type: 'music-event',
     videoUrl: string,
-    meaningfulMoments: Record<string, MeaningfulMoment>
+    programEvent: MusicProgramEvent
     setMeaningfulMoments: (
         meaningfulMoments: Record<string, MeaningfulMoment>) => void
     transcript?: string,
-    defaultExpanded: boolean,
-    date: string,
-    id: string,
 }
 
-type Row = MusicEventRow
+type ManualEntryRow = CommonRowFields & {
+    type: 'manual-entry-event',
+    programEvent: ManualEntryEvent
+}
+
+type Row = MusicEventRow | ManualEntryRow;
+
+const engagementLevelLabel = (engagmentLevel: EngagementLevel) => {
+    switch (engagmentLevel) {
+        case 'average':
+            return 'Average';
+        case 'high':
+            return 'Above Average';
+        case 'low':
+            return 'Low';
+        case 'na':
+            return 'N/A';
+        case 'none':
+            return 'None';
+    }
+};
+
+const redirectionLevelLabel = (redirectionLevel: RedirectionLevel) => {
+    switch (redirectionLevel) {
+        case 'na':
+            return 'N/A';
+        case 'success':
+            return 'Success';
+        case 'none':
+            return 'None';
+        case 'unsuccessful':
+            return 'Unsuccessful';
+    }
+};
 
 const columns: TableColumn<Row>[] = [
+    {
+        name: 'Description',
+        selector: (row: Row) => row.description,
+        sortable: false,
+    },
+    {
+        name: 'Date',
+        selector: (row: Row) => row.date,
+        sortable: true,
+        sortFunction: (rowA, rowB) => ((new Date(rowB.date))
+            .getTime() - (new Date(rowA.date)).getTime()),
+    },
+    {
+        name: 'Engagement level',
+        selector: (row: Row) => engagementLevelLabel(
+            row.engagement),
+        sortable: true,
+    },
+    {
+        name: 'Redirections',
+        selector: (row: Row) => redirectionLevelLabel(
+            row.redirection),
+        sortable: true,
+    },
     {
         name: 'Event type',
         selector: (row: Row) => row.label,
@@ -44,56 +111,82 @@ const columns: TableColumn<Row>[] = [
         sortable: true,
     },
     {
-        name: 'Date',
-        selector: (row: Row) => row.date,
+        name: 'Caregiver',
+        selector: (row: Row) => row.CGName,
         sortable: true,
-        sortFunction: (rowA, rowB) => ((new Date(rowB.date))
-            .getTime() - (new Date(rowA.date)).getTime()),
-    },
-    {
-        name: 'Description',
-        selector: (row: Row) => row.description,
-        sortable: false,
     },
 ];
 
 const ExpandedComponent: ExpandableRowsComponent<Row> = (
     d) => {
-    const { videoUrl,
-        meaningfulMoments, setMeaningfulMoments } = d.data;
-    return <pre style={{
+    if (d.data.type === 'music-event') {
+        const { videoUrl,
+            programEvent, setMeaningfulMoments } = d.data;
+        return <pre style={{
+            borderWidth: '30px',
+            borderStyle: 'none none none solid',
+            borderColor: 'lightgray'
+        }}>
+            <VideoPlayer videoSrc={videoUrl}
+                setMeaningfulMoments={setMeaningfulMoments}
+                programEvent={programEvent as MusicProgramEvent} />
+        </pre>;
+    }
+    return (<pre style={{
         borderWidth: '30px',
         borderStyle: 'none none none solid',
         borderColor: 'lightgray'
     }}>
-        <VideoPlayer videoSrc={videoUrl}
-            setMeaningfulMoments={setMeaningfulMoments}
-            meaningfulMoments={meaningfulMoments} />
-    </pre>;
+        <ManualEntryExpandedView programEvent={
+            d.data.programEvent}
+            setProgramEvent={d.data.setProgramEvent} />
+    </pre>);
 };
 
 
 const programEventsToRows: (v: ProgramEvent[],
     updateMeaningfulMoments: (id: string) =>
         (v: Record<string, MeaningfulMoment>) => void,
+    updateProgramEvent: (id: string) => (
+        programEvent: ProgramEvent) => void,
     cRInfo: Record<string, CRInfo>) => Row[] = (v,
-        updateMeaningfulMoments, CRInfo) =>
-        v.map((l) => ({
-            ...l,
-            date: (new Date(l.date)).toString(),
-            CRName: CRInfo[l.CRUUID].name,
-            id: l.uuid,
-            meaningfulMoments: l.meaningfulMoments,
-            setMeaningfulMoments: updateMeaningfulMoments(l.uuid),
-            defaultExpanded: false,
-        }));
+        updateMeaningfulMoments,
+        updateProgramEvent, CRInfo) =>
+        v.map((l) => {
+            if (l.type === 'music-event') {
+                return ({
+                    ...l,
+                    date: (new Date(l.date)).toString(),
+                    CRName: CRInfo[l.CRUUID].name,
+                    programEvent: l,
+                    setMeaningfulMoments: updateMeaningfulMoments(l.uuid),
+                    setProgramEvent: updateProgramEvent(l.uuid),
+                    engagement: l.engagement,
+                    redirection: l.redirection,
+                    CGName: l.CGUUID,
+                    defaultExpanded: false,
+                });
+            } else {
+                return ({
+                    ...l,
+                    date: (new Date(l.date)).toString(),
+                    CRName: CRInfo[l.CRUUID].name,
+                    programEvent: l,
+                    engagement: l.engagement,
+                    CGName: l.CGUUID,
+                    redirection: l.redirection,
+                    setProgramEvent: updateProgramEvent(l.uuid),
+                    defaultExpanded: false,
+                });
+            }
+        });
 
 
 const ProgramEventsTable: React.FC = () => {
     const [pageContext, setPageContext] = useRecoilState(pageContextState);
     const CRInfo = useRecoilValue(allCRInfoState);
 
-    // TODO: also update remote.
+    // TODO: also update remote. (maybe this is already done? TODO check)
     const updateMeaningfulMoments: (id: string) => (
         moments: Record<string, MeaningfulMoment>) => void = (id) =>
             (moments) => setPageContext({
@@ -101,14 +194,27 @@ const ProgramEventsTable: React.FC = () => {
                 selectedCRProgramEvents: {
                     ...pageContext.selectedCRProgramEvents,
                     [id]: {
-                        ...pageContext.selectedCRProgramEvents[id],
+                        ...(pageContext.
+                            selectedCRProgramEvents[id]) as MusicProgramEvent,
                         meaningfulMoments: moments,
                     }
                 }
             });
+    const updateProgramEvent: (id: string) => (
+        programEvent: ProgramEvent) => void = (id) =>
+            (programEvent) => {
+                setPageContext({
+                    ...pageContext,
+                    selectedCRProgramEvents: {
+                        ...pageContext.selectedCRProgramEvents,
+                        [id]: programEvent,
+                    }
+                });
+            };
     const data: Row[] = programEventsToRows(
-        Object.values(pageContext.selectedCRProgramEvents),
-        updateMeaningfulMoments,
+        Object.values(pageContext.selectedCRProgramEvents)
+        .filter((v) => v.deleted === undefined),
+        updateMeaningfulMoments, updateProgramEvent,
         CRInfo);
     const title = pageContext.selectedCR === NO_CR_SELECTED ?
         'Showing recent events for ' +
