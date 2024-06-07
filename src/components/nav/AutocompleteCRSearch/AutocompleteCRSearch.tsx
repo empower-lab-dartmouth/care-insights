@@ -11,7 +11,6 @@ import {
 import { useRecoilState, useRecoilValue } from 'recoil';
 import {
     loadCRData,
-    getSelectedCRProgramEvents
 } from '../../../state/fetching';
 
 const AutocompleteUserSearch = () => {
@@ -37,13 +36,12 @@ const AutocompleteUserSearch = () => {
             getOptionLabel={(option) => option.label}
             isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
             onChange={(event, newValue) => {
+                console.log(newValue);
                 const newUUID = newValue === null ? 'NONE' : newValue.uuid;
+                console.log(newUUID);
                 const newPageState = {
                     ...pageContext,
                     selectedCR: newUUID,
-                    selectedCRProgramEvents:
-                        getSelectedCRProgramEvents(
-                            NO_CR_SELECTED),
                     loadingCRInfo: false,
                 };
                 loadCRData(newPageState, setPageContext, setQueries);

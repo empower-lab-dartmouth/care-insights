@@ -363,7 +363,7 @@ const EventsTimeline: React.FC<TimelineProps> = (props) => {
                     </TimelineItem>
                     {
                         Object.values(localEvents).sort(
-                            (a, b) => a.startTime - b.startTime).map((e) =>
+                            (b, a) => a.startTime - b.startTime).map((e) =>
                                 <TimelineItem key={e.startTime}>
                                     <TimelineOppositeContent
                                         sx={{
@@ -455,7 +455,7 @@ const EventsTimeline: React.FC<TimelineProps> = (props) => {
                 </TimelineItem>
                 {
                     Object.values(events).sort(
-                        (a, b) => a.startTime - b.startTime).map((e) =>
+                        (b, a) => a.startTime - b.startTime).map((e) =>
                             <TimelineItem key={e.startTime}>
                                 <TimelineOppositeContent
                                     sx={{

@@ -17,6 +17,7 @@ import { ExpandableRowsComponent } from
 import VideoPlayer from '../VideoPlayer/VideoPlayer';
 import ManualEntryExpandedView from
     '../ManualEntryExpandedView/ManualEntryExpandedView';
+import { setRemoteProgramEvent } from '../../../state/setting';
 
 type CommonRowFields = {
     label: string,
@@ -212,6 +213,7 @@ const ProgramEventsTable: React.FC = () => {
                         [id]: programEvent,
                     }
                 });
+                setRemoteProgramEvent(programEvent);
             };
     const data: Row[] = programEventsToRows(
         Object.values(pageContext.selectedCRProgramEvents)

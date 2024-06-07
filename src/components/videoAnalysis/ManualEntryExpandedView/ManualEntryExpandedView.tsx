@@ -58,7 +58,10 @@ const ManualEntryExpandedView: React.FC<
                                     Cancel
                                 </Fab>
                                 <CommonRowControls programEvent={programEvent}
-                                setProgramEvent={setProgramEvent} />
+                                setProgramEvent={(e) => {
+                                    setProgramEvent(e);
+                                    setLocalProgramEvent(e as ManualEntryEvent);
+                                }} />
                             </Stack>
                             <br />
                             <br />

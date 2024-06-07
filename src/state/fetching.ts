@@ -1,5 +1,4 @@
 import { SetterOrUpdater } from "recoil";
-import { fetchSampleProgramData } from "./sampleData";
 import { CRProgramEvents, PageState, ProgramEvent } from "./types";
 import {
     collection, doc, getDoc, getDocs,
@@ -10,13 +9,14 @@ import { db } from "./firebase/firebase-config";
 import { defaultQueryEmpty, samplePageState } from "./recoil";
 import { QueryRecord } from "./queryingTypes";
 
-export function getSelectedCRProgramEvents(v: string) {
-    return fetchSampleProgramData(v);
-}
+// export function getSelectedCRProgramEvents(v: string) {
+//     return fetchSampleProgramData(v);
+// }
 
 const QUERY_LIMIT = 30;
 
-export const loadCRData = async (pageState: PageState,
+export const loadCRData = async (
+    pageState: PageState,
     setPageContext: SetterOrUpdater<PageState>,
     setLocalQueries: SetterOrUpdater<Record<string,
         QueryRecord>>) => {
@@ -26,7 +26,6 @@ export const loadCRData = async (pageState: PageState,
             ...pageState,
             loadingCRInfo: true,
         });
-        pageState.loadingCRInfo = false;
         const q = query(collection(db, `CRProgramEvents`),
             where('CRUUID', '==', pageState.selectedCR),
             orderBy('date', 'desc'));
@@ -46,12 +45,13 @@ export const loadCRData = async (pageState: PageState,
                 ...acc,
                 [curr.uuid]: curr,
             }), temp);
-        setPageContext({
+        const updatedPageState = {
             ...pageState,
             selectedCRProgramEvents: programEvents,
             loadingCRInfo: false,
-        });
-        loadQueriesForCR(pageState,
+        };
+        setPageContext(updatedPageState);
+        loadQueriesForCR(updatedPageState,
             setPageContext, setLocalQueries);
     } else {
         // Pull all CRs' data
@@ -79,6 +79,8 @@ export const loadCRData = async (pageState: PageState,
             ...pageState,
             selectedCRProgramEvents: programEvents,
             loadingCRInfo: false,
+            insightsQuery: defaultQueryEmpty,
+            suggestedQueries: []
         });
     }
 };
