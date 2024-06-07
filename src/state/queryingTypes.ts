@@ -1,10 +1,10 @@
-export type UUID = string
-export type RecordUUID = UUID
-export type QueryUUID = UUID
+type UUID = string
+type RecordUUID = UUID
+type QueryUUID = UUID
 export type CRUUID = UUID
-export type CGUUID = UUID
-export type ActionUUID = UUID
-export type Timestamp = number
+type CGUUID = UUID
+type ActionUUID = UUID
+type Timestamp = number
 
 export type CRRecord = {
     description: string
@@ -27,9 +27,11 @@ export type CRRecordAction = {
 
 export type QueryRecord = {
     query: string
-    date: Timestamp
+    CRUUID: string
+    CGUUID: string
     queryResponse: string
     queryUUID: QueryUUID
+    dateApproved?: Timestamp
 }
 
 export type QueryFeedback = {

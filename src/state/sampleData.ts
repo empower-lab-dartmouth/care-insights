@@ -4,6 +4,7 @@ import {
     HeatmapData, MeaningfulMoment,
     ProgramEvent
 } from "./types";
+import { QueryRecord } from "./queryingTypes";
 
 export const sampleCRInfo: Record<string, CRInfo> = {
     'abby': {
@@ -217,10 +218,26 @@ export const commonProgramEvents: CRProgramEvents = {
     }
 };
 
-export const SAMPLE_SUGGESTED_QUERIES = [
-    'what is the most important info I should know about this care recepient?',
-    'what are some tips for sundowning?',
-    'does this care recepient respond well to physical contact?'
+export const SAMPLE_SUGGESTED_QUERIES: QueryRecord[] = [{
+    query: 'what is the most important info I should ' +
+        'know about this care recipient?',
+    queryResponse: 'Response 1',
+    queryUUID: 'uuid1',
+    CGUUID: '',
+    CRUUID: '',
+}, {
+    query: 'what are some tips for sundowning?',
+    queryResponse: 'Response 2',
+    queryUUID: 'uuid2',
+    CGUUID: '',
+    CRUUID: '',
+}, {
+    query: 'does this care recipient respond well to physical contact?',
+    queryResponse: 'Response 3',
+    queryUUID: 'uuid3',
+    CGUUID: '',
+    CRUUID: '',
+}
 ];
 
 export const SAMPLE_SUGGESTED_RECORD_EVENT_RESPONSES = [

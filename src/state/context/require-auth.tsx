@@ -19,7 +19,7 @@ function RequireAuth({ children }: { children: JSX.Element }) {
     return <Navigate to="/" state={{ from: location }} replace />;
   } else {
     if (currentUser.email !== null &&
-      pageState.insightsResponse === 'loading') {
+      pageState.insightsQuery.queryResponse === 'loading') {
       console.log('pulling info from remote');
       loadPageDataFromFB(currentUser.email, setPageState);
     }

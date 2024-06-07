@@ -2,10 +2,11 @@
 import React from 'react';
 import Fab from '@mui/material/Fab';
 import { Stack } from '@mui/material';
+import { QueryRecord } from '../../../state/queryingTypes';
 
 type SuggestedTextProps = {
-    textSuggestions: string[],
-    onSelected: (option: string) => void
+    textSuggestions: QueryRecord[],
+    onSelected: (option: QueryRecord) => void
 }
 
 const SuggestedText: React.FC<SuggestedTextProps> = (props) => {
@@ -18,10 +19,11 @@ const SuggestedText: React.FC<SuggestedTextProps> = (props) => {
                 spacing={{ xs: 1 }}>
                 {
                     textSuggestions.map((option) =>
-                        (<Fab variant="extended" key={option} onClick={
+                    (<Fab variant="extended"
+                        key={option.queryUUID} onClick={
                             () => onSelected(option)}>
-                            {option}
-                        </Fab>)
+                        {option.query}
+                    </Fab>)
                     )
                 }
             </Stack>

@@ -1,17 +1,33 @@
 import { atom, selector } from 'recoil';
 import { CRInfo, PageState, CRAutoselectOptions, CGInfo } from './types';
 import { SAMPLE_SUGGESTED_QUERIES, sampleCRInfo } from './sampleData';
+import { QueryRecord } from './queryingTypes';
 
 export const trackingTimeUntilNextPush = atom<number>({
   key: 'tracking-elapsed-time',
   default: 30000, // 30 sec
 });
 
+export const defaultQueryLoading: QueryRecord = {
+  query: '',
+  queryResponse: 'loading',
+  queryUUID: '',
+  CGUUID: '',
+  CRUUID: '',
+};
+
+export const defaultQueryEmpty: QueryRecord = {
+  query: '',
+  queryResponse: '',
+  queryUUID: '',
+  CGUUID: '',
+  CRUUID: '',
+};
+
 export const samplePageState: PageState = {
   selectedCR: 'NONE',
   selectedCRProgramEvents: {},
-  insightsQuery: '',
-  insightsResponse: '',
+  insightsQuery: defaultQueryEmpty,
   addEventModalOpen: false,
   suggestedQueries: SAMPLE_SUGGESTED_QUERIES,
   loadingCRInfo: false,
@@ -21,7 +37,7 @@ export const pageContextState = atom<PageState>({
   key: 'page-state',
   default: {
     ...samplePageState,
-    insightsResponse: 'loading'
+    insightsQuery: defaultQueryLoading
 }});
 
 export const allCRInfoState = atom<Record<string, CRInfo>>({
@@ -110,6 +126,12 @@ export const userIsActiveState = atom<boolean>({
 export const currentSessionActivityState = atom<SessionActivityEvent>({
   key: 'current-session-activity',
   default: newActivtySession('NO-USER', (new Date()).getTime()),
+});
+
+type QueryString = string
+export const queriesForCurrentCGState = atom<Record<QueryString, QueryRecord>>({
+  key: 'queries-for-CG',
+  default: {},
 });
 
 

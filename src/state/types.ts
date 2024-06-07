@@ -1,13 +1,14 @@
+import { QueryRecord } from "./queryingTypes"
+
 export type UserUUID = string
 export type EventUUID = string
 
 export type PageState = {
     selectedCR: UserUUID,
     selectedCRProgramEvents: CRProgramEvents
-    insightsQuery: string,
-    insightsResponse: string,
+    insightsQuery: QueryRecord,
     addEventModalOpen: boolean,
-    suggestedQueries: string[],
+    suggestedQueries: QueryRecord[],
     loadingCRInfo: boolean,
 }
 

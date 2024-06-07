@@ -1,6 +1,9 @@
 /* eslint-disable require-jsdoc */
-import React, { useState } from 'react';
-import { pageContextState } from '../../../state/recoil';
+import React, { useContext, useState } from 'react';
+import {
+    pageContextState,
+    queriesForCurrentCGState
+} from '../../../state/recoil';
 import Paper from '@mui/material/Paper';
 import { useRecoilState } from 'recoil';
 import TextField from '@mui/material/TextField';
@@ -9,11 +12,35 @@ import SuggestedText from '../SuggestedText/SuggestedText';
 import Button from '@mui/material/Button';
 import SearchIcon from '@mui/icons-material/Search';
 import CircularProgress from '@mui/material/CircularProgress';
-import { makeQuery } from '../../../state/fetching';
+import { QueryRecord } from '../../../state/queryingTypes';
+import { askQuery } from '../../../state/querying';
+import { AuthContext } from '../../../state/context/auth-context';
 
 const QuestionAndAnswerPanel: React.FC = () => {
     const [pageContext, setPageContext] = useRecoilState(pageContextState);
+    const { currentUser } = useContext(AuthContext);
     const [loadingResponse, setLoadingResponse] = useState(false);
+    const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
+    const [editingQuery, setEditingQuery] = useState(
+        pageContext.insightsQuery.query);
+    const handleLocalQueryResponse = (q: QueryRecord) => {
+        setQueries({
+            ...queries,
+            [q.query]: q
+        });
+        setPageContext({
+            ...pageContext,
+            insightsQuery: q
+        });
+    };
+    const makeQuery = () => {
+        setLoadingResponse(true);
+        askQuery(editingQuery, handleLocalQueryResponse,
+            pageContext.selectedCRProgramEvents,
+            currentUser?.email as string,
+            pageContext.selectedCR, queries);
+        setLoadingResponse(false);
+    };
 
     return (
         <>
@@ -33,17 +60,12 @@ const QuestionAndAnswerPanel: React.FC = () => {
                         }
                     }}
                     variant="standard"
-                    value={pageContext.insightsQuery}
+                    value={editingQuery}
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                         if (event.target.value.endsWith('\n')) {
-                            makeQuery(pageContext.insightsQuery,
-                                pageContext,
-                                setPageContext, setLoadingResponse);
+                            makeQuery();
                         } else {
-                            setPageContext(({
-                                ...pageContext,
-                                insightsQuery: event.target.value,
-                            }));
+                            setEditingQuery(event.target.value);
                         }
                     }}
                 />
@@ -51,19 +73,15 @@ const QuestionAndAnswerPanel: React.FC = () => {
                     onSelected={(option) => {
                         setPageContext({
                             ...pageContext,
-                            insightsQuery: option,
+                            insightsQuery: option
                         });
-                        makeQuery(
-                            option, pageContext,
-                            setPageContext, setLoadingResponse);
-                        }}
+                        setEditingQuery(option.query);
+                    }}
                 />
                 <Button variant="contained"
                     sx={{ width: '100%' }} color="success"
                     startIcon={<SearchIcon />} onClick={() => {
-                        makeQuery(pageContext.insightsQuery,
-                            pageContext, setPageContext,
-                            setLoadingResponse);
+                        makeQuery();
                     }}>
                     Get insights
                 </Button>
@@ -75,9 +93,11 @@ const QuestionAndAnswerPanel: React.FC = () => {
                 {
                     loadingResponse ? <CircularProgress /> :
                         <Typography variant="body1" gutterBottom>
-                            {pageContext.insightsResponse}
+                            {pageContext.insightsQuery.queryResponse}
                         </Typography>
                 }
+                <h2>Debugging purposes: Loaded queries</h2>
+                <p>{JSON.stringify(queries)}</p>
             </ Paper >
         </>
     );
