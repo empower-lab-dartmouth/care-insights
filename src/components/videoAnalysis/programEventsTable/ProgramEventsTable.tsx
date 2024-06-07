@@ -121,13 +121,15 @@ const ExpandedComponent: ExpandableRowsComponent<Row> = (
     d) => {
     if (d.data.type === 'music-event') {
         const { videoUrl,
-            programEvent, setMeaningfulMoments } = d.data;
+            programEvent, setMeaningfulMoments,
+            setProgramEvent } = d.data;
         return <pre style={{
             borderWidth: '30px',
             borderStyle: 'none none none solid',
             borderColor: 'lightgray'
         }}>
             <VideoPlayer videoSrc={videoUrl}
+                setProgramEvent={setProgramEvent}
                 setMeaningfulMoments={setMeaningfulMoments}
                 programEvent={programEvent as MusicProgramEvent} />
         </pre>;
@@ -213,7 +215,7 @@ const ProgramEventsTable: React.FC = () => {
             };
     const data: Row[] = programEventsToRows(
         Object.values(pageContext.selectedCRProgramEvents)
-        .filter((v) => v.deleted === undefined),
+            .filter((v) => v.deleted === undefined),
         updateMeaningfulMoments, updateProgramEvent,
         CRInfo);
     const title = pageContext.selectedCR === NO_CR_SELECTED ?

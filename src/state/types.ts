@@ -17,11 +17,17 @@ export type HeatmapData = {
     attention: HeatMapDataPoint[]
 }
 
+export type MomentType = 'positive-music' | 'redirection' | 'memory-recall' | 'note'
+export type SelectorValue<T = string> = {
+    label: string
+    value: T
+}
+
 export type MeaningfulMoment = {
     startTime: number
     uuid: string,
     description: string,
-    type: 'positiveMusic' | 'negative' | 'memory' | 'note'
+    type: MomentType
 }
 
 export type CRAutoselectOption = {

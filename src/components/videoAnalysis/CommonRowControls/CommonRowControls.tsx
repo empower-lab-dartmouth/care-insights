@@ -19,6 +19,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import Fab from '@mui/material/Fab';
 import DeleteConfirmModal from './DeleteConfirmationModal';
+import TextField from '@mui/material/TextField';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -31,6 +32,16 @@ const style = {
     boxShadow: 24,
     p: 4,
 };
+
+
+const inputStyles = {
+    'width': '100%',
+    'input:focus, input:valid, textarea:valid': {
+        'outline': 'none',
+        'border': 'none'
+    }
+};
+
 
 const datePickerStyling = {
     'input:focus, input:valid, textarea:valid': {
@@ -133,6 +144,21 @@ const CommonRowControls: React.FC<
                                 variant="h6" component="h2">
                                 Edit row fields
                             </Typography>
+                            <TextField id="outlined-basic"
+                                label="Event type"
+                                value={localProgramEvent.label}
+                                onChange={
+                                    (event:
+                                        React.ChangeEvent<
+                                            HTMLInputElement>) => {
+                                        setLocalProgramEvent({
+                                            ...localProgramEvent,
+                                            label:
+                                                event.target.value
+                                        });
+                                    }}
+                                sx={inputStyles}
+                            />
                             <Selector selected={localProgramEvent.engagement}
                                 label={'Engagement level'} onSelect={(c) =>
                                     setLocalProgramEvent({

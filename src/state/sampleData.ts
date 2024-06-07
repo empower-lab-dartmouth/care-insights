@@ -1,6 +1,8 @@
+import { v4 } from "uuid";
 import {
     CRInfo, CRProgramEvents,
-    HeatmapData, MeaningfulMoment
+    HeatmapData, MeaningfulMoment,
+    ProgramEvent
 } from "./types";
 
 export const sampleCRInfo: Record<string, CRInfo> = {
@@ -36,21 +38,21 @@ export const sampleMeaningfulMoments: Record<string, MeaningfulMoment> = {
         startTime: 400,
         uuid: 'a',
         description: 'Abby acted violently.',
-        type: 'negative'
+        type: 'redirection'
     },
     'b': {
         startTime: 4000,
         uuid: 'b',
         description: 'Abby had an above average positive reaction to ' +
             'the song "Autumn leaves."',
-        type: 'positiveMusic'
+        type: 'positive-music'
     },
     'c': {
         startTime: 10000,
         uuid: 'c',
         description: 'Abby recalled memories of her experiences in ' +
             'marching band in high school.',
-        type: 'memory'
+        type: 'memory-recall'
     },
 };
 
@@ -134,6 +136,20 @@ export const sampleProgramData2: CRProgramEvents = {
         meaningfulMoments: sampleMeaningfulMoments,
     }
 };
+
+export const newMusicProgramEvent: () => ProgramEvent = () => ({
+    type: 'music-event',
+    videoUrl: 'https://www.youtube.com/watch?v=LXb3EKWsInQ',
+    label: 'Program event',
+    CRUUID: 'abby',
+    redirection: 'na',
+    engagement: 'na',
+    CGUUID: 'bart',
+    date: 10030010,
+    uuid: v4(),
+    description: 'Memory care program event 2',
+    meaningfulMoments: sampleMeaningfulMoments,
+});
 
 export const commonProgramEvents: CRProgramEvents = {
     'e1': {

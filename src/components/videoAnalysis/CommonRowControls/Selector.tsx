@@ -34,10 +34,10 @@ const Selector: React.FC<ControlledSelectorProps> = ({
 
     return (
         <div>
-            <FormControl sx={{ m: 1, minWidth: 120 }}>
+            <FormControl sx={{ m: 1, minWidth: 200 }}>
                 <InputLabel
                     id="demo-controlled-open-select-label">
-                    Age</InputLabel>
+                    {label}</InputLabel>
                 <Select
                     labelId="demo-controlled-open-select-label"
                     id="demo-controlled-open-select"

@@ -13,7 +13,11 @@ import TimelineOppositeContent, {
 import TimelineDot from '@mui/lab/TimelineDot';
 import prettyMilliseconds from 'pretty-ms';
 import Typography from '@mui/material/Typography';
-import { MeaningfulMoment, MusicProgramEvent } from '../../../state/types';
+import {
+    MeaningfulMoment, MomentType, MusicProgramEvent,
+    ProgramEvent,
+    SelectorValue
+} from '../../../state/types';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
@@ -31,6 +35,7 @@ import { v4 as uuidv4 } from 'uuid';
 import NotesIcon from '@mui/icons-material/Notes';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { setRemoteProgramEvent } from '../../../state/setting';
+import CommonRowControls from '../CommonRowControls/CommonRowControls';
 
 const inputStyles = {
     'width': '100%',
@@ -42,29 +47,30 @@ const inputStyles = {
 
 type TimelineProps = {
     programEvent: MusicProgramEvent
+    setProgramEvent: (programEvent: ProgramEvent) => void
     setEvents: (events: Record<string, MeaningfulMoment>) => void
 }
 
 function eventHeader(moment: MeaningfulMoment) {
     switch (moment.type) {
-        case 'memory':
+        case 'memory-recall':
             return "Memory recall";
-        case 'negative':
-            return "Concerning event";
+        case 'redirection':
+            return "Redirection";
         case 'note':
             return "Note";
-        case 'positiveMusic':
+        case 'positive-music':
             return 'Positive response to music';
     }
 };
 
 function icon(moment: MeaningfulMoment) {
     switch (moment.type) {
-        case 'memory':
+        case 'memory-recall':
             return (<TimelineDot>
                 <FavoriteIcon />
             </TimelineDot>);
-        case 'negative':
+        case 'redirection':
             return (
                 <TimelineDot color="error">
                     <ErrorOutlineIcon />
@@ -76,7 +82,7 @@ function icon(moment: MeaningfulMoment) {
                     <NotesIcon />
                 </TimelineDot>
             );
-        case 'positiveMusic':
+        case 'positive-music':
             return (
                 <TimelineDot>
                     <MusicNoteIcon />
@@ -87,9 +93,10 @@ function icon(moment: MeaningfulMoment) {
 
 type OptionsProps = {
     moment: MeaningfulMoment;
+    updateMomentType: (type: MomentType) => void
 }
 
-const Options: React.FC<OptionsProps> = () => {
+const Options: React.FC<OptionsProps> = ({ moment, updateMomentType }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -99,11 +106,21 @@ const Options: React.FC<OptionsProps> = () => {
         setAnchorEl(null);
     };
 
-    const options = [
-        'Concerning event',
-        'Positive response to music',
-        'Memory recall',
-    ];
+    const options: SelectorValue<MomentType>[] = [{
+        label: 'Redirection',
+        value: 'redirection'
+    }, {
+        label: 'Positive response to music',
+        value: 'positive-music'
+    },
+    {
+        label: 'Memory recall',
+        value: 'memory-recall'
+    },
+    {
+        label: 'Note',
+        value: 'note'
+    }];
 
     const ITEM_HEIGHT = 48;
 
@@ -135,13 +152,16 @@ const Options: React.FC<OptionsProps> = () => {
                 }}
             >
                 {options.map((option) => (
-                    <MenuItem key={option} selected={
-                        option === 'Pyxis'} onClick={handleClose}>
-                        {option}
+                    <MenuItem key={option.label} selected={
+                        option.value === moment.type} onClick={() => {
+                            updateMomentType(option.value);
+                            handleClose();
+                        }}>
+                        {option.label}
                     </MenuItem>
                 ))}
             </Menu>
-        </div>
+        </div >
     );
 };
 
@@ -181,7 +201,9 @@ const TimePicker: React.FC<TimePickerProps> = ({ updateTime, time }) => {
                     aria-label="more"
                     id="long-button"
                     onClick={() => {
+                        console.log('save button clicked');
                         if (showSlider) {
+                            console.log('UPDATE TIME');
                             updateTime(localTime);
                         }
                         setShowTimer(!showSlider);
@@ -197,19 +219,24 @@ const TimePicker: React.FC<TimePickerProps> = ({ updateTime, time }) => {
 
                 {
                     showSlider ?
-                        <Slider sx={{
-                            'min-width': '200px'
-                        }}
-                            aria-label="Change time"
-                            valueLabelDisplay="on"
-                            value={localTime}
-                            onChange={handleChange}
-                            min={0}
-                            max={10800000} // Three hours
-                            valueLabelFormat={(value) => {
-                                return prettyMilliseconds(value);
-                            }
-                            } /> : <></>
+                        <Stack direction={'column'}>
+                            <Slider sx={{
+                                'min-width': '200px'
+                            }}
+                                aria-label="Change time"
+                                valueLabelDisplay="on"
+                                value={localTime}
+                                onChange={handleChange}
+                                min={0}
+                                max={10800000} // Three hours
+                                valueLabelFormat={(value) => {
+                                    return prettyMilliseconds(value);
+                                }
+                                } />
+                            <Typography variant='body1'>
+                                Apply changes by closing this slider
+                            </Typography>
+                        </Stack> : <></>
                 }
             </Stack>
         </div>
@@ -217,7 +244,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ updateTime, time }) => {
 };
 
 const EventsTimeline: React.FC<TimelineProps> = (props) => {
-    const { programEvent, setEvents } = props;
+    const { programEvent, setEvents, setProgramEvent } = props;
     const events = programEvent.meaningfulMoments;
     const [localEvents, setLocalEvents] = React.useState(events);
     const [editModeOn, setEditModeOn] = React.useState(false);
@@ -244,6 +271,17 @@ const EventsTimeline: React.FC<TimelineProps> = (props) => {
             }
         });
     };
+
+    const updateMomentType = (moment:
+        MeaningfulMoment) => (type: MomentType) => {
+            setLocalEvents({
+                ...localEvents,
+                [moment.uuid]: {
+                    ...localEvents[moment.uuid],
+                    type,
+                }
+            });
+        };
 
     const updateMeaningfulMoments = (moment: MeaningfulMoment) =>
         setLocalEvents({
@@ -317,6 +355,9 @@ const EventsTimeline: React.FC<TimelineProps> = (props) => {
                                     <AddIcon />
                                     Add moment
                                 </Fab>
+                                <CommonRowControls programEvent={programEvent}
+                                    setProgramEvent={setProgramEvent}
+                                />
                             </Stack>
                         </TimelineOppositeContent>
                     </TimelineItem>
@@ -349,7 +390,9 @@ const EventsTimeline: React.FC<TimelineProps> = (props) => {
                                                     eventHeader(e)
                                                 }
                                             </Typography>
-                                            <Options moment={e} />
+                                            <Options moment={e}
+                                                updateMomentType={
+                                                    updateMomentType(e)} />
                                             <Delete delete={
                                                 deleteMeaningfulMoment(e)} />
                                             <TimePicker

@@ -6,7 +6,7 @@ import { NO_CR_SELECTED, pageContextState } from '../../../state/recoil';
 import { useRecoilState } from 'recoil';
 import AddIcon from '@mui/icons-material/Add';
 import { setRemoteProgramEvent } from '../../../state/setting';
-import { commonProgramEvents } from '../../../state/sampleData';
+import { newMusicProgramEvent } from '../../../state/sampleData';
 
 
 const CommonCRActions = () => {
@@ -41,7 +41,7 @@ const CommonCRActions = () => {
                     </Fab>
                 </Button>
                 <Button onClick={() =>
-                    setRemoteProgramEvent(commonProgramEvents['e2'])
+                    setRemoteProgramEvent(newMusicProgramEvent())
                 }>Degugging tool: Push sample event</Button>
             </Stack>
             <Modal
