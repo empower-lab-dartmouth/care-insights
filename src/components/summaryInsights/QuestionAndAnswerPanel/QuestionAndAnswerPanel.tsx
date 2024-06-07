@@ -13,7 +13,7 @@ import Button from '@mui/material/Button';
 import SearchIcon from '@mui/icons-material/Search';
 import CircularProgress from '@mui/material/CircularProgress';
 import { QueryRecord } from '../../../state/queryingTypes';
-import { askQuery } from '../../../state/querying';
+import { askQuery, respondToApprovalFeedback } from '../../../state/querying';
 import { AuthContext } from '../../../state/context/auth-context';
 
 const QuestionAndAnswerPanel: React.FC = () => {
@@ -32,16 +32,36 @@ const QuestionAndAnswerPanel: React.FC = () => {
             ...pageContext,
             insightsQuery: q
         });
+        setEditingQuery(q.query);
     };
-    const makeQuery = () => {
+    const makeQuery = async (q: string) => {
         setLoadingResponse(true);
-        askQuery(editingQuery, handleLocalQueryResponse,
+        await askQuery(q, handleLocalQueryResponse,
             pageContext.selectedCRProgramEvents,
             currentUser?.email as string,
             pageContext.selectedCR, queries);
         setLoadingResponse(false);
     };
 
+    const submitApprovalFeedback = async () => {
+        setLoadingResponse(true);
+        const approvedQuery = {
+            ...pageContext.insightsQuery,
+            dateApproved: (new Date()).getTime()
+        };
+        await respondToApprovalFeedback(
+            approvedQuery);
+        setPageContext({
+            ...pageContext,
+            insightsQuery: approvedQuery,
+        });
+        setQueries({
+            ...queries,
+            [approvedQuery.query]: approvedQuery
+        });
+        setLoadingResponse(false);
+    };
+    const queryModified = pageContext.insightsQuery.query !== editingQuery;
     return (
         <>
             <Paper elevation={1}
@@ -63,7 +83,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
                     value={editingQuery}
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                         if (event.target.value.endsWith('\n')) {
-                            makeQuery();
+                            makeQuery(editingQuery);
                         } else {
                             setEditingQuery(event.target.value);
                         }
@@ -71,17 +91,14 @@ const QuestionAndAnswerPanel: React.FC = () => {
                 />
                 <SuggestedText textSuggestions={pageContext.suggestedQueries}
                     onSelected={(option) => {
-                        setPageContext({
-                            ...pageContext,
-                            insightsQuery: option
-                        });
                         setEditingQuery(option.query);
+                        makeQuery(option.query);
                     }}
                 />
                 <Button variant="contained"
                     sx={{ width: '100%' }} color="success"
                     startIcon={<SearchIcon />} onClick={() => {
-                        makeQuery();
+                        makeQuery(editingQuery);
                     }}>
                     Get insights
                 </Button>
@@ -93,9 +110,18 @@ const QuestionAndAnswerPanel: React.FC = () => {
                 {
                     loadingResponse ? <CircularProgress /> :
                         <Typography variant="body1" gutterBottom>
-                            {pageContext.insightsQuery.queryResponse}
+                            {queryModified ?
+                                'Click "Get Insights" when you ' +
+                                'finish editing to see results' :
+                                pageContext.insightsQuery.queryResponse}
                         </Typography>
                 }
+                <h1>Feedback</h1>
+                {pageContext.insightsQuery.dateApproved !== undefined &&
+                    !queryModified ?
+                    <p>Approved result</p> : <p>Not approved result</p>}
+                <Button onClick={() => submitApprovalFeedback()}>
+                    Approve</Button>
                 <h2>Debugging purposes: Loaded queries</h2>
                 <p>{JSON.stringify(queries)}</p>
             </ Paper >

@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// banstest
 import * as React from 'react';
 import {
   Routes, Route, useNavigate,
@@ -14,7 +13,7 @@ import VideoAnalysis from './components/videoAnalysis/VideoAnalysis';
 import SummaryInsights from './components/summaryInsights/SummaryInsights';
 import Landing from './components/landing/landing';
 import { useRecoilState } from 'recoil';
-import { pageContextState } from './state/recoil';
+import { pageContextState, queriesForCurrentCGState } from './state/recoil';
 import { loadPageDataFromFB } from './state/fetching';
 
 const App = () => {
@@ -22,12 +21,13 @@ const App = () => {
   const { currentUser } = useContext(AuthContext);
   const navigate = useNavigate();
   const [pageState, setPageState] = useRecoilState(pageContextState);
+  const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
 
   useEffect(() => {
     if (currentUser &&
       pageState.insightsQuery.queryResponse === 'loading') {
       loadPageDataFromFB(currentUser?.email as string,
-        setPageState);
+        setPageState, setQueries);
       navigate('/summaryInsights');
     }
   }, [currentUser]);

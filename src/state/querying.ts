@@ -1,14 +1,10 @@
 import { v4 } from "uuid";
-import { CRRecord, QueryFeedback, QueryRecord } from "./queryingTypes";
+import { QueryRecord } from "./queryingTypes";
 import { timeout } from "./sampleData";
 import { CRProgramEvents, ProgramEvent } from "./types";
+import { setRemoteQueryRecord } from "./setting";
 
-export const storeEvent: (record: CRRecord) => void = (record) => {
-    console.log(record); // placeholder
-    // - save GRRecord to CRRecordCollection
-    // - log a CRRecordAction action to ActionCollection
-};
-
+// TODO: Bansharee (helper function)
 export const getRelevantQueries: (inputQuery: string,
     allCRQueries: Record<string, QueryRecord>) => QueryRecord[] = (
         inputQuery, allCRQueries) => {
@@ -26,6 +22,7 @@ export const getRelevantQueries: (inputQuery: string,
         return relevantQueries;
     };
 
+// TODO: Bansharee (helper function)
 export const getRelevantRecords: (inputQuery: string,
     allCREvents: CRProgramEvents) => ProgramEvent[] = (
         inputQuery, allEvents) => {
@@ -40,6 +37,7 @@ export const getRelevantRecords: (inputQuery: string,
         return relevantEvents;
     };
 
+// TODO: Bansharee
 export async function askQuery(inputQuery: string,
     handleLocalResponse: (q: QueryRecord) => void,
     allCREvents: CRProgramEvents,
@@ -48,9 +46,12 @@ export async function askQuery(inputQuery: string,
     allCRQueries: Record<string, QueryRecord>) {
     console.log(inputQuery);
     const existingQueryMatchesExactly = allCRQueries[inputQuery];
+    console.log('!!!!!!');
     if (existingQueryMatchesExactly !== undefined) {
-        console.log('Query exactly matches an existing one');
-        return existingQueryMatchesExactly;
+        console.log('!!!!!!Query exactly matches an existing one');
+        console.log(existingQueryMatchesExactly.queryResponse);
+        console.log(existingQueryMatchesExactly);
+        handleLocalResponse(existingQueryMatchesExactly);
     }
     const relevantQueries = getRelevantQueries(inputQuery, allCRQueries);
     const relevantRecords = getRelevantRecords(inputQuery, allCREvents);
@@ -77,25 +78,28 @@ export async function askQuery(inputQuery: string,
     handleLocalResponse(completedQuery);
 }
 
-export const respondToFeedback: (
+export async function respondToApprovalFeedback(
+    query: QueryRecord) {
+    setRemoteQueryRecord(query);
+    // TODO Dylan — log push
+};
+
+// TODO Let's wait on this for a bit
+export async function respondToRevisionFeedback(
     query: QueryRecord,
-    feedback: QueryFeedback) => QueryRecord = (inputQuery) => {
-        console.log(inputQuery); // placeholder
-        // if feedback is positive, save query to
-        // QueryRecordCollection. Then return query
-        //
-        // otherwise:
-        // Save feedback to ActionCollection
-        // prompt = `you are a memory loss
-        // therapist with deep knowldge of ${fakeName}.
-        // A more knowlegable peer caregiver just asked you the question:
-        // ${query.querty}. You replied
-        // ${query.queryResponse}. Your peer just told you
-        // that your reply was ${feedback.type},
-        // and were given a chance to redo your
-        // repsponse according to the suggestion
-        // ${feedback.suggestion}. Redo the response:`
-        // queryResponse = Ask ChatGPT the prompt
-        // return QueryRecord
-        return null as any;
-    };
+    handleLocalResponse: (q: QueryRecord) => void) {
+    handleLocalResponse(query);
+    // Save feedback to ActionCollection
+    // prompt = `you are a memory loss
+    // therapist with deep knowldge of ${fakeName}.
+    // A more knowlegable peer caregiver just asked you the question:
+    // ${query.querty}. You replied
+    // ${query.queryResponse}. Your peer just told you
+    // that your reply was ${feedback.type},
+    // and were given a chance to redo your
+    // repsponse according to the suggestion
+    // ${feedback.suggestion}. Redo the response:`
+    // queryResponse = Ask ChatGPT the prompt
+    // return QueryRecord
+    return null as any;
+};

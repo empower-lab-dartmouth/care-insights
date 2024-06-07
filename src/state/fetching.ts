@@ -8,6 +8,7 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase/firebase-config";
 import { samplePageState } from "./recoil";
+import { QueryRecord } from "./queryingTypes";
 
 export function getSelectedCRProgramEvents(v: string) {
     return fetchSampleProgramData(v);
@@ -15,8 +16,10 @@ export function getSelectedCRProgramEvents(v: string) {
 
 const QUERY_LIMIT = 30;
 
-export const loadCRProgramEvents = async (pageState: PageState,
-    setPageContext: SetterOrUpdater<PageState>) => {
+export const loadCRData = async (pageState: PageState,
+    setPageContext: SetterOrUpdater<PageState>,
+    setLocalQueries: SetterOrUpdater<Record<string,
+        QueryRecord>>) => {
     if (pageState.selectedCR !== 'NONE') {
         // Pull sepcific CR's data
         setPageContext({
@@ -48,6 +51,8 @@ export const loadCRProgramEvents = async (pageState: PageState,
             selectedCRProgramEvents: programEvents,
             loadingCRInfo: false,
         });
+        loadQueriesForCR(pageState,
+            setPageContext, setLocalQueries);
     } else {
         // Pull all CRs' data
         setPageContext({
@@ -78,8 +83,46 @@ export const loadCRProgramEvents = async (pageState: PageState,
     }
 };
 
+export const loadQueriesForCR = async (pageState: PageState,
+    setPageContext: SetterOrUpdater<PageState>,
+    setLocalQueries: SetterOrUpdater<Record<string,
+        QueryRecord>>) => {
+    // Pull all CRs' data
+    setPageContext({
+        ...pageState,
+        loadingCRInfo: true,
+    });
+    const q = query(collection(db, `QueryRecord`),
+        where('CRUUID', '==', pageState.selectedCR));
+    const querySnapshot = await getDocs(q);
+    console.log(querySnapshot.docs);
+    console.log('Firebase collection read <queries>');
+    const docs: QueryRecord[] = querySnapshot.docs
+        .map((doc: any) => {
+            const d = doc.data() as any as QueryRecord;
+            return d;
+        }).sort(
+            (a, b) => b.dateApproved as number -
+                (a.dateApproved as number));
+    const temp: Record<string, QueryRecord> = {};
+    const queries: Record<string, QueryRecord> = docs
+        .reduce((acc, curr) => ({
+            ...acc,
+            [curr.query]: curr,
+        }), temp);
+    setLocalQueries(queries);
+    setPageContext({
+        ...pageState,
+        suggestedQueries: docs.slice(0, 5),
+        insightsQuery: docs[0],
+        loadingCRInfo: false,
+    });
+};
+
 export const loadPageDataFromFB = async (username: string,
-    setPageContext: SetterOrUpdater<PageState>) => {
+    setPageContext: SetterOrUpdater<PageState>,
+    setLocalQueries: SetterOrUpdater<Record<string,
+        QueryRecord>>) => {
     console.log('loading session data from fb');
     const ref = doc(db, 'PageContext', username);
     const docSnap = await await getDoc(ref);
@@ -87,10 +130,12 @@ export const loadPageDataFromFB = async (username: string,
         console.log('past session exists');
         const data = docSnap.data() as PageState;
         setPageContext(data as PageState);
-        await loadCRProgramEvents(data, setPageContext);
+        await loadCRData(data, setPageContext,
+            setLocalQueries);
     } else {
         console.log('past session does not exits');
         setPageContext(samplePageState);
-        await loadCRProgramEvents(samplePageState, setPageContext);
+        await loadCRData(samplePageState, setPageContext,
+            setLocalQueries);
     }
 };

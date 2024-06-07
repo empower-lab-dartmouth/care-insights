@@ -1,13 +1,16 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import {
     NO_CR_SELECTED, allCRInfoState, allCRNamesState,
-    pageContextState
+    pageContextState,
+    queriesForCurrentCGState
 } from '../../../state/recoil';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import {
-    loadCRProgramEvents,
+    loadCRData,
     getSelectedCRProgramEvents
 } from '../../../state/fetching';
 
@@ -16,7 +19,7 @@ const AutocompleteUserSearch = () => {
     const allCGInfo = useRecoilValue(allCRInfoState);
     const [pageContext, setPageContext] = useRecoilState(pageContextState);
     const selectedCGValue = allCGInfo[pageContext.selectedCR];
-
+    const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
 
     return (
         <Autocomplete
@@ -43,7 +46,7 @@ const AutocompleteUserSearch = () => {
                             NO_CR_SELECTED),
                     loadingCRInfo: false,
                 };
-                loadCRProgramEvents(newPageState, setPageContext);
+                loadCRData(newPageState, setPageContext, setQueries);
             }}
             // inputValue={{label: inputValue, uuid: 'test'}}
             renderInput={(params) => <TextField {...params} label="Name" />}
