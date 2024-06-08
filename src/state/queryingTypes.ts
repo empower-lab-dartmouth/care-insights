@@ -58,7 +58,7 @@ export type Action = {
     actionUUID: ActionUUID
 } & (QueryAction | CRRecordAction)
 
-export type CareRecepientInfo = {
+export type CareRecipientInfo = {
     name: string
     pronouns: string
     fakeName: string
@@ -68,4 +68,4 @@ export type CareRecepientInfo = {
 export type CRRecordCollection = Record<RecordUUID, CRRecord> 
 export type QueryCollection = Record<RecordUUID, CRRecord> 
 export type ActionCollection = Record<ActionUUID, Action>
-export type CareRecepientInfoCollection = Record<ActionUUID, Action>
+export type CareRecipientInfoCollection = Record<ActionUUID, Action>

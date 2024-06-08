@@ -23,8 +23,8 @@ export const sampleCRInfo: Record<string, CRInfo> = {
         uuid: 'claire'
     },
     'NONE': {
-        name: 'Select a care recepient',
-        label: 'Select a care recepient',
+        name: 'Select a care recipient',
+        label: 'Select a care recipient',
         uuid: 'NONE'
     }
 };

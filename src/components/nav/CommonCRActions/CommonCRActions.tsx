@@ -29,7 +29,7 @@ const CommonCRActions: React.FC<CommonCRActionsProps> = ({ page }) => {
         <>
             <Stack direction="row" spacing={2}>
                 <Typography variant="h6">
-                    Viewing care recepient:
+                    Viewing care recipient:
                 </Typography>
                 <AutocompleteCRSearch />
                 {
