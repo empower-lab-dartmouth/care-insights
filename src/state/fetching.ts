@@ -8,6 +8,7 @@ import {
 import { db } from "./firebase/firebase-config";
 import { defaultQueryEmpty, samplePageState } from "./recoil";
 import { QueryRecord } from "./queryingTypes";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
 
 // export function getSelectedCRProgramEvents(v: string) {
 //     return fetchSampleProgramData(v);
@@ -151,3 +152,16 @@ export const loadPageDataFromFB = async (username: string,
             setLocalQueries);
     }
 };
+
+
+export async function downloadFile(path: string,
+    localCallBack: (url: string) => void) {
+    const storage = getStorage();
+    getDownloadURL(ref(storage, path))
+        .then((url) => {
+            localCallBack(url);
+        })
+        .catch((error) => {
+            // Handle any errors
+        });
+}

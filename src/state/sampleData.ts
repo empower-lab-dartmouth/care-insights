@@ -102,3 +102,8 @@ export const SAMPLE_SUGGESTED_RECORD_EVENT_RESPONSES = [
 export function timeout(delay: number) {
     return new Promise((res) => setTimeout(res, delay));
 }
+
+export async function delayThenDo(fn: () => void, delay: number) {
+    await timeout(delay);
+    fn();
+}

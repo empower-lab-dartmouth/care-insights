@@ -47,7 +47,11 @@ export async function askQuery(inputQuery: string,
     console.log(inputQuery);
     const existingQueryMatchesExactly = allCRQueries[inputQuery];
     if (existingQueryMatchesExactly !== undefined) {
+        console.log('queries match exactly');
+        console.log(existingQueryMatchesExactly);
+        console.log(allCRQueries);
         handleLocalResponse(existingQueryMatchesExactly);
+        return;
     }
     const relevantQueries = getRelevantQueries(inputQuery, allCRQueries);
     const relevantRecords = getRelevantRecords(inputQuery, allCREvents);
@@ -74,28 +78,41 @@ export async function askQuery(inputQuery: string,
     handleLocalResponse(completedQuery);
 }
 
-export async function respondToApprovalFeedback(
-    query: QueryRecord) {
-    setRemoteQueryRecord(query);
-    // TODO Dylan — log push
-};
 
-// TODO Let's wait on this for a bit
-export async function respondToRevisionFeedback(
+// TODO: Bansharee
+export async function modifyWithFeedback(feedback: string,
     query: QueryRecord,
-    handleLocalResponse: (q: QueryRecord) => void) {
-    handleLocalResponse(query);
-    // Save feedback to ActionCollection
+    handleLocalResponse: (q: QueryRecord) => void,
+    allCREvents: CRProgramEvents,
+    CGUUID: string,
+    CRUUID: string,
+    allCRQueries: Record<string, QueryRecord>) {
     // prompt = `you are a memory loss
     // therapist with deep knowldge of ${fakeName}.
     // A more knowlegable peer caregiver just asked you the question:
     // ${query.querty}. You replied
     // ${query.queryResponse}. Your peer just told you
-    // that your reply was ${feedback.type},
+    // that your reply was insufficient,
     // and were given a chance to redo your
     // repsponse according to the suggestion
     // ${feedback.suggestion}. Redo the response:`
     // queryResponse = Ask ChatGPT the prompt
-    // return QueryRecord
-    return null as any;
+    await timeout(1000); // Mocking the delay of calling ChatGPT
+    const ChatGPTResponse =
+        'Updated response to include feedback "' + feedback + '"';
+    const completedQuery: QueryRecord = {
+        ...query,
+        dateApproved: undefined,
+        queryResponse: ChatGPTResponse,
+        CGUUID,
+        CRUUID,
+    };
+    handleLocalResponse(completedQuery);
+}
+
+
+export async function respondToApprovalFeedback(
+    query: QueryRecord) {
+    setRemoteQueryRecord(query);
+    // TODO Dylan — log push
 };

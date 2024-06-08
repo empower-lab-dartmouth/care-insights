@@ -2,6 +2,10 @@ import { collection, doc, setDoc } from "firebase/firestore";
 import { ProgramEvent } from "./types";
 import { db } from "./firebase/firebase-config";
 import { QueryRecord } from "./queryingTypes";
+import { getStorage, ref, uploadBytes } from "firebase/storage";
+
+const storage = getStorage();
+
 
 export const setRemoteProgramEvent = async (event: ProgramEvent) => {
   const programEventRef = collection(db, 'CRProgramEvents');
@@ -25,3 +29,12 @@ export const setRemoteQueryRecord = async (query: QueryRecord) => {
   }
 };
 
+
+export async function uploadFile(file: any, path: string) {
+  const storageRef = ref(storage, path);
+  // 'file' comes from the Blob or File API
+  uploadBytes(storageRef, file).then((snapshot) => {
+    console.log('Uploaded a blob or file!');
+    console.log(snapshot);
+  });
+}

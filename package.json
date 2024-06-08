@@ -8,6 +8,15 @@
     "@dfnivo/chord": "^0.79.13",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@mdxeditor/editor": "^3.4.1",
+    "@milkdown/core": "^7.3.6",
+    "@milkdown/ctx": "^7.3.6",
+    "@milkdown/plugin-history": "^7.3.6",
+    "@milkdown/preset-commonmark": "^7.3.6",
+    "@milkdown/prose": "^7.3.6",
+    "@milkdown/react": "^7.3.6",
+    "@milkdown/theme-nord": "^7.3.6",
+    "@milkdown/transformer": "^7.3.6",
     "@mui/icons-material": "^5.11.16",
     "@mui/lab": "^5.0.0-alpha.170",
     "@mui/material": "^5.15.19",
@@ -81,6 +90,7 @@
     ]
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.13",
     "@types/is-url": "^1.2.30",
     "@types/lodash": "^4.14.195",
     "@types/uuid": "^9.0.8",
