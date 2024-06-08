@@ -17,9 +17,9 @@ import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import Fab from '@mui/material/Fab';
 import DeleteConfirmModal from './DeleteConfirmationModal';
 import TextField from '@mui/material/TextField';
+import SaveIcon from '@mui/icons-material/Save';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -116,15 +116,10 @@ const CommonRowControls: React.FC<
 
         return (
             <>
-                <Fab variant="extended"
-                    sx={{
-                        'min-width': '150px'
-                    }}
-                    onClick={handleOpen}
-                    aria-label="edit">
-                    <EditIcon />
+                <Button startIcon={<EditIcon />}
+                    onClick={handleOpen}>
                     Edit row fields
-                </Fab>
+                </Button>
                 <Modal
                     aria-labelledby="transition-modal-title"
                     aria-describedby="transition-modal-description"
@@ -144,6 +139,7 @@ const CommonRowControls: React.FC<
                                 variant="h6" component="h2">
                                 Edit row fields
                             </Typography>
+                            <br />
                             <TextField id="outlined-basic"
                                 label="Event type"
                                 value={localProgramEvent.label}
@@ -178,7 +174,7 @@ const CommonRowControls: React.FC<
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <DateTimePicker
                                     sx={datePickerStyling}
-                                    label="Controlled picker"
+                                    label="Date of event"
                                     value={dayjs(programEvent.date)}
                                     onChange={(newValue) => {
                                         if (newValue != null) {
@@ -191,12 +187,15 @@ const CommonRowControls: React.FC<
                                 />
                             </LocalizationProvider>
                             <br />
-                            <Button onClick={
-                                () => {
-                                    setRemoteProgramEvent(localProgramEvent);
-                                    setProgramEvent(localProgramEvent);
-                                    handleClose();
-                                }}>
+                            <Button startIcon={
+                                <SaveIcon color='success' />}
+                                onClick={
+                                    () => {
+                                        setRemoteProgramEvent(
+                                            localProgramEvent);
+                                        setProgramEvent(localProgramEvent);
+                                        handleClose();
+                                    }}>
                                 Save</Button>
                             <br />
                             <DeleteConfirmModal deleteAction={() => {

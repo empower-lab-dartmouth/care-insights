@@ -24,7 +24,7 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
-import { Fab, Slider, Stack, TextField } from '@mui/material';
+import { Button, Slider, Stack, TextField } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
@@ -298,69 +298,39 @@ const EventsTimeline: React.FC<TimelineProps> = (props) => {
 
     if (editModeOn) {
         return (
-            <>
+            <><Stack>
+                <Stack direction="row" spacing={0}>
+                    <Button startIcon={<SaveIcon color='success' />}
+                        onClick={() => {
+                            setEvents(localEvents);
+                            setRemoteProgramEvent({
+                                ...programEvent,
+                                meaningfulMoments: localEvents,
+                            });
+                            setEditModeOn(false);
+                        }
+                        }>
+                        Save changes </Button>
+                    <Button startIcon={<CancelIcon />}
+                        onClick={() => {
+                            setEditModeOn(false);
+                            setLocalEvents(events);
+                        }
+                        }>
+                        Cancel </Button>
+                    <Button startIcon={<AddIcon color='success'/>}
+                        onClick={addMoment}
+                    >
+                        Add moment </Button>
+                    <CommonRowControls programEvent={programEvent}
+                        setProgramEvent={setProgramEvent}
+                    />
+                </Stack>
                 <Timeline sx={{
                     [`& .${timelineOppositeContentClasses.root}`]: {
                         flex: 0.2,
                     },
                 }}>
-                    <TimelineItem>
-                        <TimelineOppositeContent
-                            sx={{
-                                'm': 'auto 0',
-                                'width': '50px',
-                                'text-wrap': 'wrap',
-                            }}
-                            align="right"
-                            variant="body2"
-                            color="text.secondary"
-                        >
-                            <Stack direction="row" spacing={0}>
-                                <Fab variant="extended"
-                                    sx={{
-                                        'min-width': '150px'
-                                    }}
-                                    aria-label="save"
-                                    onClick={() => {
-                                        setEvents(localEvents);
-                                        setRemoteProgramEvent({
-                                            ...programEvent,
-                                            meaningfulMoments: localEvents,
-                                        });
-                                        setEditModeOn(false);
-                                    }
-                                    }>
-                                    <SaveIcon color='primary' />
-                                    Save edits
-                                </Fab>
-                                <Fab variant="extended"
-                                    aria-label="edit"
-                                    sx={{
-                                        'min-width': '150px'
-                                    }}
-                                    onClick={() => {
-                                        setEditModeOn(false);
-                                        setLocalEvents(events);
-                                    }
-                                    }>
-                                    <CancelIcon />
-                                    Cancel
-                                </Fab>
-                                <Fab variant="extended"
-                                    sx={{
-                                        'min-width': '150px'
-                                    }}
-                                    onClick={addMoment}
-                                    aria-label="add">
-                                    <AddIcon />
-                                    Add moment
-                                </Fab>
-                                <CommonRowControls programEvent={programEvent}
-                                    setProgramEvent={setProgramEvent}
-                                />
-                            </Stack>
-                        </TimelineOppositeContent>
-                    </TimelineItem>
                     {
                         Object.values(localEvents).sort(
                             (b, a) => a.startTime - b.startTime).map((e) =>
@@ -421,75 +391,65 @@ const EventsTimeline: React.FC<TimelineProps> = (props) => {
                             )
                     }
                 </Timeline>
+            </Stack>
             </>
         );
     }
     return (
         <>
-            <Timeline sx={{
-                [`& .${timelineOppositeContentClasses.root}`]: {
-                    flex: 0.2,
-                },
-            }}>
-                <TimelineItem>
-                    <TimelineOppositeContent
-                        sx={{
-                            'm': 'auto 0',
-                            'width': '50px',
-                            'text-wrap': 'wrap',
-                        }}
-                        align="right"
-                        variant="body2"
-                        color="text.secondary"
-                    >
-                        <Fab variant="extended"
-                            sx={{
-                                'min-width': '150px'
-                            }}
-                            onClick={() => setEditModeOn(true)}
-                            aria-label="edit">
-                            <EditIcon />
-                            Edit
-                        </Fab>
-                    </TimelineOppositeContent>
-                </TimelineItem>
-                {
-                    Object.values(events).sort(
-                        (a, b) => a.startTime - b.startTime).map((e) =>
-                            <TimelineItem key={e.startTime}>
-                                <TimelineOppositeContent
-                                    sx={{
-                                        'm': 'auto 0',
-                                        'width': '50px',
-                                        'text-wrap': 'wrap',
-                                    }}
-                                    align="right"
-                                    variant="body2"
-                                    color="text.secondary"
-                                >
-                                    {prettyMilliseconds(e.startTime)}
-                                </TimelineOppositeContent>
-                                <TimelineSeparator>
-                                    <TimelineConnector />
-                                    {icon(e)}
-                                    <TimelineConnector />
-                                </TimelineSeparator>
-                                <TimelineContent sx={{ py: '12px', px: 2 }}>
-                                    <Typography variant="h6" component="span">
-                                        {
-                                            eventHeader(e)
-                                        }
-                                    </Typography>
-                                    <Typography variant="body2" sx={{
-                                        'width': '200px',
-                                        'text-wrap': 'wrap',
-                                    }}>
-                                        {e.description}</Typography>
-                                </TimelineContent>
-                            </TimelineItem>
-                        )
-                }
-            </Timeline >
+            <Stack>
+                <Stack direction={'row'}>
+                    <Button startIcon={<EditIcon />}
+                        onClick={() => setEditModeOn(true)}>
+                        Edit timeline </Button>
+                    <CommonRowControls programEvent={programEvent}
+                        setProgramEvent={setProgramEvent}
+                    />
+                </Stack>
+                <Timeline sx={{
+                    [`& .${timelineOppositeContentClasses.root}`]: {
+                        flex: 0.2,
+                    },
+                }}>
+                    {
+                        Object.values(events).sort(
+                            (a, b) => a.startTime - b.startTime).map((e) =>
+                                <TimelineItem key={e.startTime}>
+                                    <TimelineOppositeContent
+                                        sx={{
+                                            'm': 'auto 0',
+                                            'width': '50px',
+                                            'text-wrap': 'wrap',
+                                        }}
+                                        align="right"
+                                        variant="body2"
+                                        color="text.secondary"
+                                    >
+                                        {prettyMilliseconds(e.startTime)}
+                                    </TimelineOppositeContent>
+                                    <TimelineSeparator>
+                                        <TimelineConnector />
+                                        {icon(e)}
+                                        <TimelineConnector />
+                                    </TimelineSeparator>
+                                    <TimelineContent sx={{ py: '12px', px: 2 }}>
+                                        <Typography variant="h6"
+                                            component="span">
+                                            {
+                                                eventHeader(e)
+                                            }
+                                        </Typography>
+                                        <Typography variant="body2" sx={{
+                                            'width': '100%',
+                                            'text-wrap': 'wrap',
+                                        }}>
+                                            {e.description}</Typography>
+                                    </TimelineContent>
+                                </TimelineItem>
+                            )
+                    }
+                </Timeline >
+            </Stack>
         </>
     );
 };

@@ -1,7 +1,9 @@
+import React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
-import React from 'react';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -33,7 +35,8 @@ const DeleteConfirmModal: React.FC<
 
         return (
             <React.Fragment>
-                <Button onClick={handleOpen} color='error'>Delete</Button>
+                <Button startIcon={<DeleteIcon color='warning' />}
+                    onClick={handleOpen} color='error'>Delete</Button>
                 <Modal
                     open={open}
                     onClose={handleClose}

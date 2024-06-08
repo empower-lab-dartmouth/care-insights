@@ -2,23 +2,15 @@
 import React, { useState } from 'react';
 import { ManualEntryEvent, ProgramEvent } from '../../../state/types';
 import CommonRowControls from '../CommonRowControls/CommonRowControls';
-import TextField from '@mui/material/TextField';
 import SaveIcon from '@mui/icons-material/Save';
-import { Fab, Stack, Typography } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
+import WYSIWYGEditor from '../../summaryInsights/WYSIWYGEditor/WYSIWYGEditor';
 
 type ManualEntryExpandedViewProps = {
     programEvent: ManualEntryEvent
     setProgramEvent: (programEvent: ProgramEvent) => void
-};
-
-const inputStyles = {
-    'width': '100%',
-    'input:focus, input:valid, textarea:valid': {
-        'outline': 'none',
-        'border': 'none'
-    }
 };
 
 const ManualEntryExpandedView: React.FC<
@@ -26,77 +18,82 @@ const ManualEntryExpandedView: React.FC<
         const { programEvent, setProgramEvent } = props;
         const [localProgramEvent,
             setLocalProgramEvent] = useState(programEvent);
-        const [editing, setEditing] = useState(false);
+        const [editing, setEditingState] = useState(false);
+        const setEditing = (v: boolean) => {
+            setEditingState(v);
+            setForceUpdateRequired(true);
+        };
+        const [forceUpdateRequired, setForceUpdateRequired] = useState(false);
         return (
             <>
                 {
                     editing ?
                         <>
                             <Stack direction={'row'} spacing={1}>
-                                <Fab variant="extended"
-                                    sx={{
-                                        'min-width': '150px'
-                                    }}
-                                    aria-label="save"
+                                <Button startIcon={<SaveIcon color='success' />}
                                     onClick={() => {
                                         setProgramEvent(localProgramEvent);
                                         setEditing(false);
                                     }}>
-                                    <SaveIcon color='primary' />
-                                    Save edits
-                                </Fab>
-                                <Fab variant="extended"
-                                    sx={{
-                                        'min-width': '150px'
-                                    }}
-                                    aria-label="Cancel"
+                                    Save changes </Button>
+                                <Button startIcon={<CancelIcon />}
                                     onClick={() => {
                                         setLocalProgramEvent(programEvent);
                                         setEditing(false);
                                     }}>
-                                    <CancelIcon color='primary' />
-                                    Cancel
-                                </Fab>
-                                <CommonRowControls programEvent={programEvent}
-                                setProgramEvent={(e) => {
-                                    setProgramEvent(e);
-                                    setLocalProgramEvent(e as ManualEntryEvent);
-                                }} />
+                                    Cancel </Button>
                             </Stack>
-                            <br />
-                            <br />
-                            <TextField id="outlined-basic"
-                                label="Observations"
-                                multiline
-                                value={localProgramEvent.description}
-                                onChange={
-                                    (event:
-                                        React.ChangeEvent<
-                                            HTMLInputElement>) => {
-                                        setLocalProgramEvent({
-                                            ...localProgramEvent,
-                                            description:
-                                                event.target.value
-                                        });
-                                    }}
-                                sx={inputStyles}
+                            <WYSIWYGEditor loading={false}
+                                readOnly={false}
+                                update={forceUpdateRequired}
+                                updateCallback={(f) => {
+                                    setForceUpdateRequired(false);
+                                    f();
+                                }}
+                                defaultMessage=
+                                'Loading...'
+                                showDefaultMessage={false}
+                                markdown={localProgramEvent.description}
+                                onChange={(update) => {
+                                    setLocalProgramEvent({
+                                        ...localProgramEvent,
+                                        description:
+                                            update
+                                    });
+                                }}
                             />
                         </> :
                         <div>
-                            <Fab variant="extended"
-                                sx={{
-                                    'min-width': '150px'
+                            <Stack direction={'row'}>
+                                <Button startIcon={<EditIcon />}
+                                    onClick={() => setEditing(true)}>
+                                    Edit details </Button>
+                                <CommonRowControls programEvent={programEvent}
+                                    setProgramEvent={(e) => {
+                                        setProgramEvent(e);
+                                        setLocalProgramEvent(
+                                            e as ManualEntryEvent);
+                                    }} />
+                            </Stack>
+                            <WYSIWYGEditor loading={false}
+                                readOnly={true}
+                                update={forceUpdateRequired}
+                                updateCallback={(f) => {
+                                    setForceUpdateRequired(false);
+                                    f();
                                 }}
-                                onClick={() => setEditing(true)}
-                                aria-label="edit">
-                                <EditIcon />
-                                Edit
-                            </Fab>
-                            <br />
-                            <br />
-                            <Typography variant="body1">
-                                {programEvent.description}
-                            </Typography>
+                                defaultMessage=
+                                'Loading...'
+                                showDefaultMessage={false}
+                                markdown={localProgramEvent.description}
+                                onChange={(update) => {
+                                    setLocalProgramEvent({
+                                        ...localProgramEvent,
+                                        description:
+                                            update
+                                    });
+                                }}
+                            />
                         </div>
                 }
             </>

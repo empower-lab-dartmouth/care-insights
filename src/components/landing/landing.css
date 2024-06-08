@@ -8,14 +8,11 @@
 }
 
 button.sign-up {
-    position: absolute;
     /* font-family: 'Press Start 2P', cursive; */
     /* font-size: 12px; */
-    background-color: #46c6ea;
-    color: white;
+    background-color: white;
+    color: black;
     padding: 1em;
-    top: 2em;
-    right: 2em;
 }
 
 .signup-form {
@@ -26,7 +23,7 @@ button.sign-up {
 
 .login-container {
     color: white;
-    background-image: url("../../assets/login_background.webp");
+    background-image: url("../../assets/green-background-login.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;

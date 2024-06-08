@@ -25,20 +25,18 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
         <>
             <Stack
                 direction="row"
-                justifyContent="flex-start"
-                alignItems="stretch"
+                justifyContent="space-between"
+                alignItems="flex-start"
                 spacing={2}
             >
+                   <EventsTimeline setEvents={setMeaningfulMoments}
+                        programEvent={programEvent}
+                        setProgramEvent={setProgramEvent} />
                 <div>
                     <ReactPlayer url={videoSrc} />
                     <br />
                     <HeatMap />
                 </div>
-                {
-                    <EventsTimeline setEvents={setMeaningfulMoments}
-                        programEvent={programEvent}
-                        setProgramEvent={setProgramEvent} />
-                }
             </Stack>
             <Transcript />
         </>

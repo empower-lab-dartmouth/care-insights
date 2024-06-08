@@ -62,10 +62,6 @@ function Home() {
             height: '150px', width: '600px'
           }}
         />
-        <button className='sign-up'
-          onClick={() => handleOpen()}>
-          Create account
-        </button>
         <div className='landing-card'>
           <form onSubmit={handleSubmit}
             className='group'
@@ -106,6 +102,10 @@ function Home() {
                 }}
                 type="submit" />
             </div>
+            <button className='sign-up'
+              onClick={() => handleOpen()}>
+              Create account
+            </button>
           </form>
           {open && (
             <SignUp

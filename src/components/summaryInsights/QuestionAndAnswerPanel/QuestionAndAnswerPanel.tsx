@@ -19,7 +19,6 @@ import {
 import { AuthContext } from '../../../state/context/auth-context';
 import Chip from '@mui/material/Chip';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import CircleIcon from '@mui/icons-material/Circle';
 import Stack from '@mui/material/Stack';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import EditIcon from '@mui/icons-material/Edit';
@@ -29,6 +28,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import WYSIWYGEditor from '../WYSIWYGEditor/WYSIWYGEditor';
 import { PageState } from '../../../state/types';
 import { delayThenDo } from '../../../state/sampleData';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 const inputStyles = {
     'width': '100%',
@@ -46,18 +46,15 @@ const responseChip = (loading: boolean,
     }
     if (pageState.insightsQuery.dateApproved !== undefined) {
         if (alreadyApproved) {
-            return (<Chip icon={<CheckCircleOutlineIcon />}
-                label="You approved this"
-                variant="outlined" />);
+            return (<Chip icon={<CheckCircleOutlineIcon />} color='success'
+                label="You approved this" />);
         } else {
-            return (<Chip icon={<CheckCircleOutlineIcon />}
-                label="Someone else approved this"
-                variant="outlined" />);
+            return (<Chip icon={<CheckCircleOutlineIcon />} color='info'
+                label="Someone else approved this"/>);
         }
     }
-    return (<Chip icon={<CircleIcon />}
-        label="Unreviewed"
-        variant="outlined" />);
+    return (<Chip icon={<WarningAmberIcon />} color='warning'
+        label="AI generated" />);
 };
 
 const QuestionAndAnswerPanel: React.FC = () => {
@@ -182,6 +179,14 @@ const QuestionAndAnswerPanel: React.FC = () => {
                         setEditingQuery(option.query);
                         makeQuery(option.query);
                     }}
+                    loadMoreSuggestions={() => setPageContext({
+                        ...pageContext,
+                        suggestedQueries: Object.values(queries)
+                    })}
+                    hasMoreSuggestions={
+                        pageContext.suggestedQueries.length !== Object
+                            .values(queries).length
+                    }
                 />
                 <br />
                 <br />

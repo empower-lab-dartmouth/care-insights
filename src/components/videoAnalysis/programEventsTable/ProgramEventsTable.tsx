@@ -159,6 +159,7 @@ const programEventsToRows: (v: ProgramEvent[],
             if (l.type === 'music-event') {
                 return ({
                     ...l,
+                    description: l.description,
                     date: (new Date(l.date)).toString(),
                     CRName: CRInfo[l.CRUUID].name,
                     programEvent: l,
@@ -172,6 +173,7 @@ const programEventsToRows: (v: ProgramEvent[],
             } else {
                 return ({
                     ...l,
+                    description: l.description,
                     date: (new Date(l.date)).toString(),
                     CRName: CRInfo[l.CRUUID].name,
                     programEvent: l,
@@ -233,6 +235,9 @@ const ProgramEventsTable: React.FC = () => {
                 title={title}
                 pagination
                 expandableRows
+                striped
+                highlightOnHover
+                expandOnRowClicked
                 expandableRowExpanded={(row: Row) => row.defaultExpanded}
                 expandableRowsComponent={ExpandedComponent}
             />

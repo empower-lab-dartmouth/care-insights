@@ -13,19 +13,21 @@ const SummaryInsights = () => {
     return (
         <>
             <Nav />
-            <br />
-            <br />
-            <br />
             <div className='container'>
-                <CommonCRActions page={'care-insights'}/>
-                {
-                    pageContext.loadingCRInfo ?
-                        <CircularProgress /> :
-                        pageContext.selectedCR === NO_CR_SELECTED ?
-                            <></> :
-                            <QuestionAndAnswerPanel />
-                }
-            </div>
+                <div className='childContainer'>
+                    <br />
+                    <br />
+                    <br />
+                    <CommonCRActions page={'care-insights'} />
+                    {
+                        pageContext.loadingCRInfo ?
+                            <CircularProgress /> :
+                            pageContext.selectedCR === NO_CR_SELECTED ?
+                                <></> :
+                                <QuestionAndAnswerPanel />
+                    }
+                </div>
+            </div >
         </>
     );
 };
