@@ -318,7 +318,7 @@ const EventsTimeline: React.FC<TimelineProps> = (props) => {
                         }
                         }>
                         Cancel </Button>
-                    <Button startIcon={<AddIcon color='success'/>}
+                    <Button startIcon={<AddIcon color='success' />}
                         onClick={addMoment}
                     >
                         Add moment </Button>
@@ -353,7 +353,9 @@ const EventsTimeline: React.FC<TimelineProps> = (props) => {
                                         <TimelineConnector />
                                     </TimelineSeparator>
                                     <TimelineContent sx={{ py: '12px', px: 2 }}>
-                                        <Stack direction="row" spacing={0}>
+                                        <Stack direction="row" spacing={0} sx={{
+                                            minWidth: '100ch'
+                                        }}>
                                             <Typography variant="h6"
                                                 component="span">
                                                 {
@@ -432,7 +434,9 @@ const EventsTimeline: React.FC<TimelineProps> = (props) => {
                                         {icon(e)}
                                         <TimelineConnector />
                                     </TimelineSeparator>
-                                    <TimelineContent sx={{ py: '12px', px: 2 }}>
+                                    <TimelineContent sx={{
+                                        py: '12px', px: 2
+                                    }}>
                                         <Typography variant="h6"
                                             component="span">
                                             {

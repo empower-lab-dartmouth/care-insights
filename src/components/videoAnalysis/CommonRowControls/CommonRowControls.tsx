@@ -9,7 +9,6 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import Button from '@mui/material/Button';
-import EditIcon from '@mui/icons-material/Edit';
 import Typography from '@mui/material/Typography';
 import Selector, { SelectionChoice } from './Selector';
 import { setRemoteProgramEvent } from '../../../state/setting';
@@ -20,6 +19,7 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import DeleteConfirmModal from './DeleteConfirmationModal';
 import TextField from '@mui/material/TextField';
 import SaveIcon from '@mui/icons-material/Save';
+import EqualizerIcon from '@mui/icons-material/Equalizer';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -116,9 +116,9 @@ const CommonRowControls: React.FC<
 
         return (
             <>
-                <Button startIcon={<EditIcon />}
+                <Button startIcon={<EqualizerIcon />}
                     onClick={handleOpen}>
-                    Edit row fields
+                    Key Metrics
                 </Button>
                 <Modal
                     aria-labelledby="transition-modal-title"
@@ -137,7 +137,7 @@ const CommonRowControls: React.FC<
                         <Box sx={style}>
                             <Typography id="transition-modal-title"
                                 variant="h6" component="h2">
-                                Edit row fields
+                                Key Metrics
                             </Typography>
                             <br />
                             <TextField id="outlined-basic"
