@@ -63,8 +63,7 @@ const AddEvent: React.FC = () => {
       <Box sx={{ ...style, width: 400 }}>
         <Paper elevation={1}>
           <h2> Record an event for {CRname} </h2>
-          <p>To record an event for a different care recepient, close this
-            module and choose a different care recepient in the dropdown.</p>
+          <p>After saving, you can edit this further in the table</p>
           <TextField
             id="standard-multiline-static"
             label="What happened?"

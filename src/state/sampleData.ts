@@ -59,7 +59,7 @@ export const sampleMeaningfulMoments: Record<string, MeaningfulMoment> = {
 
 export const newMusicProgramEvent: () => ProgramEvent = () => ({
     type: 'music-event',
-    videoUrl: 'https://www.youtube.com/watch?v=LXb3EKWsInQ',
+    videoUrl: 'https://www.youtube.com/watch?v=jJfGhTxNFoI',
     label: 'Program event',
     CRUUID: 'abby',
     redirection: 'na',

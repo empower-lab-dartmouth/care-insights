@@ -1,9 +1,8 @@
 .container {
     /* color: white; */
     background-image: url("../../assets/green-background-faded.jpg");
-    background-size: 100%;
-    background-repeat: no-repeat;
-    background-position: center;
+    background-size: cover;
+    background-position: center top;
     opacity: 1;
     z-index: -1;
     /* background-color: white; */
