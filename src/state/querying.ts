@@ -79,7 +79,7 @@ export async function askQuery(inputQuery: string,
 }
 
 
-// TODO: Bansharee
+// TODO: Bansharee (do this after the above functions are working)
 export async function modifyWithFeedback(feedback: string,
     query: QueryRecord,
     handleLocalResponse: (q: QueryRecord) => void,
