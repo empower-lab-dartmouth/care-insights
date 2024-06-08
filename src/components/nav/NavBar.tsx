@@ -5,7 +5,7 @@ import LiveHelpIcon from '@mui/icons-material/LiveHelp';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { NavLink } from 'react-router-dom';
 import './navbar.css';
-import logo from '../../assets/care_insights_logo.png';
+import logo from '../../assets/care_insights_logo_heart.png';
 import AppBar from '@mui/material/AppBar';
 import Stack from '@mui/material/Stack';
 import SessionTracker from '../../Tracker';

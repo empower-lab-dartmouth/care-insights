@@ -33,6 +33,6 @@ button.sign-up {
     background-repeat: no-repeat;
     /* background-attachment: fixed; */
     background-position: center;
-    background-size: 100%;
-    background-image: url("../../assets/care_insights_logo.png");
+    background-size: auto 100%;
+    background-image: url("../../assets/care_insights_logo_heart.png");
 }
