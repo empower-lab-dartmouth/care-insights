@@ -16,7 +16,7 @@ export default function VideoAnalysis() {
             <br />
             <br />
             <div className='container'>
-                <CommonCRActions />
+                <CommonCRActions page={'program-events'} />
                 {
                     pageContext.loadingCRInfo ?
                         <CircularProgress /> : <ProgramEventsTable />

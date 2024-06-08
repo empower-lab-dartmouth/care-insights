@@ -145,27 +145,37 @@ const QuestionAndAnswerPanel: React.FC = () => {
                 sx={{
                     padding: '12px'
                 }}>
-                <TextField
-                    id="standard-multiline-static"
-                    label="Ask a question"
-                    multiline
-                    sx={{
-                        'width': '100%',
-                        'input:focus, textarea:valid': {
-                            'outline': 'none',
-                            'border': 'none'
-                        }
-                    }}
-                    variant="standard"
-                    value={editingQuery}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        if (event.target.value.endsWith('\n')) {
+                <Stack direction={'row'}>
+                    <TextField
+                        id="standard-multiline-static"
+                        label="Ask a question"
+                        multiline
+                        sx={{
+                            'width': '100%',
+                            'input:focus, textarea:valid': {
+                                'outline': 'none',
+                                'border': 'none'
+                            }
+                        }}
+                        variant="standard"
+                        value={editingQuery}
+                        onChange={(event: React.ChangeEvent<
+                            HTMLInputElement>) => {
+                            if (event.target.value.endsWith('\n')) {
+                                makeQuery(editingQuery);
+                            } else {
+                                setEditingQuery(event.target.value);
+                            }
+                        }}
+                    />
+                    <Button variant="contained"
+                        sx={{ "max-width": '200px' }} color="success"
+                        startIcon={<SearchIcon />} onClick={() => {
                             makeQuery(editingQuery);
-                        } else {
-                            setEditingQuery(event.target.value);
-                        }
-                    }}
-                />
+                        }}>
+                        Search
+                    </Button>
+                </Stack>
                 <SuggestedText textSuggestions={pageContext.suggestedQueries}
                     onSelected={async (option) => {
                         console.log('use query string: ' + option.query);
@@ -173,13 +183,6 @@ const QuestionAndAnswerPanel: React.FC = () => {
                         makeQuery(option.query);
                     }}
                 />
-                <Button variant="contained"
-                    sx={{ width: '100%' }} color="success"
-                    startIcon={<SearchIcon />} onClick={() => {
-                        makeQuery(editingQuery);
-                    }}>
-                    Get insights
-                </Button>
                 <br />
                 <br />
                 <Stack direction={'row'}>
@@ -241,7 +244,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
                                 {
                                     feedbackInputOpen ?
                                         <Button startIcon={<LoopIcon />}
-                                        disabled={feedbackInput === ''}
+                                            disabled={feedbackInput === ''}
                                             onClick={updateWithFeedback}>
                                             Update response to
                                             incoprorate feedback

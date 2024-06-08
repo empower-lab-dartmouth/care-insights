@@ -4,12 +4,14 @@ import AddEvent from '../../summaryInsights/AddEventModal/AddEventModal';
 import AutocompleteCRSearch from '../AutocompleteCRSearch/AutocompleteCRSearch';
 import { NO_CR_SELECTED, pageContextState } from '../../../state/recoil';
 import { useRecoilState } from 'recoil';
-import AddIcon from '@mui/icons-material/Add';
-import { setRemoteProgramEvent } from '../../../state/setting';
-import { newMusicProgramEvent } from '../../../state/sampleData';
+import EditNoteIcon from '@mui/icons-material/EditNote';
+// import { setRemoteProgramEvent } from '../../../state/setting';
+// import { newMusicProgramEvent } from '../../../state/sampleData';
 
-
-const CommonCRActions = () => {
+type CommonCRActionsProps = {
+    page: 'care-insights' | 'program-events'
+}
+const CommonCRActions: React.FC<CommonCRActionsProps> = ({ page }) => {
     const [pageContext, setPageContext] = useRecoilState(pageContextState);
     const handleOpen = () => {
         setPageContext({
@@ -30,19 +32,22 @@ const CommonCRActions = () => {
                     Viewing care recepient:
                 </Typography>
                 <AutocompleteCRSearch />
-                <Button onClick={handleOpen}
-                disabled={
-                        pageContext.selectedCR === NO_CR_SELECTED}>
-                    <Fab color="primary" disabled={
-                        pageContext.selectedCR === NO_CR_SELECTED}
-                        variant="extended">
-                        <AddIcon sx={{ mr: 1 }} />
-                        Record event
-                    </Fab>
-                </Button>
-                <Button onClick={() =>
+                {
+                    page === 'program-events' ?
+                        <Button onClick={handleOpen}
+                            disabled={
+                                pageContext.selectedCR === NO_CR_SELECTED}>
+                            <Fab color="success" disabled={
+                                pageContext.selectedCR === NO_CR_SELECTED}
+                                variant="extended">
+                                <EditNoteIcon sx={{ mr: 1 }} />
+                                New event
+                            </Fab>
+                        </Button> : <></>
+                }
+                {/* <Button onClick={() =>
                     setRemoteProgramEvent(newMusicProgramEvent())
-                }>Degugging tool: Push sample event</Button>
+                }>Degugging tool: Push sample event</Button> */}
             </Stack>
             <Modal
                 open={pageContext.addEventModalOpen}

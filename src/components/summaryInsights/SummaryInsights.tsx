@@ -17,7 +17,7 @@ const SummaryInsights = () => {
             <br />
             <br />
             <div className='container'>
-                <CommonCRActions />
+                <CommonCRActions page={'care-insights'}/>
                 {
                     pageContext.loadingCRInfo ?
                         <CircularProgress /> :

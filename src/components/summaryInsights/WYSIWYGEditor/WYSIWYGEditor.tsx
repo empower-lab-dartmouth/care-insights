@@ -6,7 +6,6 @@ import {
     BoldItalicUnderlineToggles,
     CreateLink,
     InsertImage,
-    InsertThematicBreak,
     ListsToggle,
     MDXEditor,
     Separator,
@@ -98,7 +97,7 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = (
                                         <ListsToggle />
                                         <Separator />
                                         <CreateLink />
-                                        <InsertThematicBreak />
+                                        {/* <InsertThematicBreak /> */}
                                         <InsertImage />
                                     </>
                             }
