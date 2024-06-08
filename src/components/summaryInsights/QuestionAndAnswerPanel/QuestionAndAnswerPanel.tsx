@@ -50,7 +50,7 @@ const responseChip = (loading: boolean,
                 label="You approved this" />);
         } else {
             return (<Chip icon={<CheckCircleOutlineIcon />} color='info'
-                label="Someone else approved this"/>);
+                label="Someone else approved this" />);
         }
     }
     return (<Chip icon={<WarningAmberIcon />} color='warning'
@@ -174,6 +174,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
                     </Button>
                 </Stack>
                 <SuggestedText textSuggestions={pageContext.suggestedQueries}
+                    currentText={editingQuery}
                     onSelected={async (option) => {
                         console.log('use query string: ' + option.query);
                         setEditingQuery(option.query);

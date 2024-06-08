@@ -9,10 +9,12 @@ type SuggestedTextProps = {
     onSelected: (option: QueryRecord) => void
     loadMoreSuggestions: () => void
     hasMoreSuggestions: boolean
+    currentText: string
 }
 
 const SuggestedText: React.FC<SuggestedTextProps> = (props) => {
-    const { textSuggestions, onSelected, hasMoreSuggestions,
+    const { textSuggestions, onSelected, currentText,
+        hasMoreSuggestions,
         loadMoreSuggestions
     } = props;
     return (
@@ -25,6 +27,7 @@ const SuggestedText: React.FC<SuggestedTextProps> = (props) => {
                     textSuggestions.map((option) =>
                     (
                         <Chip key={option.queryUUID}
+                            disabled={currentText === option.query}
                             onClick={
                                 () => onSelected(option)}
                             label={option.query} variant="outlined" />

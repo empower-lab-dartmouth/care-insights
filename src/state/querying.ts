@@ -14,7 +14,7 @@ export const getRelevantQueries: (inputQuery: string,
         console.log('relevant care recipient approved past queries');
         console.log(relevantQueries, inputQuery);
         // CRSpecificQueries = query QueryCollection for all queries
-        // related to care recepient with the same CRUUID
+        // related to care recipient with the same CRUUID
         // For each query q in CRSpecificQueries, ask ChatGPT if
         // inputQuery is relevant to q.query and q.queryResponse
         // TODO: figure out a good prompt to do the above
@@ -30,7 +30,7 @@ export const getRelevantRecords: (inputQuery: string,
         console.log('relevant care recipient events');
         console.log(allEvents, inputQuery);
         // CRSpecificRecords = query CRRecordCollection for all
-        // queries related to care recepient with the same CRUUID
+        // queries related to care recipient with the same CRUUID
         // For each record r in CRSpecificRecords, ask ChatGPT if
         // inputQuery is relevant to r.description
         // Return all the records that are relevant.
