@@ -9,7 +9,7 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 // import { newMusicProgramEvent } from '../../../state/sampleData';
 
 type CommonCRActionsProps = {
-    page: 'care-insights' | 'program-events'
+    page: 'care-insights' | 'program-events' | 'care-team'
 }
 const CommonCRActions: React.FC<CommonCRActionsProps> = ({ page }) => {
     const [pageContext, setPageContext] = useRecoilState(pageContextState);

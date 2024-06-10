@@ -107,3 +107,14 @@ export async function delayThenDo(fn: () => void, delay: number) {
     await timeout(delay);
     fn();
 }
+
+export const DEFAULT_PROFILE_IMAGE = 'https://t4.ftcdn.net/jpg/00/64/67/27/360_F_64672736_U5kpdGs9keUll8CRQ3p3YaEv2M6qkVY5.jpg';
+
+export const generateCaregiverInfo = () => ({
+        imageURL: DEFAULT_PROFILE_IMAGE,
+        name: 'Abby A. ' + (new Date()).getMilliseconds(),
+        uuid: 'abby' + (new Date()).getMilliseconds(),
+        dateCreated: (new Date()).getTime(),
+        memberOfGroupsUUID: [],
+        adminOfGroups: []
+});

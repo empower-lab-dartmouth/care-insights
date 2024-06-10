@@ -4,7 +4,8 @@ import * as React from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import {
-    NO_CR_SELECTED, allCRInfoState, allCRNamesState,
+    NO_CR_SELECTED,
+    careRecipientsInfoState,
     pageContextState,
     queriesForCurrentCGState
 } from '../../../state/recoil';
@@ -14,18 +15,32 @@ import {
 } from '../../../state/fetching';
 
 const AutocompleteUserSearch = () => {
-    const allCGNames = useRecoilValue(allCRNamesState);
-    const allCGInfo = useRecoilValue(allCRInfoState);
+    const allCGInfo = useRecoilValue(careRecipientsInfoState);
     const [pageContext, setPageContext] = useRecoilState(pageContextState);
     const selectedCGValue = allCGInfo[pageContext.selectedCR];
     const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
+
+    const options = Object.values(allCGInfo)
+        .filter((v) => v.uuid !== NO_CR_SELECTED)
+        .map((v) => (
+          {
+            label: v.name,
+            uuid: v.uuid,
+          }));
+    const value = selectedCGValue === undefined ? {
+        label: 'Select a care recipient',
+        uuid: 'NONE'
+    } : {
+        label: selectedCGValue.name,
+        uuid: selectedCGValue.uuid,
+    };
 
     return (
         <Autocomplete
             disablePortal
             id="combo-box-demo"
-            options={allCGNames}
-            value={selectedCGValue}
+            options={options}
+            value={value}
             sx={{
                 'width': 400,
                 'input:focus, input:valid, textarea:valid': {

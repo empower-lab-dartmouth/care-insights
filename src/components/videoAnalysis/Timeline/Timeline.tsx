@@ -36,6 +36,8 @@ import NotesIcon from '@mui/icons-material/Notes';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { setRemoteProgramEvent } from '../../../state/setting';
 import CommonRowControls from '../CommonRowControls/CommonRowControls';
+import MovieIcon from '@mui/icons-material/Movie';
+import HideSourceIcon from '@mui/icons-material/HideSource';
 
 const inputStyles = {
     'width': '100%',
@@ -49,6 +51,8 @@ type TimelineProps = {
     programEvent: MusicProgramEvent
     setProgramEvent: (programEvent: ProgramEvent) => void
     setEvents: (events: Record<string, MeaningfulMoment>) => void
+    setShowVideo: (v: boolean) => void
+    showVideo: boolean
 }
 
 function eventHeader(moment: MeaningfulMoment) {
@@ -244,7 +248,9 @@ const TimePicker: React.FC<TimePickerProps> = ({ updateTime, time }) => {
 };
 
 const EventsTimeline: React.FC<TimelineProps> = (props) => {
-    const { programEvent, setEvents, setProgramEvent } = props;
+    const { programEvent, setEvents, setProgramEvent,
+        showVideo, setShowVideo
+    } = props;
     const events = programEvent.meaningfulMoments;
     const [localEvents, setLocalEvents] = React.useState(events);
     const [editModeOn, setEditModeOn] = React.useState(false);
@@ -296,6 +302,14 @@ const EventsTimeline: React.FC<TimelineProps> = (props) => {
             setLocalEvents(res);
         };
 
+    const toggleShowVideoButton = showVideo ?
+        <Button startIcon={<HideSourceIcon />}
+            onClick={() => setShowVideo(false)}>
+            Hide video </Button> :
+        <Button startIcon={<MovieIcon />}
+            onClick={() => setShowVideo(true)}>
+            Show video </Button>;
+
     if (editModeOn) {
         return (
             <><Stack>
@@ -325,6 +339,7 @@ const EventsTimeline: React.FC<TimelineProps> = (props) => {
                     <CommonRowControls programEvent={programEvent}
                         setProgramEvent={setProgramEvent}
                     />
+                    {toggleShowVideoButton}
                 </Stack>
                 <Timeline sx={{
                     [`& .${timelineOppositeContentClasses.root}`]: {
@@ -407,6 +422,7 @@ const EventsTimeline: React.FC<TimelineProps> = (props) => {
                     <CommonRowControls programEvent={programEvent}
                         setProgramEvent={setProgramEvent}
                     />
+                    {toggleShowVideoButton}
                 </Stack>
                 <Timeline sx={{
                     [`& .${timelineOppositeContentClasses.root}`]: {

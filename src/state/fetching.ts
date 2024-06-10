@@ -1,5 +1,8 @@
 import { SetterOrUpdater } from "recoil";
-import { CRProgramEvents, PageState, ProgramEvent } from "./types";
+import {
+    CRProgramEvents, CareRecipientInfo, CaregiverInfo,
+    PageState, ProgramEvent
+} from "./types";
 import {
     collection, doc, getDoc, getDocs,
     limit, orderBy, query,
@@ -165,3 +168,89 @@ export async function downloadFile(path: string,
             // Handle any errors
         });
 }
+
+
+export const loadCareGiverInfo = async (
+    pageState: PageState,
+    setPageContext: SetterOrUpdater<PageState>,
+    setCaregiversInfo: SetterOrUpdater<Record<string,
+        CaregiverInfo>>) => {
+    console.log('loading info on all caregivers');
+    setPageContext({
+        ...pageState,
+        loadingCRInfo: true,
+    });
+    const q = query(collection(db, `CaregiverInfo`));
+    const querySnapshot = await getDocs(q);
+    console.log(querySnapshot.docs);
+    console.log('Firebase collection read <caregivers info>');
+    if (querySnapshot.empty) {
+        setCaregiversInfo({});
+        setPageContext({
+            ...pageState,
+            loadingCRInfo: false,
+        });
+    } else {
+        const docs: CaregiverInfo[] = querySnapshot.docs
+            .map((doc: any) => {
+                const d = doc.data() as any as CaregiverInfo;
+                return d;
+            }).sort(
+                (a, b) => b.dateCreated as number -
+                    (a.dateCreated as number));
+        const temp: Record<string, CaregiverInfo> = {};
+        const v: Record<string, CaregiverInfo> = docs
+            .reduce((acc, curr) => ({
+                ...acc,
+                [curr.uuid]: curr,
+            }), temp);
+        setCaregiversInfo(v);
+        setPageContext({
+            ...pageState,
+            loadingCRInfo: false,
+        });
+    }
+};
+
+
+export const loadCareRecipientsInfo = async (
+    pageState: PageState,
+    setPageContext: SetterOrUpdater<PageState>,
+    setCareRecipientInfo: SetterOrUpdater<Record<string,
+        CareRecipientInfo>>) => {
+    console.log('loading info on all care recipients');
+    setPageContext({
+        ...pageState,
+        loadingCRInfo: true,
+    });
+    const q = query(collection(db, `CareRecipientInfo`));
+    const querySnapshot = await getDocs(q);
+    console.log(querySnapshot.docs);
+    console.log('Firebase collection read <care recipient info>');
+    if (querySnapshot.empty) {
+        setCareRecipientInfo({});
+        setPageContext({
+            ...pageState,
+            loadingCRInfo: false,
+        });
+    } else {
+        const docs: CareRecipientInfo[] = querySnapshot.docs
+            .map((doc: any) => {
+                const d = doc.data() as any as CareRecipientInfo;
+                return d;
+            }).sort(
+                (a, b) => b.dateCreated as number -
+                    (a.dateCreated as number));
+        const temp: Record<string, CareRecipientInfo> = {};
+        const careRecipients: Record<string, CareRecipientInfo> = docs
+            .reduce((acc, curr) => ({
+                ...acc,
+                [curr.uuid]: curr,
+            }), temp);
+        setCareRecipientInfo(careRecipients);
+        setPageContext({
+            ...pageState,
+            loadingCRInfo: false,
+        });
+    }
+};

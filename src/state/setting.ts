@@ -1,5 +1,5 @@
 import { collection, doc, setDoc } from "firebase/firestore";
-import { ProgramEvent } from "./types";
+import { CareRecipientInfo, CaregiverInfo, ProgramEvent } from "./types";
 import { db } from "./firebase/firebase-config";
 import { QueryRecord } from "./queryingTypes";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
@@ -38,3 +38,29 @@ export async function uploadFile(file: any, path: string) {
     console.log(snapshot);
   });
 }
+
+export const setCaregiverInfo = async (
+  caregiverInfo: CaregiverInfo) => {
+  const caregiverInfoRef = collection(db, 'CaregiverInfo');
+  try {
+    await setDoc(doc(caregiverInfoRef,
+      caregiverInfo.uuid), caregiverInfo);
+    console.log('Posted caregiver info!');
+  } catch (e) {
+    console.log('error writing to fb');
+    console.log(e);
+  }
+};
+
+export const setCareRecipientInfo = async (
+  careRecipientInfo: CareRecipientInfo) => {
+  const careRecipientInfoRef = collection(db, 'CareRecipientInfo');
+  try {
+    await setDoc(doc(careRecipientInfoRef,
+      careRecipientInfo.uuid), careRecipientInfo);
+    console.log('Posted care recipient info!');
+  } catch (e) {
+    console.log('error writing to fb');
+    console.log(e);
+  }
+};

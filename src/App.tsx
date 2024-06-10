@@ -13,8 +13,16 @@ import VideoAnalysis from './components/videoAnalysis/VideoAnalysis';
 import SummaryInsights from './components/summaryInsights/SummaryInsights';
 import Landing from './components/landing/landing';
 import { useRecoilState } from 'recoil';
-import { pageContextState, queriesForCurrentCGState } from './state/recoil';
-import { loadPageDataFromFB } from './state/fetching';
+import {
+  careRecipientsInfoState,
+  caregiversInfoState, pageContextState,
+  queriesForCurrentCGState
+} from './state/recoil';
+import {
+  loadCareGiverInfo, loadCareRecipientsInfo,
+  loadPageDataFromFB
+} from './state/fetching';
+import CareTeam from './components/care-team/CareTeam';
 
 const App = () => {
   // eslint-disable-next-line no-unused-vars
@@ -22,12 +30,20 @@ const App = () => {
   const navigate = useNavigate();
   const [pageState, setPageState] = useRecoilState(pageContextState);
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
+  const [_, setCaregiversInfo] = useRecoilState(caregiversInfoState);
+  const [__, setCareRecipientInfo] = useRecoilState(
+    careRecipientsInfoState);
 
   useEffect(() => {
     if (currentUser &&
       pageState.insightsQuery.queryResponse === 'loading') {
       loadPageDataFromFB(currentUser?.email as string,
         setPageState, setQueries);
+      loadCareGiverInfo(pageState, setPageState,
+        setCaregiversInfo
+      );
+      loadCareRecipientsInfo(pageState, setPageState,
+        setCareRecipientInfo);
       navigate('/summaryInsights');
     }
   }, [currentUser]);
@@ -47,6 +63,10 @@ const App = () => {
 
       <Route path="/videoAnalysis" element={<RequireAuth>
         <VideoAnalysis />
+      </RequireAuth>} />
+
+      <Route path="/careTeam" element={<RequireAuth>
+        <CareTeam />
       </RequireAuth>} />
 
       <Route path="*" element={<FallBack />} />

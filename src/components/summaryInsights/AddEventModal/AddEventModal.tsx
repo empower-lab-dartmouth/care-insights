@@ -2,7 +2,10 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import { allCRInfoState, pageContextState } from '../../../state/recoil';
+import {
+  careRecipientsInfoState,
+  pageContextState
+} from '../../../state/recoil';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import Button from '@mui/material/Button';
 import { v4 as uuidv4 } from 'uuid';
@@ -27,7 +30,7 @@ const style = {
 const AddEvent: React.FC = () => {
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
   const { currentUser } = React.useContext(AuthContext);
-  const CRInfo = useRecoilValue(allCRInfoState);
+  const CRInfo = useRecoilValue(careRecipientsInfoState);
   const CRname = CRInfo[pageContext.selectedCR].name;
   const [eventDescription, setEventDescription] = React.useState('');
 

@@ -1,6 +1,8 @@
-import { atom, selector } from 'recoil';
-import { CRInfo, PageState, CRAutoselectOptions, CGInfo } from './types';
-import { sampleCRInfo } from './sampleData';
+import { atom } from 'recoil';
+import {
+  PageState, CGInfo,
+  CaregiverInfo, CareGroupInfo, CareRecipientInfo
+} from './types';
 import { QueryRecord } from './queryingTypes';
 
 export const trackingTimeUntilNextPush = atom<number>({
@@ -38,12 +40,13 @@ export const pageContextState = atom<PageState>({
   default: {
     ...samplePageState,
     insightsQuery: defaultQueryLoading
-}});
-
-export const allCRInfoState = atom<Record<string, CRInfo>>({
-  key: 'all-CR-info',
-  default: sampleCRInfo,
+  }
 });
+
+// export const allCRInfoState = atom<Record<string, CRInfo>>({
+//   key: 'all-CR-info',
+//   default: sampleCRInfo,
+// });
 
 export const allCGInfoState = atom<Record<string, CGInfo>>({
   key: 'all-CG-info',
@@ -52,16 +55,16 @@ export const allCGInfoState = atom<Record<string, CGInfo>>({
 
 export const NO_CR_SELECTED = 'NONE';
 
-export const allCRNamesState = selector<CRAutoselectOptions>({
-  key: 'all-user-names',
-  get: ({ get }) => Object.values(get(allCRInfoState))
-    .filter((v) => v.uuid !== NO_CR_SELECTED)
-    .map((v) => (
-      {
-        label: v.name,
-        uuid: v.uuid,
-      }))
-});
+// export const allCRNamesState = selector<CRAutoselectOptions>({
+//   key: 'all-user-names',
+//   get: ({ get }) => Object.values(get(allCRInfoState))
+//     .filter((v) => v.uuid !== NO_CR_SELECTED)
+//     .map((v) => (
+//       {
+//         label: v.name,
+//         uuid: v.uuid,
+//       }))
+// });
 
 export type EventType = string // Will further specify this later.
 
@@ -134,4 +137,18 @@ export const queriesForCurrentCGState = atom<Record<QueryString, QueryRecord>>({
   default: {},
 });
 
+export const caregiversInfoState = atom<Record<string, CaregiverInfo>>({
+  key: 'caregiver-info-state',
+  default: {}
+});
+
+export const careGroupsInfoState = atom<Record<string, CareGroupInfo>>({
+  key: 'care-group-info',
+  default: {}
+});
+
+export const careRecipientsInfoState = atom<Record<string, CareRecipientInfo>>({
+  key: 'care-recipient-info-state',
+  default: {}
+});
 

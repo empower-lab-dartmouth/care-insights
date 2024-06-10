@@ -1,14 +1,15 @@
 /* eslint-disable require-jsdoc */
 import React from 'react';
 import {
-    CRInfo, EngagementLevel, EventUUID,
+    CareRecipientInfo, EngagementLevel, EventUUID,
     ManualEntryEvent,
     MeaningfulMoment, MusicProgramEvent, ProgramEvent,
     RedirectionLevel
 } from "../../../state/types";
 import DataTable, { TableColumn } from 'react-data-table-component';
 import {
-    NO_CR_SELECTED, allCRInfoState,
+    NO_CR_SELECTED,
+    careRecipientsInfoState,
     pageContextState
 } from '../../../state/recoil';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -152,7 +153,7 @@ const programEventsToRows: (v: ProgramEvent[],
         (v: Record<string, MeaningfulMoment>) => void,
     updateProgramEvent: (id: string) => (
         programEvent: ProgramEvent) => void,
-    cRInfo: Record<string, CRInfo>) => Row[] = (v,
+    cRInfo: Record<string, CareRecipientInfo>) => Row[] = (v,
         updateMeaningfulMoments,
         updateProgramEvent, CRInfo) =>
         v.map((l) => {
@@ -189,7 +190,7 @@ const programEventsToRows: (v: ProgramEvent[],
 
 const ProgramEventsTable: React.FC = () => {
     const [pageContext, setPageContext] = useRecoilState(pageContextState);
-    const CRInfo = useRecoilValue(allCRInfoState);
+    const CRInfo = useRecoilValue(careRecipientsInfoState);
 
     // TODO: also update remote. (maybe this is already done? TODO check)
     const updateMeaningfulMoments: (id: string) => (

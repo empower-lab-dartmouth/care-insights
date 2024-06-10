@@ -58,12 +58,6 @@ export type Action = {
     actionUUID: ActionUUID
 } & (QueryAction | CRRecordAction)
 
-export type CareRecipientInfo = {
-    name: string
-    pronouns: string
-    fakeName: string
-}
-
 // Firebase collections
 export type CRRecordCollection = Record<RecordUUID, CRRecord> 
 export type QueryCollection = Record<RecordUUID, CRRecord> 

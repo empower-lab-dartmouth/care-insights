@@ -78,3 +78,29 @@ export type MusicProgramEvent = {
 export type ManualEntryEvent = {
     type: 'manual-entry-event',
 } & CommonEventFields
+
+export type CaregiverInfo = {
+    imageURL: string
+    name: string
+    uuid: string // this is also the email.
+    dateCreated: number,
+    memberOfGroupsUUID: string[]
+    adminOfGroups: string[]
+    deletedDate?: number
+}
+
+export type CareGroupInfo = {
+    imageURL: string
+    name: string
+    uuid: string
+    deletedDate?: number
+    careRecipients: string[]
+}
+
+export type CareRecipientInfo = {
+    imageURL: string
+    dateCreated:number
+    name: string
+    uuid: string
+    deletedDate?: number
+}

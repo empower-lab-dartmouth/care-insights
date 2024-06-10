@@ -1,5 +1,5 @@
 /* eslint-disable require-jsdoc */
-import React from 'react';
+import React, { useState } from 'react';
 import ReactPlayer from 'react-player';
 import {
     MeaningfulMoment, MusicProgramEvent,
@@ -21,6 +21,7 @@ type VideoPlayerProps = {
 const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
     const { videoSrc, setProgramEvent,
         programEvent, setMeaningfulMoments } = props;
+    const [showVideo, setShowVideo] = useState(false);
     return (
         <>
             <Stack
@@ -29,14 +30,20 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
                 alignItems="flex-start"
                 spacing={2}
             >
-                   <EventsTimeline setEvents={setMeaningfulMoments}
-                        programEvent={programEvent}
-                        setProgramEvent={setProgramEvent} />
-                <div>
-                    <ReactPlayer url={videoSrc} />
-                    <br />
-                    <HeatMap />
-                </div>
+                <EventsTimeline setEvents={setMeaningfulMoments}
+                    programEvent={programEvent}
+                    setProgramEvent={setProgramEvent}
+                    showVideo={showVideo}
+                    setShowVideo={setShowVideo}
+                />
+                {
+                    showVideo ?
+                        <div>
+                            <ReactPlayer url={videoSrc} />
+                            <br />
+                            <HeatMap />
+                        </div> : <></>
+                }
             </Stack>
             <Transcript />
         </>

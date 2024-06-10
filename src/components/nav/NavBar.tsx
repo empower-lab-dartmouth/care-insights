@@ -13,6 +13,7 @@ import Modal from '@mui/material/Modal';
 import LogoutModal from './LogoutModal/LogoutModal';
 import { AuthContext } from '../../state/context/auth-context';
 import { Typography } from '@mui/material';
+import Diversity1Icon from '@mui/icons-material/Diversity1';
 
 export default function Nav() {
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
@@ -60,6 +61,13 @@ export default function Nav() {
               alignItems="center">
               <VideoLibraryIcon />
               Program events
+            </Stack>
+          </NavLink>
+          <NavLink to="/careTeam" className="nav-item">
+            <Stack direction="column" justifyContent="flex-start"
+              alignItems="center">
+              <Diversity1Icon />
+              Care team
             </Stack>
           </NavLink>
           <div
