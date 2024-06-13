@@ -1,5 +1,8 @@
 import { collection, doc, setDoc } from "firebase/firestore";
-import { CareRecipientInfo, CaregiverInfo, ProgramEvent } from "./types";
+import {
+  CareGroupInfo, CareRecipientInfo,
+  CaregiverInfo, FacilityInfo, PageState, ProgramEvent
+} from "./types";
 import { db } from "./firebase/firebase-config";
 import { QueryRecord } from "./queryingTypes";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
@@ -64,3 +67,49 @@ export const setCareRecipientInfo = async (
     console.log(e);
   }
 };
+
+
+export const setCareGroupInfo = async (
+  careGroupInfo: CareGroupInfo) => {
+  const careGroupInfoRef = collection(db, 'CareGroupInfo');
+  try {
+    await setDoc(doc(careGroupInfoRef,
+      careGroupInfo.uuid), careGroupInfo);
+    console.log('Posted care group info!');
+  } catch (e) {
+    console.log('error writing to fb');
+    console.log(e);
+  }
+};
+
+export const setFacilityInfo = async (
+  facilityInfo: FacilityInfo) => {
+  const facilityInfoRef = collection(db, 'CareFacilityInfo');
+  try {
+    await setDoc(doc(facilityInfoRef,
+      facilityInfo.uuid), facilityInfo);
+    console.log('Posted care facility info!');
+  } catch (e) {
+    console.log('error writing to fb');
+    console.log(e);
+  }
+};
+
+export const setPartialPageContext = async (
+  pageContext: PageState) => {
+  const pageContextRef = collection(db, 'PageContext');
+  const partial = {
+    ...pageContext,
+    suggestedQueries: [],
+    selectedCRProgramEvents: [],
+  };
+  try {
+    await setDoc(doc(pageContextRef,
+      pageContext.username), partial);
+    console.log('Posted page context!');
+  } catch (e) {
+    console.log('error writing to fb');
+    console.log(e);
+  }
+};
+

@@ -13,6 +13,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import {
     loadCRData,
 } from '../../../state/fetching';
+import { setPartialPageContext } from '../../../state/setting';
 
 const AutocompleteUserSearch = () => {
     const allCGInfo = useRecoilValue(careRecipientsInfoState);
@@ -59,6 +60,7 @@ const AutocompleteUserSearch = () => {
                     selectedCR: newUUID,
                     loadingCRInfo: false,
                 };
+                setPartialPageContext(newPageState);
                 loadCRData(newPageState, setPageContext, setQueries);
             }}
             // inputValue={{label: inputValue, uuid: 'test'}}

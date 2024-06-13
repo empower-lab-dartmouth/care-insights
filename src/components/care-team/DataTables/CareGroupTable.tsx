@@ -2,27 +2,24 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import {
-    careRecipientsInfoState,
-    pageContextState
-} from '../../../state/recoil';
-import { CareRecipientInfo } from '../../../state/types';
+import { careGroupsInfoState, pageContextState } from '../../../state/recoil';
+import { CareGroupInfo } from '../../../state/types';
 import {
     Backdrop, Button, Fade, Modal,
     TextField, Typography
 } from '@mui/material';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import AddIcon from '@mui/icons-material/Add';
 import { DEFAULT_PROFILE_IMAGE } from '../../../state/sampleData';
 import { v4 } from 'uuid';
-import { setCareRecipientInfo } from '../../../state/setting';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { setCareGroupInfo } from '../../../state/setting';
 
 
-type CareRecipientTableRows = {
+type CareGroupTableRows = {
     name: string,
     uuid: string,
-    joinedCareInsights: number,
+    dateCreated: number,
 }
 
 const style = {
@@ -45,14 +42,14 @@ const inputStyles = {
     }
 };
 
-const columns: GridColDef<CareRecipientTableRows>[] = [
+const columns: GridColDef<CareGroupTableRows>[] = [
     {
         field: 'name',
         headerName: 'Name',
         width: 200,
     },
     {
-        field: 'joinedCareInsights',
+        field: 'dateCreated',
         valueGetter: (v, r, c) => (new Date(v)).toString(),
         headerName: 'Joined Care Insights', width: 200
     },
@@ -63,45 +60,49 @@ const columns: GridColDef<CareRecipientTableRows>[] = [
     },
 ];
 
-const caregiverInfoToRows: (caregiverInfo:
-    Record<string, CareRecipientInfo>) =>
-    CareRecipientTableRows[] = (c) => Object.values(c)
+const caregroupInfoToRows: (careGroupInfo:
+    Record<string, CareGroupInfo>) =>
+    CareGroupTableRows[] = (c) => Object.values(c)
         .map((x) => ({
             name: x.name,
             uuid: x.uuid,
-            joinedCareInsights: x.dateCreated
+            dateCreated: x.dateCreated
         }));
 
-const CareRecipientTable: React.FC = () => {
-    const [careRecipients, setCareRecipients] = useRecoilState(
-        careRecipientsInfoState);
+const CareGroupTable: React.FC = () => {
+    const [careGroups, setCareGroups] = useRecoilState(
+        careGroupsInfoState);
+    const pageContext = useRecoilValue(
+        pageContextState);
     const [modalOpen, setModalOpen] = React.useState(false);
-    const pageContext = useRecoilValue(pageContextState);
-    const [newProfileName, setNewProfileName] = React.useState('');
+    const [newGroupName, setNewGroupName] = React.useState('');
     const handleClose = () => {
         setModalOpen(false);
         setTimeout(() => {
-            setNewProfileName('');
+            setNewGroupName('');
         }, 500);
     };
 
-    const newCareRecipientInfo: () =>
-        CareRecipientInfo = () => ({
+    const newCareGroupInfo: () =>
+        CareGroupInfo = () => ({
             imageURL: DEFAULT_PROFILE_IMAGE,
-            name: newProfileName,
+            name: newGroupName,
+            careRecipients: [],
+            readPermissions: [],
             facilityID: pageContext.selectedFacilityID,
+            editPermissions: [],
             dateCreated: (new Date()).getTime(),
             uuid: v4(),
         });
 
     const createNew = () => {
-        const newCR = newCareRecipientInfo();
-        setCareRecipients({
-            ...careRecipients,
-            [newCR.uuid]: newCR,
+        const newCareGroup = newCareGroupInfo();
+        setCareGroups({
+            ...careGroups,
+            [newCareGroup.uuid]: newCareGroup,
         });
-        setCareRecipientInfo(
-            newCR);
+        setCareGroupInfo(
+            newCareGroup);
     };
 
     return (
@@ -123,17 +124,22 @@ const CareRecipientTable: React.FC = () => {
                     <Box sx={style}>
                         <Typography id="transition-modal-title"
                             variant="h6" component="h2">
-                            Create a new care recipient profile
+                            Create a new care group
+                        </Typography>
+                        <Typography id="transition-modal-title"
+                            variant="body1">
+                            {"You can modify care group permissions" +
+                                "after clicking 'create.'"}
                         </Typography>
                         <br />
                         <TextField id="outlined-basic"
-                            label="Care recipient name"
-                            value={newProfileName}
+                            label="Care group name"
+                            value={newGroupName}
                             onChange={
                                 (event:
                                     React.ChangeEvent<
                                         HTMLInputElement>) => {
-                                    setNewProfileName(
+                                    setNewGroupName(
                                         event.target.value);
                                 }}
                             sx={inputStyles}
@@ -161,14 +167,14 @@ const CareRecipientTable: React.FC = () => {
                 backgroundColor: 'white'
             }}>
                 <Button startIcon={
-                    <PersonAddIcon color='success' />}
+                    <GroupAddIcon color='success' />}
                     onClick={
                         () => {
                             setModalOpen(true);
                         }}>
-                    Create a new care recipient profile</Button>
+                    Create a new care group</Button>
                 <DataGrid
-                    rows={caregiverInfoToRows(careRecipients)}
+                    rows={caregroupInfoToRows(careGroups)}
                     columns={columns}
                     getRowId={(c) => c.uuid}
                     initialState={{
@@ -187,4 +193,4 @@ const CareRecipientTable: React.FC = () => {
     );
 };
 
-export default CareRecipientTable;
+export default CareGroupTable;

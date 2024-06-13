@@ -1,6 +1,7 @@
 import { SetterOrUpdater } from "recoil";
 import {
     CRProgramEvents, CareRecipientInfo, CaregiverInfo,
+    FacilityInfo,
     PageState, ProgramEvent
 } from "./types";
 import {
@@ -150,8 +151,8 @@ export const loadPageDataFromFB = async (username: string,
             setLocalQueries);
     } else {
         console.log('past session does not exits');
-        setPageContext(samplePageState);
-        await loadCRData(samplePageState, setPageContext,
+        setPageContext(samplePageState(username));
+        await loadCRData(samplePageState(username), setPageContext,
             setLocalQueries);
     }
 };
@@ -174,7 +175,9 @@ export const loadCareGiverInfo = async (
     pageState: PageState,
     setPageContext: SetterOrUpdater<PageState>,
     setCaregiversInfo: SetterOrUpdater<Record<string,
-        CaregiverInfo>>) => {
+        CaregiverInfo>>,
+    setCareFacilitiesInfo: SetterOrUpdater<Record<string,
+        FacilityInfo>>, currentUser: string) => {
     console.log('loading info on all caregivers');
     setPageContext({
         ...pageState,
@@ -185,6 +188,7 @@ export const loadCareGiverInfo = async (
     console.log(querySnapshot.docs);
     console.log('Firebase collection read <caregivers info>');
     if (querySnapshot.empty) {
+        console.log('Caregiver info is empty');
         setCaregiversInfo({});
         setPageContext({
             ...pageState,
@@ -205,6 +209,11 @@ export const loadCareGiverInfo = async (
                 [curr.uuid]: curr,
             }), temp);
         setCaregiversInfo(v);
+        console.log('TESTing');
+        console.log(v[currentUser]);
+        await loadFacilitiesInfo(pageState, setPageContext,
+            setCareFacilitiesInfo,
+            v[currentUser].adminForFacilities);
         setPageContext({
             ...pageState,
             loadingCRInfo: false,
@@ -248,6 +257,59 @@ export const loadCareRecipientsInfo = async (
                 [curr.uuid]: curr,
             }), temp);
         setCareRecipientInfo(careRecipients);
+        setPageContext({
+            ...pageState,
+            loadingCRInfo: false,
+        });
+    }
+};
+
+
+export const loadFacilitiesInfo = async (
+    pageState: PageState,
+    setPageContext: SetterOrUpdater<PageState>,
+    setCareFacilitiesInfo: SetterOrUpdater<Record<string,
+        FacilityInfo>>,
+    adminForFacilities: string[]) => {
+    console.log('loading info on all facilities');
+    setPageContext({
+        ...pageState,
+        loadingCRInfo: true,
+    });
+    const q = query(collection(db, `CareFacilityInfo`));
+    const querySnapshot = await getDocs(q);
+    console.log(querySnapshot.docs);
+    console.log('Firebase collection read <care facilities info>');
+    if (querySnapshot.empty) {
+        console.log('Facilities query is empty');
+        setCareFacilitiesInfo({});
+        setPageContext({
+            ...pageState,
+            loadingCRInfo: false,
+        });
+    } else {
+        const docs: FacilityInfo[] = querySnapshot.docs
+            .map((doc: any) => {
+                const d = doc.data() as any as FacilityInfo;
+                return d;
+            })
+            .filter((f) => {
+                console.log(f);
+                console.log("TEST");
+                return adminForFacilities.includes(f.uuid);
+            })
+            .sort(
+                (a, b) => b.dateCreated as number -
+                    (a.dateCreated as number));
+        const temp: Record<string, FacilityInfo> = {};
+        const facilities: Record<string, FacilityInfo> = docs
+            .reduce((acc, curr) => ({
+                ...acc,
+                [curr.uuid]: curr,
+            }), temp);
+        console.log('Writing Facilities query');
+        console.log(facilities);
+        setCareFacilitiesInfo(facilities);
         setPageContext({
             ...pageState,
             loadingCRInfo: false,

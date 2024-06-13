@@ -145,7 +145,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
                 <Stack direction={'row'}>
                     <TextField
                         id="standard-multiline-static"
-                        label="Ask a question"
+                        label="Search Care Insights"
                         multiline
                         sx={{
                             'width': '100%',

@@ -57,14 +57,14 @@ export const sampleMeaningfulMoments: Record<string, MeaningfulMoment> = {
     },
 };
 
-export const newMusicProgramEvent: () => ProgramEvent = () => ({
+export const newMusicProgramEvent: (id: string) => ProgramEvent = (id) => ({
     type: 'music-event',
     videoUrl: 'https://www.youtube.com/watch?v=jJfGhTxNFoI',
     label: 'Program event',
-    CRUUID: 'abby',
+    CRUUID: id,
     redirection: 'na',
     engagement: 'na',
-    CGUUID: 'bart',
+    CGUUID: id,
     date: 10030010,
     uuid: v4(),
     description: 'Memory care program event 2',
@@ -116,5 +116,6 @@ export const generateCaregiverInfo = () => ({
         uuid: 'abby' + (new Date()).getMilliseconds(),
         dateCreated: (new Date()).getTime(),
         memberOfGroupsUUID: [],
+        adminForFacilities: [],
         adminOfGroups: []
 });

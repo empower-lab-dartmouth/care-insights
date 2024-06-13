@@ -14,12 +14,14 @@ import SummaryInsights from './components/summaryInsights/SummaryInsights';
 import Landing from './components/landing/landing';
 import { useRecoilState } from 'recoil';
 import {
+  careFacilitiesState,
   careRecipientsInfoState,
   caregiversInfoState, pageContextState,
   queriesForCurrentCGState
 } from './state/recoil';
 import {
   loadCareGiverInfo, loadCareRecipientsInfo,
+  loadFacilitiesInfo,
   loadPageDataFromFB
 } from './state/fetching';
 import CareTeam from './components/care-team/CareTeam';
@@ -30,9 +32,11 @@ const App = () => {
   const navigate = useNavigate();
   const [pageState, setPageState] = useRecoilState(pageContextState);
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
-  const [_, setCaregiversInfo] = useRecoilState(caregiversInfoState);
+  const [caregiverInfo, setCaregiversInfo] = useRecoilState(
+    caregiversInfoState);
   const [__, setCareRecipientInfo] = useRecoilState(
     careRecipientsInfoState);
+  const [___, setCareFacilityInfo] = useRecoilState(careFacilitiesState);
 
   useEffect(() => {
     if (currentUser &&
@@ -40,7 +44,8 @@ const App = () => {
       loadPageDataFromFB(currentUser?.email as string,
         setPageState, setQueries);
       loadCareGiverInfo(pageState, setPageState,
-        setCaregiversInfo
+        setCaregiversInfo, setCareFacilityInfo,
+        currentUser?.email as string
       );
       loadCareRecipientsInfo(pageState, setPageState,
         setCareRecipientInfo);

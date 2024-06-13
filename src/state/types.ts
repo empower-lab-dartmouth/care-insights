@@ -4,10 +4,12 @@ export type UserUUID = string
 export type EventUUID = string
 
 export type PageState = {
+    username: string,
     selectedCR: UserUUID,
     selectedCRProgramEvents: CRProgramEvents
     insightsQuery: QueryRecord,
     addEventModalOpen: boolean,
+    selectedFacilityID: string
     suggestedQueries: QueryRecord[],
     loadingCRInfo: boolean,
 }
@@ -85,19 +87,34 @@ export type CaregiverInfo = {
     uuid: string // this is also the email.
     dateCreated: number,
     memberOfGroupsUUID: string[]
-    adminOfGroups: string[]
+    adminForFacilities: string[]
     deletedDate?: number
 }
 
+export type Features = 'program-events-page'
+
 export type CareGroupInfo = {
+    facilityID: string
     imageURL: string
     name: string
     uuid: string
+    dateCreated: number
     deletedDate?: number
     careRecipients: string[]
+    readPermissions: Features[]
+    editPermissions: Features[]
 }
 
 export type CareRecipientInfo = {
+    imageURL: string
+    facilityID: string
+    dateCreated:number
+    name: string
+    uuid: string
+    deletedDate?: number
+}
+
+export type FacilityInfo = {
     imageURL: string
     dateCreated:number
     name: string

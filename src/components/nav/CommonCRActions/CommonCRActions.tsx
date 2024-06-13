@@ -7,6 +7,7 @@ import { useRecoilState } from 'recoil';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 // import { setRemoteProgramEvent } from '../../../state/setting';
 // import { newMusicProgramEvent } from '../../../state/sampleData';
+// import { setRemoteProgramEvent } from '../../../state/setting';
 
 type CommonCRActionsProps = {
     page: 'care-insights' | 'program-events' | 'care-team'
@@ -46,7 +47,8 @@ const CommonCRActions: React.FC<CommonCRActionsProps> = ({ page }) => {
                         </Button> : <></>
                 }
                 {/* <Button onClick={() =>
-                    setRemoteProgramEvent(newMusicProgramEvent())
+                    setRemoteProgramEvent(newMusicProgramEvent(
+                        pageContext.selectedCR as string))
                 }>Degugging tool: Push sample event</Button> */}
             </Stack>
             <Modal

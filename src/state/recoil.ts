@@ -1,7 +1,8 @@
 import { atom } from 'recoil';
 import {
   PageState, CGInfo,
-  CaregiverInfo, CareGroupInfo, CareRecipientInfo
+  CaregiverInfo, CareGroupInfo, CareRecipientInfo,
+  FacilityInfo
 } from './types';
 import { QueryRecord } from './queryingTypes';
 
@@ -26,22 +27,31 @@ export const defaultQueryEmpty: QueryRecord = {
   CRUUID: '',
 };
 
-export const samplePageState: PageState = {
-  selectedCR: 'NONE',
-  selectedCRProgramEvents: {},
-  insightsQuery: defaultQueryEmpty,
-  addEventModalOpen: false,
-  suggestedQueries: [],
-  loadingCRInfo: false,
-};
+export const samplePageState: (
+  email: string) => PageState = (email) => ({
+    selectedCR: 'NONE',
+    username: email,
+    selectedCRProgramEvents: {},
+    selectedFacilityID: 'sandboxID',
+    insightsQuery: defaultQueryEmpty,
+    addEventModalOpen: false,
+    suggestedQueries: [],
+    loadingCRInfo: false,
+  });
 
 export const pageContextState = atom<PageState>({
   key: 'page-state',
   default: {
-    ...samplePageState,
+    ...samplePageState('not-set'),
     insightsQuery: defaultQueryLoading
   }
 });
+
+export const careFacilitiesState = atom<Record<string,
+  FacilityInfo>>({
+    key: 'facilityInfo',
+    default: {}
+  });
 
 // export const allCRInfoState = atom<Record<string, CRInfo>>({
 //   key: 'all-CR-info',
