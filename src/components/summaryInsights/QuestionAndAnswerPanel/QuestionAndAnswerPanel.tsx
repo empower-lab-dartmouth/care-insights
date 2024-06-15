@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 import React, { useContext, useState } from 'react';
 import {
     pageContextState,
