@@ -1,11 +1,12 @@
-/* eslint-disable require-jsdoc, no-unused-vars */
 import React from 'react';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { signInUser } from '../../state/firebase/firebase';
 import { useNavigate } from 'react-router-dom';
-import '../../App.css';
-import './landing.css';
+// import '../../App.css';
+// import './landing.css';
 import SignUp from './signup';
+
+import { Button, Paper, Text, Input, Title } from '@mantine/core';
 
 const defaultFormFields = {
   email: '',
@@ -27,14 +28,10 @@ function Home() {
   const navigate = useNavigate();
 
   const resetFormFields = () => {
-    return (
-      setFormFields(defaultFormFields)
-    );
+    return setFormFields(defaultFormFields);
   };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const handleSubmit = async () => {
     try {
       // Send the email and password to firebase
       const userCredential = await signInUser(email, password);
@@ -54,66 +51,43 @@ function Home() {
   };
 
   return (
-    <div className='login-container'>
-      <div className="App-header">
-        <div className='login-header-img'
-          style={{
-            marginTop: '-200px', marginBottom: '5px',
-            height: '150px', width: '600px'
-          }}
-        />
-        <div className='landing-card'>
-          <form onSubmit={handleSubmit}
-            className='group'
-          >
-            <div>
-              <input
-                style={{
-                  backgroundColor: 'white',
-                  color: 'black'
-                }}
-                type="email"
-                name="email"
-                value={email}
-                onChange={handleChange}
-                placeholder="Email"
-                required
-              />
-            </div>
-            <div>
-              <input
-                style={{
-                  backgroundColor: 'white',
-                  color: 'black'
-                }}
-                type='password'
-                name='password'
-                value={password}
-                onChange={handleChange}
-                placeholder="Password"
-                required
-              />
-            </div>
-            <div>
-              <input id='login'
-                style={{
-                  backgroundColor: 'white',
-                  color: 'black', cursor: 'pointer'
-                }}
-                type="submit" />
-            </div>
-            <button className='sign-up'
-              onClick={() => handleOpen()}>
-              Create account
-            </button>
-          </form>
-          {open && (
-            <SignUp
-              closeModal={() => handleClose()}
+    <div className='min-h-screen flex flex-col items-center justify-center bg-[#238be6]'>
+      <Paper shadow='xs' className='w-[400px] p-8'>
+        <Title order={3} className='pb-1'>
+          Welcome back!
+        </Title>
+        <Text>Sign in to your account</Text>
+        <form className='w-full flex flex-col gap-4 pt-4'>
+          <Input.Wrapper label='Email'>
+            <Input
+              placeholder='Your email address'
+              type='email'
+              name='email'
+              value={email}
+              onChange={handleChange}
+              required
             />
-          )}
-        </div>
-      </div>
+          </Input.Wrapper>
+          <Input.Wrapper label='Password'>
+            <Input
+              placeholder='Your password'
+              type='password'
+              name='password'
+              value={password}
+              onChange={handleChange}
+              required
+            />
+          </Input.Wrapper>
+
+          <Button type='submit' onClick={handleSubmit}>
+            Login
+          </Button>
+          <Button variant='transparent' onClick={() => handleOpen()}>
+            Create account
+          </Button>
+        </form>
+        {open && <SignUp opened={open} closeModal={() => handleClose()} />}
+      </Paper>
     </div>
   );
 }

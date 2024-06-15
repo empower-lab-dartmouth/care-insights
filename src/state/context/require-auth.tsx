@@ -1,6 +1,3 @@
-/* eslint-disable require-jsdoc */
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { useContext } from 'react';
 import { AuthContext } from './auth-context';
@@ -18,10 +15,12 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   if (!currentUser) {
     // Redirect the user to the home page.
     // Please! Close the mustache {{}}
-    return <Navigate to="/" state={{ from: location }} replace />;
+    return <Navigate to='/' state={{ from: location }} replace />;
   } else {
-    if (currentUser.email !== null &&
-      pageState.insightsQuery.queryResponse === 'loading') {
+    if (
+      currentUser.email !== null &&
+      pageState.insightsQuery.queryResponse === 'loading'
+    ) {
       console.log('pulling info from remote');
       loadPageDataFromFB(currentUser.email, setPageState, setQueries);
     }

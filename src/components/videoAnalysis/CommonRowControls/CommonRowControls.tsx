@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 import React, { useState } from 'react';
 import {
     EngagementLevel, ProgramEvent,

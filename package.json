@@ -8,6 +8,8 @@
     "@dfnivo/chord": "^0.79.13",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@mantine/core": "^7.10.2",
+    "@mantine/hooks": "^7.10.2",
     "@mdxeditor/editor": "^3.4.1",
     "@milkdown/core": "^7.3.6",
     "@milkdown/ctx": "^7.3.6",
@@ -75,12 +77,6 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -98,10 +94,8 @@
     "@types/is-url": "^1.2.30",
     "@types/lodash": "^4.14.195",
     "@types/uuid": "^9.0.8",
-    "@typescript-eslint/eslint-plugin": "^5.50.0",
-    "@typescript-eslint/parser": "^5.50.0",
-    "eslint": "^8.33.0",
-    "eslint-config-google": "^0.14.0",
-    "eslint-plugin-react": "^7.32.2"
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4"
   }
 }
