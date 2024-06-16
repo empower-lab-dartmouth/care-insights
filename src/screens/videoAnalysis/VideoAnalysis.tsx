@@ -5,15 +5,12 @@ import CommonCRActions from '../nav/CommonCRActions/CommonCRActions';
 import { pageContextState } from '../../state/recoil';
 import { useRecoilValue } from 'recoil';
 import CircularProgress from '@mui/material/CircularProgress';
+import UserShell from '../../components/UserShell';
 
 export default function VideoAnalysis() {
   const pageContext = useRecoilValue(pageContextState);
   return (
-    <>
-      <Nav />
-      <br />
-      <br />
-      <br />
+    <UserShell>
       <div className='container'>
         <CommonCRActions page={'program-events'} />
         {pageContext.loadingCRInfo ? (
@@ -22,6 +19,6 @@ export default function VideoAnalysis() {
           <ProgramEventsTable />
         )}
       </div>
-    </>
+    </UserShell>
   );
 }

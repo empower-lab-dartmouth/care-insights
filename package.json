@@ -43,6 +43,7 @@
     "html-to-react": "^1.6.0",
     "is-url": "^1.2.4",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.395.0",
     "markdown-to-text": "^0.1.1",
     "markdown-to-txt": "^2.0.1",
     "marked": "^12.0.2",
