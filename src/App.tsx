@@ -6,7 +6,6 @@ import { useContext, useEffect } from 'react';
 import { AuthContext } from './state/context/auth-context';
 import RequireAuth from './state/context/require-auth';
 import VideoAnalysis from './screens/videoAnalysis/VideoAnalysis';
-import SummaryInsights from './screens/summaryInsights/SummaryInsights';
 import Landing from './screens/landing/landing';
 import { useRecoilState } from 'recoil';
 import {
@@ -23,6 +22,7 @@ import {
   loadPageDataFromFB,
 } from './state/fetching';
 import CareTeam from './screens/care-team/CareTeam';
+import CareInsightsPage from './screens/summaryInsights/CareInsights';
 
 const App = () => {
   const { currentUser } = useContext(AuthContext);
@@ -62,7 +62,7 @@ const App = () => {
         path='/'
         element={
           <RequireAuth>
-            <SummaryInsights />
+            <CareInsightsPage />
           </RequireAuth>
         }
       />
@@ -71,7 +71,7 @@ const App = () => {
         path='/summaryInsights'
         element={
           <RequireAuth>
-            <SummaryInsights />
+            <CareInsightsPage />
           </RequireAuth>
         }
       />

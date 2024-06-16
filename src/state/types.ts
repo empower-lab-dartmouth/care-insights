@@ -105,12 +105,18 @@ export type CareGroupInfo = {
     editPermissions: Features[]
 }
 
+export type CareRecipientInfoBoxItem = {
+    label: string
+    value: string
+}
+
 export type CareRecipientInfo = {
     imageURL: string
     facilityID: string
     dateCreated:number
     name: string
     uuid: string
+    infoBox: CareRecipientInfoBoxItem[]
     deletedDate?: number
 }
 
