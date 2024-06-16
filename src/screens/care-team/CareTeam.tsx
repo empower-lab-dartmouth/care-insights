@@ -7,6 +7,7 @@ import CareGroupTable from './DataTables/CareGroupTable';
 import SelectFacility from './SelectFacility';
 import { useRecoilValue } from 'recoil';
 import { caregiversInfoState } from '../../state/recoil';
+import UserShell from '../../components/UserShell';
 // import { pageContextState } from '../../state/recoil';
 // import { useRecoilValue } from 'recoil';
 
@@ -15,11 +16,7 @@ export default function CareTeam() {
   console.log(caregiverInfo);
 
   return (
-    <>
-      <Nav />
-      <br />
-      <br />
-      <br />
+    <UserShell>
       <div
         className='container'
         style={{
@@ -34,6 +31,6 @@ export default function CareTeam() {
         <Typography variant='h2'>Your care team</Typography>
         <CaregiverTable />
       </div>
-    </>
+    </UserShell>
   );
 }

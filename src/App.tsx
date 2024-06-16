@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 // import './App.css';
-import SignUp from './components/landing/signup';
+import SignUp from './screens/landing/signup';
 import { useContext, useEffect } from 'react';
 import { AuthContext } from './state/context/auth-context';
 import RequireAuth from './state/context/require-auth';
-import VideoAnalysis from './components/videoAnalysis/VideoAnalysis';
-import SummaryInsights from './components/summaryInsights/SummaryInsights';
-import Landing from './components/landing/landing';
+import VideoAnalysis from './screens/videoAnalysis/VideoAnalysis';
+import SummaryInsights from './screens/summaryInsights/SummaryInsights';
+import Landing from './screens/landing/landing';
 import { useRecoilState } from 'recoil';
 import {
   careFacilitiesState,
@@ -22,7 +22,7 @@ import {
   loadFacilitiesInfo,
   loadPageDataFromFB,
 } from './state/fetching';
-import CareTeam from './components/care-team/CareTeam';
+import CareTeam from './screens/care-team/CareTeam';
 
 const App = () => {
   const { currentUser } = useContext(AuthContext);
