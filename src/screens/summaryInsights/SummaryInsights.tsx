@@ -14,9 +14,6 @@ const SummaryInsights = () => {
     <UserShell>
       <div className='container'>
         <div className='childContainer'>
-          <br />
-          <br />
-          <br />
           <CommonCRActions page={'care-insights'} />
           {pageContext.loadingCRInfo ? (
             <CircularProgress />
