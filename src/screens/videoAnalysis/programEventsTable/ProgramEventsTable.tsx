@@ -20,6 +20,8 @@ import { ExpandableRowsComponent } from 'react-data-table-component/dist/DataTab
 import VideoPlayer from '../VideoPlayer/VideoPlayer';
 import ManualEntryExpandedView from '../ManualEntryExpandedView/ManualEntryExpandedView';
 import { setRemoteProgramEvent } from '../../../state/setting';
+import DataGrid from 'react-data-grid';
+import { columns } from './columns';
 
 type CommonRowFields = {
   label: string;
@@ -79,45 +81,45 @@ const redirectionLevelLabel = (redirectionLevel: RedirectionLevel) => {
   }
 };
 
-const columns: TableColumn<Row>[] = [
-  {
-    name: 'Description',
-    selector: (row: Row) => row.description,
-    sortable: false,
-  },
-  {
-    name: 'Date',
-    selector: (row: Row) => row.date,
-    sortable: true,
-    sortFunction: (rowA, rowB) =>
-      new Date(rowB.date).getTime() - new Date(rowA.date).getTime(),
-  },
-  {
-    name: 'Engagement level',
-    selector: (row: Row) => engagementLevelLabel(row.engagement),
-    sortable: true,
-  },
-  {
-    name: 'Redirections',
-    selector: (row: Row) => redirectionLevelLabel(row.redirection),
-    sortable: true,
-  },
-  {
-    name: 'Event type',
-    selector: (row: Row) => row.label,
-    sortable: true,
-  },
-  {
-    name: 'Care recipient',
-    selector: (row: Row) => row.CRName,
-    sortable: true,
-  },
-  {
-    name: 'Caregiver',
-    selector: (row: Row) => row.CGName,
-    sortable: true,
-  },
-];
+// const columns: TableColumn<Row>[] = [
+//   {
+//     name: 'Description',
+//     selector: (row: Row) => row.description,
+//     sortable: false,
+//   },
+//   {
+//     name: 'Date',
+//     selector: (row: Row) => row.date,
+//     sortable: true,
+//     sortFunction: (rowA, rowB) =>
+//       new Date(rowB.date).getTime() - new Date(rowA.date).getTime(),
+//   },
+//   {
+//     name: 'Engagement level',
+//     selector: (row: Row) => engagementLevelLabel(row.engagement),
+//     sortable: true,
+//   },
+//   {
+//     name: 'Redirections',
+//     selector: (row: Row) => redirectionLevelLabel(row.redirection),
+//     sortable: true,
+//   },
+//   {
+//     name: 'Event type',
+//     selector: (row: Row) => row.label,
+//     sortable: true,
+//   },
+//   {
+//     name: 'Care recipient',
+//     selector: (row: Row) => row.CRName,
+//     sortable: true,
+//   },
+//   {
+//     name: 'Caregiver',
+//     selector: (row: Row) => row.CGName,
+//     sortable: true,
+//   },
+// ];
 
 const ExpandedComponent: ExpandableRowsComponent<Row> = d => {
   if (d.data.type === 'music-event') {
@@ -237,12 +239,14 @@ const ProgramEventsTable: React.FC = () => {
     pageContext.selectedCR === NO_CR_SELECTED
       ? 'Showing recent events for ' + 'all care recipients'
       : `Showing events for ${CRInfo[pageContext.selectedCR].name}`;
+
+  console.log('data', data);
   return (
     <>
-      <DataTable
+      <DataGrid columns={columns} rows={data} />
+      {/* <DataTable
         columns={columns}
         data={data}
-        title={title}
         pagination
         expandableRows
         striped
@@ -250,7 +254,7 @@ const ProgramEventsTable: React.FC = () => {
         expandOnRowClicked
         expandableRowExpanded={(row: Row) => row.defaultExpanded}
         expandableRowsComponent={ExpandedComponent}
-      />
+      /> */}
     </>
   );
 };

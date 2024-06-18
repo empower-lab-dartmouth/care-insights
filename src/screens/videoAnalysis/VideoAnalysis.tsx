@@ -6,19 +6,20 @@ import { pageContextState } from '../../state/recoil';
 import { useRecoilValue } from 'recoil';
 import CircularProgress from '@mui/material/CircularProgress';
 import UserShell from '../../components/UserShell';
+import { Paper } from '@mantine/core';
 
 export default function VideoAnalysis() {
   const pageContext = useRecoilValue(pageContextState);
   return (
     <UserShell>
-      <div className='container'>
-        <CommonCRActions page={'program-events'} />
+      <CommonCRActions page={'program-events'} />
+      <Paper shadow='xs' p={12} className='mt-8'>
         {pageContext.loadingCRInfo ? (
           <CircularProgress />
         ) : (
           <ProgramEventsTable />
         )}
-      </div>
+      </Paper>
     </UserShell>
   );
 }

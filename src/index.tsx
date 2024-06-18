@@ -8,6 +8,7 @@ import { AuthProvider } from './state/context/auth-context';
 import { MantineProvider } from '@mantine/core';
 
 import '@mantine/core/styles.css';
+import 'react-data-grid/lib/styles.css';
 import './index.css';
 
 const root = ReactDOM.createRoot(

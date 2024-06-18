@@ -51,7 +51,7 @@ function Home() {
   };
 
   return (
-    <div className='min-h-screen flex flex-col items-center justify-center bg-gray-900'>
+    <div className='min-h-screen flex flex-col items-center justify-center bg-[#238be6]'>
       <Paper shadow='xs' className='w-[400px] p-8'>
         <Title order={3} className='pb-1'>
           Welcome back!
@@ -79,7 +79,7 @@ function Home() {
             />
           </Input.Wrapper>
 
-          <Button type='submit' onClick={handleSubmit} color='black'>
+          <Button type='submit' onClick={handleSubmit}>
             Login
           </Button>
           <Button
