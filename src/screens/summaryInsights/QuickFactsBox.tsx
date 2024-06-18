@@ -7,14 +7,15 @@ import { NO_CR_SELECTED, careRecipientsInfoState, pageContextState, queriesForCu
 import { useRecoilState, useRecoilValue } from 'recoil';
 import CircularProgress from '@mui/material/CircularProgress';
 import UserShell from '../../components/UserShell';
-import { Image, Text, Grid, Group, Stack, Paper, Title, Center, Button } from '@mantine/core';
+import { Image, Text, Grid, Group, Stack, Paper, Title, Center, Button, Chip, Pill } from '@mantine/core';
 import WYSIWYGEditor from './WYSIWYGEditor/WYSIWYGEditor';
 import { MDXEditor, headingsPlugin, imagePlugin, linkDialogPlugin, listsPlugin } from '@mdxeditor/editor';
 import { AuthContext } from '../../state/context/auth-context';
 import { QueryRecord } from '../../state/queryingTypes';
 import { askQuery, modifyWithFeedback, respondToApprovalFeedback } from '../../state/querying';
 import { delayThenDo } from '../../state/sampleData';
-import { IconCheck, IconX, IconEdit } from '@tabler/icons-react';
+import { IconCheck, IconAlertTriangle, IconX, IconEdit } from '@tabler/icons-react';
+import { PageState } from '../../state/types';
 
 
 
@@ -39,6 +40,17 @@ const title = ({ type }: QuickFactsBoxProps) => {
     }
 };
 
+const responseChip = (loading: boolean,
+    alreadyApproved: boolean) => {
+    if (loading) {
+        return (<></>);
+    }
+    if (!alreadyApproved) {
+        return (<Pill c={'red'}>AI generated</Pill>);
+    }
+    return <></>
+};
+
 const QuickFactsBox: React.FC<QuickFactsBoxProps> = (props) => {
     const { type, queryRecord, setQueryRecord } = props;
     const { currentUser } = useContext(AuthContext);
@@ -51,8 +63,8 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = (props) => {
     const [editedResponse, setEditedResponse] = useState(queryRecord
         .queryResponse);
     const [forceUpdateRequired, setForceUpdateRequired] = useState(false);
-    const alreadyApproved = queryRecord !== undefined &&
-        queryRecord.CGUUID === currentUser?.email as string;
+    const alreadyApproved = queries[queryRecord.query] !== undefined ??
+        queries[queryRecord.query].dateApproved !== undefined;
 
     const handleLocalQueryResponse = (q: QueryRecord) => {
         setQueries({
@@ -122,6 +134,9 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = (props) => {
     return (
         <Paper>
             <Stack h={300}>
+                <Group justify='flex-end' h={"auto"}>
+                    {responseChip(loadingResponse, alreadyApproved)}
+                </Group>
                 <Center>
                     <Title order={1} c={type == 'avoid' ? 'red' : 'dark'}>{title(props)}</Title>
                 </Center>
@@ -129,8 +144,13 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = (props) => {
                     readOnly={!editingDirectly}
                     update={forceUpdateRequired}
                     updateCallback={(f) => {
-                        setEditedResponse(queries[
-                            queryRecord.query].queryResponse);
+                        if (queries[
+                            queryRecord.query] !== undefined) {
+                            setEditedResponse(queries[
+                                queryRecord.query].queryResponse);
+                            setEditedResponse(queries[
+                                queryRecord.query].queryResponse);
+                        }
                         setForceUpdateRequired(false);
                         f();
                     }}
@@ -146,20 +166,21 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = (props) => {
                 justify="flex-end"
             >
                 <Group justify="flex-end" h={"auto"}>
-                    {
-                        alreadyApproved &&
-                            !editingDirectly ? <></> :
-                            <Button variant="outline" onClick={approve}
-                                leftSection={<IconCheck color='green' size={14} />} >
-                                Endorse
-                            </Button>
-                    }
+
+                    <Button variant="outline" onClick={approve}
+                        disabled={alreadyApproved && !editingDirectly}
+                        leftSection={<IconCheck color='green' size={14} />} >
+                        {alreadyApproved && !editingDirectly ? "Endorsed" : "Endorse"}
+                    </Button>
                     {
                         editingDirectly ?
-                        <Button variant="outline"
+                            <Button variant="outline"
                                 onClick={() => {
-                                    setEditedResponse(queries[
-                                        queryRecord.query].queryResponse);
+                                    if (queries[
+                                        queryRecord.query] !== undefined) {
+                                        setEditedResponse(queries[
+                                            queryRecord.query].queryResponse);
+                                    }
                                     setEditingDirectly(false);
                                     setFeedbackInputOpen(false);
                                 }}

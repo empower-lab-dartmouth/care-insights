@@ -11,7 +11,7 @@ import { Image, Text, Grid, Group, Stack, Paper, Space, Avatar, Button } from '@
 import QuickFactsBox, { LOADING_STRING } from './QuickFactsBox';
 import { QueryRecord } from '../../state/queryingTypes';
 
-const sampleAvoidQuery = (name: string) => `What things should you as a caregiver avoid when working with ${name}?`;
+const sampleAvoidQuery = (name: string) => `What specific things should you as a caregiver avoid when working with ${name}?`;
 const sampleDoQuery = (name: string) => `What things should you as a caregiver do more of when working with ${name}?`;
 const sampleSymptomsQuery = (name: string) => `What common symptoms does ${name} show?`;
 const sampleRedirectQuery = (name: string) => `What things should you do as a dementia caregiver to redirect ${name} show?`;
