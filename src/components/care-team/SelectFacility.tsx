@@ -190,7 +190,7 @@ export default function SelectFacility() {
                                 ...pageState,
                                 selectedFacilityID: newValue.value
                             };
-                            setPageState(newState);w
+                            setPageState(newState);
                             setPartialPageContext(newState);
                         }
                     }}
