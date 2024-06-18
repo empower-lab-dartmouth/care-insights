@@ -89,9 +89,10 @@ const CareInsightsPage = () => {
                                     // gap="md"
                                     >
                                         {
+                                            careRecipients[pageContext.selectedCR].infoBox ? 
                                             careRecipients[pageContext.selectedCR].infoBox.map((i) => (
                                                 <Text>{`${i.label}: ${i.value}`}</Text>
-                                            ))
+                                            )) : <></>
                                         }
                                     </Stack>
                                 </Group>
