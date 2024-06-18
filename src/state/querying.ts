@@ -56,6 +56,7 @@ export async function askQuery(inputQuery: string,
     const relevantQueries = getRelevantQueries(inputQuery, allCRQueries);
     const relevantRecords = getRelevantRecords(inputQuery, allCREvents);
     // logging this as placeholder
+    console.log(relevantQueries, relevantRecords);
     // prompt = `you are an expert memory loss therapist
     // with deep knowldge of ${fakeName}. A less knowlegable
     // peer caregiver asks you the question:
@@ -106,7 +107,6 @@ export async function modifyWithFeedback(feedback: string,
         CGUUID,
         CRUUID,
     };
-    console.log('updating to ', completedQuery);
     handleLocalResponse(completedQuery);
 }
 

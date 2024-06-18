@@ -62,7 +62,7 @@ const AutocompleteUserSearch = () => {
         loadCRData(newPageState, setPageContext, setQueries);
       }}
       // inputValue={{label: inputValue, uuid: 'test'}}
-      renderInput={params => <TextField {...params} label='Care Recipient' />}
+      renderInput={params => <TextField {...params} label='Name' />}
     />
   );
 };
