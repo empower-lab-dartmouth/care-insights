@@ -44,7 +44,7 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
       <AppShell.Navbar p='sm'>
         <div className='flex flex-col gap-2'>
           <MenuButton path='/summaryInsights' icon={<FileQuestion size={18} />}>
-            Summary Insights
+            Care Insights
           </MenuButton>
           <MenuButton path='/videoAnalysis' icon={<SquarePlay size={18} />}>
             Program Events
