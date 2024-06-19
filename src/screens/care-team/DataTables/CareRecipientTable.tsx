@@ -89,6 +89,7 @@ const CareRecipientTable: React.FC = () => {
         CareRecipientInfo = () => ({
             imageURL: DEFAULT_PROFILE_IMAGE,
             name: newProfileName,
+            infoBox: [],
             facilityID: pageContext.selectedFacilityID,
             dateCreated: (new Date()).getTime(),
             uuid: v4(),

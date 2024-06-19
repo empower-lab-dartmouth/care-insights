@@ -25,7 +25,7 @@ export const setRemoteQueryRecord = async (query: QueryRecord) => {
   const queryRef = collection(db, 'QueryRecord');
   try {
     await setDoc(doc(queryRef, query.query), query);
-    console.log('Posted query!');
+    console.log('Posted query!', query);
   } catch (e) {
     console.log('error writing to fb');
     console.log(e);
