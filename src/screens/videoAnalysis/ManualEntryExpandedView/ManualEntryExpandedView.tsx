@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { ManualEntryEvent, ProgramEvent } from '../../../state/types';
 import CommonRowControls from '../CommonRowControls/CommonRowControls';
 import SaveIcon from '@mui/icons-material/Save';
-import { Button, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
+import { Button } from '@mantine/core';
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
 import WYSIWYGEditor from '../../summaryInsights/WYSIWYGEditor/WYSIWYGEditor';
@@ -29,7 +30,8 @@ const ManualEntryExpandedView: React.FC<
         <>
           <Stack direction={'row'} spacing={1}>
             <Button
-              startIcon={<SaveIcon color='success' />}
+              variant='transparent'
+              size='xs'
               onClick={() => {
                 setProgramEvent(localProgramEvent);
                 setEditing(false);
@@ -38,7 +40,9 @@ const ManualEntryExpandedView: React.FC<
               Save changes{' '}
             </Button>
             <Button
-              startIcon={<CancelIcon />}
+              variant='transparent'
+              color='red'
+              size='xs'
               onClick={() => {
                 setLocalProgramEvent(programEvent);
                 setEditing(false);
@@ -69,7 +73,12 @@ const ManualEntryExpandedView: React.FC<
       ) : (
         <div>
           <Stack direction={'row'}>
-            <Button startIcon={<EditIcon />} onClick={() => setEditing(true)}>
+            <Button
+              variant='transparent'
+              size='xs'
+              onClick={() => setEditing(true)}
+              color='green'
+            >
               Edit details{' '}
             </Button>
             <CommonRowControls

@@ -1,10 +1,19 @@
-import { AppShell, Burger, Divider, UnstyledButton } from '@mantine/core';
+import {
+  AppShell,
+  Avatar,
+  Burger,
+  Divider,
+  UnstyledButton,
+  Text,
+} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Link, useLocation } from 'react-router-dom';
 import Nav from '../screens/nav/NavBar';
 
 import { FileQuestion, LogOut, SquarePlay, UsersRound } from 'lucide-react';
 import { primaryColor } from '../constants';
+import { useContext } from 'react';
+import { AuthContext } from '../state/context/auth-context';
 
 const MenuButton = ({
   children,
@@ -16,7 +25,6 @@ const MenuButton = ({
   icon: React.ReactNode;
 }) => {
   const { pathname } = useLocation();
-  console.log(pathname, path);
   return (
     <Link to={path}>
       <UnstyledButton
@@ -35,6 +43,7 @@ const MenuButton = ({
 
 const UserShell = ({ children }: { children: React.ReactNode }) => {
   const [opened, { toggle }] = useDisclosure();
+  const { currentUser } = useContext(AuthContext);
 
   return (
     <AppShell
@@ -49,7 +58,15 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
       padding='md'
     >
       <AppShell.Header>
-        <div>Logo</div>
+        <div className='flex justify-between items-center h-full px-3'>
+          <div>Logo</div>
+          <div className='flex items-center gap-2'>
+            <Text>{currentUser!.email}</Text>
+            <Avatar radius='xl' size='md' color='blue'>
+              M
+            </Avatar>
+          </div>
+        </div>
       </AppShell.Header>
 
       <AppShell.Navbar p='sm'>
@@ -78,7 +95,7 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
         </div>
       </AppShell.Navbar>
 
-      <AppShell.Main className='bg-slate-50 mx-10'>{children}</AppShell.Main>
+      <AppShell.Main className='mx-10'>{children}</AppShell.Main>
     </AppShell>
   );
 };

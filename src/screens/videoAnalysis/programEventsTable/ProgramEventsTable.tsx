@@ -10,6 +10,7 @@ import {
   RedirectionLevel,
 } from '../../../state/types';
 import DataTable, { TableColumn } from 'react-data-table-component';
+
 import {
   NO_CR_SELECTED,
   careRecipientsInfoState,
@@ -22,6 +23,9 @@ import ManualEntryExpandedView from '../ManualEntryExpandedView/ManualEntryExpan
 import { setRemoteProgramEvent } from '../../../state/setting';
 import DataGrid from 'react-data-grid';
 import { columns } from './columns';
+import { Drawer, Title } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import RowDrawer from '../RowDrawer';
 
 type CommonRowFields = {
   label: string;
@@ -51,7 +55,7 @@ type ManualEntryRow = CommonRowFields & {
   programEvent: ManualEntryEvent;
 };
 
-type Row = MusicEventRow | ManualEntryRow;
+export type Row = MusicEventRow | ManualEntryRow;
 
 const engagementLevelLabel = (engagmentLevel: EngagementLevel) => {
   switch (engagmentLevel) {
@@ -81,45 +85,45 @@ const redirectionLevelLabel = (redirectionLevel: RedirectionLevel) => {
   }
 };
 
-// const columns: TableColumn<Row>[] = [
-//   {
-//     name: 'Description',
-//     selector: (row: Row) => row.description,
-//     sortable: false,
-//   },
-//   {
-//     name: 'Date',
-//     selector: (row: Row) => row.date,
-//     sortable: true,
-//     sortFunction: (rowA, rowB) =>
-//       new Date(rowB.date).getTime() - new Date(rowA.date).getTime(),
-//   },
-//   {
-//     name: 'Engagement level',
-//     selector: (row: Row) => engagementLevelLabel(row.engagement),
-//     sortable: true,
-//   },
-//   {
-//     name: 'Redirections',
-//     selector: (row: Row) => redirectionLevelLabel(row.redirection),
-//     sortable: true,
-//   },
-//   {
-//     name: 'Event type',
-//     selector: (row: Row) => row.label,
-//     sortable: true,
-//   },
-//   {
-//     name: 'Care recipient',
-//     selector: (row: Row) => row.CRName,
-//     sortable: true,
-//   },
-//   {
-//     name: 'Caregiver',
-//     selector: (row: Row) => row.CGName,
-//     sortable: true,
-//   },
-// ];
+const columns2: TableColumn<Row>[] = [
+  {
+    name: 'Description',
+    selector: (row: Row) => row.description,
+    sortable: false,
+  },
+  {
+    name: 'Date',
+    selector: (row: Row) => row.date,
+    sortable: true,
+    sortFunction: (rowA, rowB) =>
+      new Date(rowB.date).getTime() - new Date(rowA.date).getTime(),
+  },
+  {
+    name: 'Engagement level',
+    selector: (row: Row) => engagementLevelLabel(row.engagement),
+    sortable: true,
+  },
+  {
+    name: 'Redirections',
+    selector: (row: Row) => redirectionLevelLabel(row.redirection),
+    sortable: true,
+  },
+  {
+    name: 'Event type',
+    selector: (row: Row) => row.label,
+    sortable: true,
+  },
+  {
+    name: 'Care recipient',
+    selector: (row: Row) => row.CRName,
+    sortable: true,
+  },
+  {
+    name: 'Caregiver',
+    selector: (row: Row) => row.CGName,
+    sortable: true,
+  },
+];
 
 const ExpandedComponent: ExpandableRowsComponent<Row> = d => {
   if (d.data.type === 'music-event') {
@@ -199,6 +203,8 @@ const programEventsToRows: (
 
 const ProgramEventsTable: React.FC = () => {
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
+  const [opened, { open, close }] = useDisclosure(false);
+
   const CRInfo = useRecoilValue(careRecipientsInfoState);
 
   // TODO: also update remote. (maybe this is already done? TODO check)
@@ -240,12 +246,10 @@ const ProgramEventsTable: React.FC = () => {
       ? 'Showing recent events for ' + 'all care recipients'
       : `Showing events for ${CRInfo[pageContext.selectedCR].name}`;
 
-  console.log('data', data);
   return (
-    <>
-      <DataGrid columns={columns} rows={data} />
-      {/* <DataTable
-        columns={columns}
+    <div className='mt-12'>
+      <DataTable
+        columns={columns2}
         data={data}
         pagination
         expandableRows
@@ -254,8 +258,8 @@ const ProgramEventsTable: React.FC = () => {
         expandOnRowClicked
         expandableRowExpanded={(row: Row) => row.defaultExpanded}
         expandableRowsComponent={ExpandedComponent}
-      /> */}
-    </>
+      />
+    </div>
   );
 };
 

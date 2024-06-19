@@ -89,9 +89,7 @@ const AutocompleteUserSearch = () => {
         className='w-80'
         renderOption={renderSelectOption}
         onChange={(event, newValue) => {
-          console.log(newValue);
           const newUUID = newValue === null ? 'NONE' : newValue.uuid;
-          console.log(newUUID);
           const newPageState = {
             ...pageContext,
             selectedCR: newUUID,

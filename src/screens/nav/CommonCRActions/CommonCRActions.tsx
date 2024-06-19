@@ -11,6 +11,7 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 
 import { Button, Modal, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { CirclePlus } from 'lucide-react';
 
 type CommonCRActionsProps = {
   page: 'care-insights' | 'program-events' | 'care-team';
@@ -58,6 +59,7 @@ const CommonCRActions: React.FC<CommonCRActionsProps> = ({ page }) => {
               onClick={open}
               disabled={pageContext.selectedCR === NO_CR_SELECTED}
             >
+              <CirclePlus size={15} className='mr-1' />
               Record new event
             </Button>
           ) : (

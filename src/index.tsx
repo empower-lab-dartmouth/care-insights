@@ -9,6 +9,8 @@ import { MantineProvider } from '@mantine/core';
 
 import '@mantine/core/styles.css';
 import 'react-data-grid/lib/styles.css';
+import '@mantine/dates/styles.css';
+
 import './index.css';
 
 const root = ReactDOM.createRoot(

@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 // import './landing.css';
 import SignUp from './signup';
 
-import { Button, Paper, Text, Input, Title } from '@mantine/core';
+import { Button, Paper, Text, Input, Title, TextInput } from '@mantine/core';
 
 const defaultFormFields = {
   email: '',
@@ -58,26 +58,23 @@ function Home() {
         </Title>
         <Text>Sign in to your account</Text>
         <form className='w-full flex flex-col gap-4 pt-4'>
-          <Input.Wrapper label='Email'>
-            <Input
-              placeholder='Your email address'
-              type='email'
-              name='email'
-              value={email}
-              onChange={handleChange}
-              required
-            />
-          </Input.Wrapper>
-          <Input.Wrapper label='Password'>
-            <Input
-              placeholder='Your password'
-              type='password'
-              name='password'
-              value={password}
-              onChange={handleChange}
-              required
-            />
-          </Input.Wrapper>
+          <TextInput
+            label='Email'
+            placeholder='Your email'
+            name='email'
+            value={email}
+            onChange={handleChange}
+            required
+          />
+
+          <TextInput
+            label='Password'
+            placeholder='Your password'
+            name='password'
+            value={password}
+            onChange={handleChange}
+            required
+          />
 
           <Button type='submit' onClick={handleSubmit}>
             Login

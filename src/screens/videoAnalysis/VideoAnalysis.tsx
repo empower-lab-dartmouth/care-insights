@@ -13,13 +13,13 @@ export default function VideoAnalysis() {
   return (
     <UserShell>
       <CommonCRActions page={'program-events'} />
-      <Paper shadow='xs' p={12} className='mt-8'>
+      <div className='mt-8'>
         {pageContext.loadingCRInfo ? (
           <CircularProgress />
         ) : (
           <ProgramEventsTable />
         )}
-      </Paper>
+      </div>
     </UserShell>
   );
 }
