@@ -133,7 +133,7 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = (props) => {
 
     return (
         <Paper>
-            <Stack h={300}>
+            <Stack style={{minHeight: 300}}>
                 <Group justify='flex-end' h={"auto"}>
                     {responseChip(loadingResponse, alreadyApproved)}
                 </Group>
