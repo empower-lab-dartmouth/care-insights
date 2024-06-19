@@ -1,218 +1,186 @@
 import React, { useState } from 'react';
 import {
-    EngagementLevel, ProgramEvent,
-    RedirectionLevel
+  EngagementLevel,
+  ProgramEvent,
+  RedirectionLevel,
 } from '../../../state/types';
-import Backdrop from '@mui/material/Backdrop';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
-import Fade from '@mui/material/Fade';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Selector, { SelectionChoice } from './Selector';
+import { SelectionChoice } from './Selector';
 import { setRemoteProgramEvent } from '../../../state/setting';
-import dayjs from 'dayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DateTimePicker } from '@mantine/dates';
 import DeleteConfirmModal from './DeleteConfirmationModal';
-import TextField from '@mui/material/TextField';
 import SaveIcon from '@mui/icons-material/Save';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
+import { Select, TextInput, Title, Modal, Button } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import dayjs from 'dayjs';
 
 const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
 };
-
 
 const inputStyles = {
-    'width': '100%',
-    'input:focus, input:valid, textarea:valid': {
-        'outline': 'none',
-        'border': 'none'
-    }
+  'width': '100%',
+  'input:focus, input:valid, textarea:valid': {
+    outline: 'none',
+    border: 'none',
+  },
 };
-
 
 const datePickerStyling = {
-    'input:focus, input:valid, textarea:valid': {
-        'outline': 'none',
-        'border': 'none'
-    }
+  'input:focus, input:valid, textarea:valid': {
+    outline: 'none',
+    border: 'none',
+  },
 };
 
-const ENGAGEMENT_LEVEL_OPTIONS: SelectionChoice<
-    EngagementLevel>[] = [
-        {
-            label: 'Low',
-            value: 'low'
-        },
-        {
-            label: 'Average',
-            value: 'average'
-        },
-        {
-            label: 'High',
-            value: 'high'
-        },
-        {
-            label: 'None',
-            value: 'none'
-        },
-        {
-            label: 'N/A',
-            value: 'na'
-        }];
+const ENGAGEMENT_LEVEL_OPTIONS: SelectionChoice<EngagementLevel>[] = [
+  {
+    label: 'Low',
+    value: 'low',
+  },
+  {
+    label: 'Average',
+    value: 'average',
+  },
+  {
+    label: 'High',
+    value: 'high',
+  },
+  {
+    label: 'None',
+    value: 'none',
+  },
+  {
+    label: 'N/A',
+    value: 'na',
+  },
+];
 
-const REDIRECTION_LEVEL_OPTIONS: SelectionChoice<
-    RedirectionLevel>[] = [
-        {
-            label: 'Success',
-            value: 'success'
-        },
-        {
-            label: 'None',
-            value: 'none'
-        },
-        {
-            label: 'Unsuccessful',
-            value: 'unsuccessful'
-        },
-        {
-            label: 'N/A',
-            value: 'na'
-        },
-    ];
-
+const REDIRECTION_LEVEL_OPTIONS: SelectionChoice<RedirectionLevel>[] = [
+  {
+    label: 'Success',
+    value: 'success',
+  },
+  {
+    label: 'None',
+    value: 'none',
+  },
+  {
+    label: 'Unsuccessful',
+    value: 'unsuccessful',
+  },
+  {
+    label: 'N/A',
+    value: 'na',
+  },
+];
 
 type ManualEntryExpandedViewProps = {
-    programEvent: ProgramEvent
-    setProgramEvent: (programEvent: ProgramEvent) => void
+  programEvent: ProgramEvent;
+  setProgramEvent: (programEvent: ProgramEvent) => void;
 };
 
-const CommonRowControls: React.FC<
-    ManualEntryExpandedViewProps> = (props) => {
-        const { programEvent, setProgramEvent } = props;
-        console.log(programEvent);
-        const [open, setOpen] = React.useState(false);
-        const [localProgramEvent, setLocalProgramEvent] = useState(
-            programEvent);
-        const handleOpen = () => setOpen(true);
-        const handleClose = () => {
-            setOpen(false);
-            setTimeout(() => {
-                setLocalProgramEvent(programEvent);
-            }, 500);
-        };
+const CommonRowControls: React.FC<ManualEntryExpandedViewProps> = props => {
+  const { programEvent, setProgramEvent } = props;
+  const [opened, { open, close }] = useDisclosure(false);
 
-        return (
-            <>
-                <Button startIcon={<EqualizerIcon />}
-                    onClick={handleOpen}>
-                    Key Metrics
-                </Button>
-                <Modal
-                    aria-labelledby="transition-modal-title"
-                    aria-describedby="transition-modal-description"
-                    open={open}
-                    onClose={handleClose}
-                    closeAfterTransition
-                    slots={{ backdrop: Backdrop }}
-                    slotProps={{
-                        backdrop: {
-                            timeout: 500,
-                        },
-                    }}
-                >
-                    <Fade in={open}>
-                        <Box sx={style}>
-                            <Typography id="transition-modal-title"
-                                variant="h6" component="h2">
-                                Key Metrics
-                            </Typography>
-                            <br />
-                            <TextField id="outlined-basic"
-                                label="Event type"
-                                value={localProgramEvent.label}
-                                onChange={
-                                    (event:
-                                        React.ChangeEvent<
-                                            HTMLInputElement>) => {
-                                        setLocalProgramEvent({
-                                            ...localProgramEvent,
-                                            label:
-                                                event.target.value
-                                        });
-                                    }}
-                                sx={inputStyles}
-                            />
-                            <Selector selected={localProgramEvent.engagement}
-                                label={'Engagement level'} onSelect={(c) =>
-                                    setLocalProgramEvent({
-                                        ...localProgramEvent,
-                                        engagement: c as EngagementLevel
-                                    })}
-                                options={ENGAGEMENT_LEVEL_OPTIONS}
-                            />
-                            <Selector selected={localProgramEvent.redirection}
-                                label={'Redirections'} onSelect={(c) =>
-                                    setLocalProgramEvent({
-                                        ...localProgramEvent,
-                                        redirection: c as RedirectionLevel
-                                    })}
-                                options={REDIRECTION_LEVEL_OPTIONS}
-                            />
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DateTimePicker
-                                    sx={datePickerStyling}
-                                    label="Date of event"
-                                    value={dayjs(programEvent.date)}
-                                    onChange={(newValue) => {
-                                        if (newValue != null) {
-                                            setLocalProgramEvent({
-                                                ...localProgramEvent,
-                                                date: newValue.valueOf(),
-                                            });
-                                        }
-                                    }}
-                                />
-                            </LocalizationProvider>
-                            <br />
-                            <Button startIcon={
-                                <SaveIcon color='success' />}
-                                onClick={
-                                    () => {
-                                        setRemoteProgramEvent(
-                                            localProgramEvent);
-                                        setProgramEvent(localProgramEvent);
-                                        handleClose();
-                                    }}>
-                                Save</Button>
-                            <br />
-                            <DeleteConfirmModal deleteAction={() => {
-                                setOpen(false);
-                                setProgramEvent({
-                                    ...programEvent,
-                                    deleted: 'true'
-                                });
-                                setRemoteProgramEvent({
-                                    ...programEvent,
-                                    deleted: 'true'
-                                });
-                            }} />
-                        </Box>
-                    </Fade>
-                </Modal>
-            </>
-        );
-    };
+  const [localProgramEvent, setLocalProgramEvent] = useState(programEvent);
+  const handleOpen = () => open();
+  const handleClose = () => {
+    close();
+    setTimeout(() => {
+      setLocalProgramEvent(programEvent);
+    }, 500);
+  };
+
+  return (
+    <>
+      <Button variant='transparent' onClick={handleOpen} size='xs'>
+        Key Metrics
+      </Button>
+      <Modal opened={opened} onClose={close} title='Key Metrics'>
+        <div className='flex flex-col gap-3'>
+          <TextInput
+            label='Event type'
+            value={localProgramEvent.label}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setLocalProgramEvent({
+                ...localProgramEvent,
+                label: event.target.value,
+              });
+            }}
+          />
+          <Select
+            label='Engagement level'
+            data={ENGAGEMENT_LEVEL_OPTIONS}
+            onChange={c =>
+              setLocalProgramEvent({
+                ...localProgramEvent,
+                engagement: c as EngagementLevel,
+              })
+            }
+            defaultValue={localProgramEvent.engagement}
+          />
+          <Select
+            label='Redirections'
+            data={REDIRECTION_LEVEL_OPTIONS}
+            onChange={c =>
+              setLocalProgramEvent({
+                ...localProgramEvent,
+                redirection: c as RedirectionLevel,
+              })
+            }
+            defaultValue={localProgramEvent.redirection}
+          />
+          <DateTimePicker
+            label='Date of event'
+            value={dayjs(programEvent.date)}
+            onChange={newValue => {
+              if (newValue != null) {
+                setLocalProgramEvent({
+                  ...localProgramEvent,
+                  date: newValue.valueOf(),
+                });
+              }
+            }}
+          />
+        </div>
+        <br />
+        <div className='flex items-center justify-end gap-2'>
+          <DeleteConfirmModal
+            deleteAction={() => {
+              close();
+              setProgramEvent({
+                ...programEvent,
+                deleted: 'true',
+              });
+              setRemoteProgramEvent({
+                ...programEvent,
+                deleted: 'true',
+              });
+            }}
+          />
+          <Button
+            onClick={() => {
+              setRemoteProgramEvent(localProgramEvent);
+              setProgramEvent(localProgramEvent);
+              handleClose();
+            }}
+          >
+            Save
+          </Button>
+        </div>
+      </Modal>
+    </>
+  );
+};
 
 export default CommonRowControls;

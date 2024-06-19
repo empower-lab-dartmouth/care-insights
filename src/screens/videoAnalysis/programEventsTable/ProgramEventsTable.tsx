@@ -10,6 +10,7 @@ import {
   RedirectionLevel,
 } from '../../../state/types';
 import DataTable, { TableColumn } from 'react-data-table-component';
+
 import {
   NO_CR_SELECTED,
   careRecipientsInfoState,
@@ -20,6 +21,11 @@ import { ExpandableRowsComponent } from 'react-data-table-component/dist/DataTab
 import VideoPlayer from '../VideoPlayer/VideoPlayer';
 import ManualEntryExpandedView from '../ManualEntryExpandedView/ManualEntryExpandedView';
 import { setRemoteProgramEvent } from '../../../state/setting';
+import DataGrid from 'react-data-grid';
+import { columns } from './columns';
+import { Drawer, Title } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import RowDrawer from '../RowDrawer';
 
 type CommonRowFields = {
   label: string;
@@ -49,7 +55,7 @@ type ManualEntryRow = CommonRowFields & {
   programEvent: ManualEntryEvent;
 };
 
-type Row = MusicEventRow | ManualEntryRow;
+export type Row = MusicEventRow | ManualEntryRow;
 
 const engagementLevelLabel = (engagmentLevel: EngagementLevel) => {
   switch (engagmentLevel) {
@@ -79,7 +85,7 @@ const redirectionLevelLabel = (redirectionLevel: RedirectionLevel) => {
   }
 };
 
-const columns: TableColumn<Row>[] = [
+const columns2: TableColumn<Row>[] = [
   {
     name: 'Description',
     selector: (row: Row) => row.description,
@@ -197,6 +203,8 @@ const programEventsToRows: (
 
 const ProgramEventsTable: React.FC = () => {
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
+  const [opened, { open, close }] = useDisclosure(false);
+
   const CRInfo = useRecoilValue(careRecipientsInfoState);
 
   // TODO: also update remote. (maybe this is already done? TODO check)
@@ -237,12 +245,12 @@ const ProgramEventsTable: React.FC = () => {
     pageContext.selectedCR === NO_CR_SELECTED
       ? 'Showing recent events for ' + 'all care recipients'
       : `Showing events for ${CRInfo[pageContext.selectedCR].name}`;
+
   return (
-    <>
+    <div className='mt-12'>
       <DataTable
-        columns={columns}
+        columns={columns2}
         data={data}
-        title={title}
         pagination
         expandableRows
         striped
@@ -251,7 +259,7 @@ const ProgramEventsTable: React.FC = () => {
         expandableRowExpanded={(row: Row) => row.defaultExpanded}
         expandableRowsComponent={ExpandedComponent}
       />
-    </>
+    </div>
   );
 };
 

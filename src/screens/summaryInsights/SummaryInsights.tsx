@@ -7,23 +7,23 @@ import { NO_CR_SELECTED, pageContextState } from '../../state/recoil';
 import { useRecoilValue } from 'recoil';
 import CircularProgress from '@mui/material/CircularProgress';
 import UserShell from '../../components/UserShell';
+import { Paper } from '@mantine/core';
 
 const SummaryInsights = () => {
   const pageContext = useRecoilValue(pageContextState);
   return (
     <UserShell>
-      <div className='container'>
-        <div className='childContainer'>
-          <CommonCRActions page={'care-insights'} />
-          {pageContext.loadingCRInfo ? (
-            <CircularProgress />
-          ) : pageContext.selectedCR === NO_CR_SELECTED ? (
-            <></>
-          ) : (
-            <QuestionAndAnswerPanel />
-          )}
-        </div>
-      </div>
+      <CommonCRActions page={'care-insights'} />
+
+      <Paper shadow='xs' p={12} className='mt-8'>
+        {pageContext.loadingCRInfo ? (
+          <CircularProgress />
+        ) : pageContext.selectedCR === NO_CR_SELECTED ? (
+          <></>
+        ) : (
+          <QuestionAndAnswerPanel />
+        )}
+      </Paper>
     </UserShell>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { handleSignUp } from '../../state/firebase/firebase';
-import { Button, Input, Modal } from '@mantine/core';
+import { Button, Input, Modal, TextInput } from '@mantine/core';
 
 export default function SignUp(props: any) {
   const [appear, setAppear] = React.useState(false);
@@ -75,45 +75,41 @@ export default function SignUp(props: any) {
       centered
     >
       <div className='flex flex-col gap-4 p-2'>
-        <Input.Wrapper label='Name'>
-          <Input
-            type='text'
-            name='name'
-            onChange={handleChange}
-            autoComplete='off'
-            required
-          />
-        </Input.Wrapper>
+        <TextInput
+          label='Name'
+          type='text'
+          name='name'
+          onChange={handleChange}
+          autoComplete='off'
+          required
+        />
 
-        <Input.Wrapper label='Email'>
-          <Input
-            type='email'
-            name='email'
-            onChange={handleChange}
-            autoComplete='off'
-            required
-          />
-        </Input.Wrapper>
+        <TextInput
+          label='Email'
+          type='email'
+          name='email'
+          onChange={handleChange}
+          autoComplete='off'
+          required
+        />
 
-        <Input.Wrapper label='Password'>
-          <Input
-            type='password'
-            name='password'
-            onChange={handleChange}
-            autoComplete='off'
-            required
-          />
-        </Input.Wrapper>
+        <TextInput
+          label='Password'
+          type='password'
+          name='password'
+          onChange={handleChange}
+          autoComplete='off'
+          required
+        />
 
-        <Input.Wrapper label='Confirm Password'>
-          <Input
-            type='password'
-            name='confirm'
-            onChange={handleChange}
-            autoComplete='off'
-            required
-          />
-        </Input.Wrapper>
+        <TextInput
+          label='Confirm Password'
+          type='password'
+          name='confirm'
+          onChange={handleChange}
+          autoComplete='off'
+          required
+        />
 
         {appear && (
           <span className='text-sm text-red-600 text-center'>{message}</span>
