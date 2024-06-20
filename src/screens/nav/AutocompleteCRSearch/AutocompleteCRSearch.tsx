@@ -76,10 +76,7 @@ const AutocompleteUserSearch = () => {
     //   // inputValue={{label: inputValue, uuid: 'test'}}
     //   renderInput={params => <TextField {...params} label='Name' />}
     // />
-    <div className='flex items-center gap-2'>
-      <Avatar radius='xl' size='sm' color='blue'>
-        <UserRound size={16} />
-      </Avatar>
+    <div className='flex flex-col items-start gap-2'>
       <Text className='text-sm font-semibold'>Current patient: </Text>
       <Select
         placeholder='Select a care recipient'

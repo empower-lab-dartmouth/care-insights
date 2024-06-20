@@ -11,7 +11,7 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 
 import { Button, Modal, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { CirclePlus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 type CommonCRActionsProps = {
   page: 'care-insights' | 'program-events' | 'care-team';
@@ -48,20 +48,34 @@ const CommonCRActions: React.FC<CommonCRActionsProps> = ({ page }) => {
     });
   };
 
+  const AddNewEventButton = () => {
+    return (
+      <Button
+        onClick={open}
+        size='sm'
+        disabled={pageContext.selectedCR === NO_CR_SELECTED}
+      >
+        <Plus size={17} className='mr-1' />
+        Record event
+      </Button>
+    );
+  };
+
   return (
     <>
-      <div className='flex justify-between'>
-        <Title order={3}>{convertToTitleCase(page)}</Title>
-        <div className='flex items-center gap-4'>
+      <div className='flex justify-between flex-col lg:flex-row'>
+        <div className='flex justify-between gap-4'>
+          <Title order={3}>{convertToTitleCase(page)}</Title>
+          <div className='hidden lg:block'>
+            <AddNewEventButton />
+          </div>
+        </div>
+        <div className='flex items-end justify-between gap-4 pt-5 lg:p-0'>
           <AutocompleteCRSearch />
           {page === 'program-events' ? (
-            <Button
-              onClick={open}
-              disabled={pageContext.selectedCR === NO_CR_SELECTED}
-            >
-              <CirclePlus size={15} className='mr-1' />
-              Record new event
-            </Button>
+            <div className='block lg:hidden'>
+              <AddNewEventButton />
+            </div>
           ) : (
             <></>
           )}

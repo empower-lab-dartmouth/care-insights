@@ -6,7 +6,7 @@ import { pageContextState } from '../../state/recoil';
 import { useRecoilValue } from 'recoil';
 import CircularProgress from '@mui/material/CircularProgress';
 import UserShell from '../../components/UserShell';
-import { Paper } from '@mantine/core';
+import { Paper, Card } from '@mantine/core';
 
 export default function VideoAnalysis() {
   const pageContext = useRecoilValue(pageContextState);

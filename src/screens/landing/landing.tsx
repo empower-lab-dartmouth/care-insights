@@ -34,13 +34,19 @@ function Home() {
   const handleSubmit = async () => {
     try {
       // Send the email and password to firebase
+      console.log(email, password);
       const userCredential = await signInUser(email, password);
+
+      console.log(userCredential);
 
       if (userCredential) {
         resetFormFields();
         navigate('/summaryInsights');
+      } else {
+        alert('User Sign In Failed');
       }
     } catch (error: any) {
+      alert(error.message);
       console.log('User Sign In Failed', error.message);
     }
   };
@@ -52,12 +58,13 @@ function Home() {
 
   return (
     <div className='min-h-screen flex flex-col items-center justify-center bg-[#238be6]'>
+      <img src={'logo-white.svg'} alt='logo' className='w-[300px] pb-8' />
       <Paper shadow='xs' className='w-[400px] p-8'>
-        <Title order={3} className='pb-1'>
-          Welcome back!
+        <Title order={3} className='pb-1 text-center'>
+          Welcome back{' '}
         </Title>
-        <Text>Sign in to your account</Text>
-        <form className='w-full flex flex-col gap-4 pt-4'>
+        <Text className='text-center'>Sign in to your account</Text>
+        <div className='w-full flex flex-col gap-4 pt-4'>
           <TextInput
             label='Email'
             placeholder='Your email'
@@ -69,6 +76,7 @@ function Home() {
 
           <TextInput
             label='Password'
+            type='password'
             placeholder='Your password'
             name='password'
             value={password}
@@ -86,7 +94,7 @@ function Home() {
           >
             Create account
           </Button>
-        </form>
+        </div>
         {open && <SignUp opened={open} closeModal={() => handleClose()} />}
       </Paper>
     </div>
