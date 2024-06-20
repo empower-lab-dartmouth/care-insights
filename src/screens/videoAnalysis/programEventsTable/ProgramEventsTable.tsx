@@ -21,11 +21,11 @@ import { ExpandableRowsComponent } from 'react-data-table-component/dist/DataTab
 import VideoPlayer from '../VideoPlayer/VideoPlayer';
 import ManualEntryExpandedView from '../ManualEntryExpandedView/ManualEntryExpandedView';
 import { setRemoteProgramEvent } from '../../../state/setting';
-import DataGrid from 'react-data-grid';
-import { columns } from './columns';
 import { Drawer, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import RowDrawer from '../RowDrawer';
+import Label from './Label';
+import dayjs from 'dayjs';
+import { tableStyles } from './tableStyles';
 
 type CommonRowFields = {
   label: string;
@@ -85,7 +85,7 @@ const redirectionLevelLabel = (redirectionLevel: RedirectionLevel) => {
   }
 };
 
-const columns2: TableColumn<Row>[] = [
+const columns: TableColumn<Row>[] = [
   {
     name: 'Description',
     selector: (row: Row) => row.description,
@@ -93,19 +93,23 @@ const columns2: TableColumn<Row>[] = [
   },
   {
     name: 'Date',
-    selector: (row: Row) => row.date,
+    selector: (row: Row) => dayjs(row.date).format('MMM, DD YYYY, HH:mm A'),
     sortable: true,
     sortFunction: (rowA, rowB) =>
       new Date(rowB.date).getTime() - new Date(rowA.date).getTime(),
   },
   {
     name: 'Engagement level',
-    selector: (row: Row) => engagementLevelLabel(row.engagement),
+    selector: (row: Row) => (
+      <Label>{engagementLevelLabel(row.engagement)}</Label>
+    ),
     sortable: true,
   },
   {
     name: 'Redirections',
-    selector: (row: Row) => redirectionLevelLabel(row.redirection),
+    selector: (row: Row) => (
+      <Label> {redirectionLevelLabel(row.redirection)}</Label>
+    ),
     sortable: true,
   },
   {
@@ -249,15 +253,15 @@ const ProgramEventsTable: React.FC = () => {
   return (
     <div className='mt-12'>
       <DataTable
-        columns={columns2}
+        columns={columns}
         data={data}
         pagination
         expandableRows
-        striped
         highlightOnHover
         expandOnRowClicked
         expandableRowExpanded={(row: Row) => row.defaultExpanded}
         expandableRowsComponent={ExpandedComponent}
+        customStyles={tableStyles}
       />
     </div>
   );
