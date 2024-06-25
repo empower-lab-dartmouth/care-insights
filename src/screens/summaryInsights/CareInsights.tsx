@@ -11,15 +11,9 @@ import { Image, Text, Grid, Group, Stack, Paper, Space, Avatar, Button } from '@
 import QuickFactsBox, { LOADING_STRING } from './QuickFactsBox';
 import { QueryRecord } from '../../state/queryingTypes';
 
-const sampleAvoidQuery = (name: string) => `What specific things should you as a caregiver avoid when working with ${name}?`;
-const sampleDoQuery = (name: string) => `What things should you as a caregiver do more of when working with ${name}?`;
-const sampleSymptomsQuery = (name: string) => `What common symptoms does ${name} show?`;
-const sampleRedirectQuery = (name: string) => `What things should you do as a dementia caregiver to redirect ${name} show?`;
-
 const CareInsightsPage = () => {
     const pageContext = useRecoilValue(pageContextState);
     const careRecipients = useRecoilValue(careRecipientsInfoState);
-    const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
     const CRName = careRecipients[pageContext.selectedCR] !== undefined ? careRecipients[pageContext.selectedCR].name : 'NONE';
 
     const quickBoxId = (prompt: string) => `QuickBox  p:${prompt} cr:${pageContext.selectedCR}`;
@@ -31,22 +25,11 @@ const CareInsightsPage = () => {
         queryResponse: LOADING_STRING,
     });
 
-    const setQuery = (q: QueryRecord) => setQueries({
-        ...queries,
-        [q.query]: q,
-    })
-
     const makeData = (prompt: string) => ({
         queryRecord: loadingQuery(prompt),
-        setQuery,
     });
 
-    const queryData = {
-        'do': makeData(sampleDoQuery(CRName)),
-        'avoid': makeData(sampleAvoidQuery(CRName)),
-        'symptom': makeData(sampleSymptomsQuery(CRName)),
-        'redirection': makeData(sampleRedirectQuery(CRName)),
-    };
+
 
     return (
         <div className='min-h-screen flex flex-col bg-gray-200'>
@@ -71,15 +54,6 @@ const CareInsightsPage = () => {
                                         gap="md"
                                     >
                                         <Avatar h={100} w="auto" src={careRecipients[pageContext.selectedCR].imageURL} alt="Care recipient image" />
-
-                                        {/* <Image
-                                            radius="md"
-                                            h={100}
-                                            w="auto"
-                                            fit="contain"
-                                            src={}
-                                            fallbackSrc="https://placehold.co/600x400?text=Placeholder"
-                                        /> */}
                                     </Stack>
                                     <Stack
                                         // h={300}
@@ -89,10 +63,10 @@ const CareInsightsPage = () => {
                                     // gap="md"
                                     >
                                         {
-                                            careRecipients[pageContext.selectedCR].infoBox ? 
-                                            careRecipients[pageContext.selectedCR].infoBox.map((i) => (
-                                                <Text>{`${i.label}: ${i.value}`}</Text>
-                                            )) : <></>
+                                            careRecipients[pageContext.selectedCR].infoBox ?
+                                                careRecipients[pageContext.selectedCR].infoBox.map((i) => (
+                                                    <Text>{`${i.label}: ${i.value}`}</Text>
+                                                )) : <></>
                                         }
                                     </Stack>
                                 </Group>
@@ -100,14 +74,19 @@ const CareInsightsPage = () => {
                         </Grid.Col>
                     </Grid>
                 </Paper>
-                {CRName !== 'NONE' ?
-                    <Grid justify="flex-start" align="stretch">
-                        <Grid.Col span={{ base: 12, md: 6 }}>
-                            <QuickFactsBox queryRecord={queryData.avoid.queryRecord} setQueryRecord={queryData.avoid.setQuery} type='avoid' /></Grid.Col>
-                        <Grid.Col span={{ base: 12, md: 6 }}><QuickFactsBox queryRecord={queryData.do.queryRecord} setQueryRecord={queryData.do.setQuery} type='do' /></Grid.Col>
-                        <Grid.Col span={{ base: 12, md: 6 }}><QuickFactsBox queryRecord={queryData.symptom.queryRecord} setQueryRecord={queryData.symptom.setQuery} type='symptom' /></Grid.Col>
-                        <Grid.Col span={{ base: 12, md: 6 }}><QuickFactsBox queryRecord={queryData.redirection.queryRecord} setQueryRecord={queryData.redirection.setQuery} type='redirection' /></Grid.Col>
-                    </Grid> : <></>
+                {pageContext.loadingCRInfo ? (
+                    <CircularProgress />
+                ) : <>
+                    {CRName !== 'NONE' ?
+                        <Grid justify="flex-start" align="stretch">
+                            <Grid.Col span={{ base: 12, md: 6 }}>
+                                <QuickFactsBox type='avoid' /></Grid.Col>
+                            <Grid.Col span={{ base: 12, md: 6 }}><QuickFactsBox type='do' /></Grid.Col>
+                            <Grid.Col span={{ base: 12, md: 6 }}><QuickFactsBox type='symptom' /></Grid.Col>
+                            <Grid.Col span={{ base: 12, md: 6 }}><QuickFactsBox type='redirection' /></Grid.Col>
+                        </Grid> : <></>
+                    }
+                </>
                 }
             </UserShell>
         </div>

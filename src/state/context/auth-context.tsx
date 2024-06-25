@@ -33,6 +33,7 @@ export const AuthProvider = ({ children }: Props) => {
   const signOut = () => {
     SignOutUser();
     setCurrentUser(null);
+    console.log('SIGN OUT');
     navigate('/');
   };
 

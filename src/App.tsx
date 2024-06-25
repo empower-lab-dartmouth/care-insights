@@ -23,6 +23,7 @@ import {
   loadPageDataFromFB,
 } from './state/fetching';
 import CareTeam from './screens/care-team/CareTeam';
+import CareInsightsPage from './screens/summaryInsights/CareInsights';
 
 const App = () => {
   const { currentUser } = useContext(AuthContext);
@@ -31,72 +32,88 @@ const App = () => {
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
   const [caregiverInfo, setCaregiversInfo] =
     useRecoilState(caregiversInfoState);
-  const [__, setCareRecipientInfo] = useRecoilState(careRecipientsInfoState);
+  const [careRecipientInfo, setCareRecipientInfo] = useRecoilState(careRecipientsInfoState);
   const [___, setCareFacilityInfo] = useRecoilState(careFacilitiesState);
 
+
   useEffect(() => {
-    if (currentUser && pageState.insightsQuery.queryResponse === 'loading') {
-      loadPageDataFromFB(
-        currentUser?.email as string,
-        setPageState,
-        setQueries
-      );
-      loadCareGiverInfo(
-        pageState,
-        setPageState,
-        setCaregiversInfo,
-        setCareFacilityInfo,
-        currentUser?.email as string
-      );
-      loadCareRecipientsInfo(pageState, setPageState, setCareRecipientInfo);
-      navigate('/summaryInsights');
+    async function fetch() {
+      if (currentUser && pageState.insightsQuery.queryResponse === 'loading') {
+        await loadCareRecipientsInfo(pageState, setPageState, setCareRecipientInfo);
+        await loadPageDataFromFB(
+          currentUser?.email as string,
+          setPageState,
+          setQueries,
+          careRecipientInfo
+        );
+        await loadCareGiverInfo(
+          pageState,
+          setPageState,
+          setCaregiversInfo,
+          setCareFacilityInfo,
+          currentUser?.email as string
+        );
+      }
     }
-  }, [currentUser]);
-  return (
-    <Routes>
-      <Route index element={<Landing />} />
-      <Route path='/' element={<Landing />} />
-      <Route path='/signup' element={<SignUp />} />
 
-      <Route
-        path='/'
-        element={
-          <RequireAuth>
-            <SummaryInsights />
-          </RequireAuth>
-        }
-      />
+    fetch()
+  }, [currentUser])
 
-      <Route
-        path='/summaryInsights'
-        element={
-          <RequireAuth>
-            <SummaryInsights />
-          </RequireAuth>
-        }
-      />
 
-      <Route
-        path='/videoAnalysis'
-        element={
-          <RequireAuth>
-            <VideoAnalysis />
-          </RequireAuth>
-        }
-      />
+return (
+  <Routes>
+    <Route index element={<Landing />} />
+    <Route path='/' element={<Landing />} />
+    <Route path='/signup' element={<SignUp />} />
 
-      <Route
-        path='/careTeam'
-        element={
-          <RequireAuth>
-            <CareTeam />
-          </RequireAuth>
-        }
-      />
+    <Route
+      path='/'
+      element={
+        <RequireAuth>
+          <SummaryInsights />
+        </RequireAuth>
+      }
+    />
 
-      <Route path='*' element={<FallBack />} />
-    </Routes>
-  );
+    <Route
+      path='/info'
+      element={
+        <RequireAuth>
+          <CareInsightsPage />
+
+        </RequireAuth>
+      }
+    />
+
+    <Route
+      path='/questions'
+      element={
+        <RequireAuth>
+          <SummaryInsights />
+        </RequireAuth>
+      }
+    />
+    <Route
+      path='/program-events'
+      element={
+        <RequireAuth>
+          <VideoAnalysis />
+        </RequireAuth>
+      }
+    />
+
+    <Route
+      path='/care-team'
+      element={
+        <RequireAuth>
+          <CareTeam />
+        </RequireAuth>
+      }
+    />
+
+    <Route path='*' element={<FallBack />} />
+  </Routes>
+);
 };
 
 const FallBack = () => {

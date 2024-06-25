@@ -27,15 +27,27 @@ export const defaultQueryEmpty: QueryRecord = {
   CRUUID: '',
 };
 
+export const reloadPageQuery: QueryRecord = {
+  query: '<loading>',
+  queryResponse: 'Try reloading the page, if the issue persists contact your admin.',
+  queryUUID: '',
+  CGUUID: '',
+  CRUUID: '',
+};
+
 export const samplePageState: (
   email: string) => PageState = (email) => ({
     selectedCR: 'NONE',
     username: email,
     selectedCRProgramEvents: {},
     selectedFacilityID: 'sandboxID',
-    insightsQuery: defaultQueryEmpty,
     addEventModalOpen: false,
     suggestedQueries: [],
+    avoidQuery: reloadPageQuery.query,
+    doQuery: reloadPageQuery.query,
+    insightsQuery: defaultQueryEmpty,
+    symptomsQuery: reloadPageQuery.query,
+    redirectionQuery: reloadPageQuery.query,
     loadingCRInfo: false,
   });
 

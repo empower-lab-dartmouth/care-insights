@@ -110,7 +110,8 @@ const QuestionAndAnswerPanel: React.FC = () => {
       pageContext.selectedCRProgramEvents,
       currentUser?.email as string,
       pageContext.selectedCR,
-      queries
+      queries,
+      false
     );
     setForceUpdateRequired(true);
     setLoadingResponse(false);

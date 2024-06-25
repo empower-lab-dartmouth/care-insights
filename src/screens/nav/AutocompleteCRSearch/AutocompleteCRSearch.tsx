@@ -18,6 +18,7 @@ const AutocompleteUserSearch = () => {
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
   const selectedCGValue = allCGInfo[pageContext.selectedCR];
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
+  const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
 
   const options = Object.values(allCGInfo)
     .filter(v => v.uuid !== NO_CR_SELECTED)
@@ -86,14 +87,14 @@ const AutocompleteUserSearch = () => {
         className='w-80'
         renderOption={renderSelectOption}
         onChange={(event, newValue) => {
-          const newUUID = newValue === null ? 'NONE' : newValue.uuid;
+          const newUUID = newValue === null ? 'NONE' : (newValue as any).uuid;
           const newPageState = {
             ...pageContext,
             selectedCR: newUUID,
             loadingCRInfo: false,
           };
           setPartialPageContext(newPageState);
-          loadCRData(newPageState, setPageContext, setQueries);
+          loadCRData(newPageState, setPageContext, setQueries, careRecipientsInfo);
         }}
       />
     </div>

@@ -7,7 +7,7 @@ import { NO_CR_SELECTED, careRecipientsInfoState, pageContextState, queriesForCu
 import { useRecoilState, useRecoilValue } from 'recoil';
 import CircularProgress from '@mui/material/CircularProgress';
 import UserShell from '../../components/UserShell';
-import { Image, Text, Grid, Group, Stack, Paper, Title, Center, Button, Chip, Pill } from '@mantine/core';
+import { Image, Text, Grid, Group, Stack, Paper, Title, Center, Button, Chip, Pill, Textarea } from '@mantine/core';
 import WYSIWYGEditor from './WYSIWYGEditor/WYSIWYGEditor';
 import { MDXEditor, headingsPlugin, imagePlugin, linkDialogPlugin, listsPlugin } from '@mdxeditor/editor';
 import { AuthContext } from '../../state/context/auth-context';
@@ -23,8 +23,6 @@ export const LOADING_STRING = 'Loading...';
 
 type QuickFactsBoxProps = {
     type: 'avoid' | 'do' | 'symptom' | 'redirection'
-    queryRecord: QueryRecord
-    setQueryRecord: (q: QueryRecord) => void
 }
 
 const title = ({ type }: QuickFactsBoxProps) => {
@@ -51,54 +49,30 @@ const responseChip = (loading: boolean,
     return <></>
 };
 
-const QuickFactsBox: React.FC<QuickFactsBoxProps> = (props) => {
-    const { type, queryRecord, setQueryRecord } = props;
-    const { currentUser } = useContext(AuthContext);
+const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = (props) => {
+    const { type } = props;
+    // const { currentUser } = useContext(AuthContext);
     const [pageContext, setPageContext] = useRecoilState(pageContextState);
     const [loadingResponse, setLoadingResponse] = useState(false);
     const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
-    const [feedbackInputOpen, setFeedbackInputOpen] = useState(false);
-    const [feedbackInput, setFeedbackInput] = useState('');
     const [editingDirectly, setEditingDirectly] = useState(false);
-    const [editedResponse, setEditedResponse] = useState(queryRecord
-        .queryResponse);
-    const [forceUpdateRequired, setForceUpdateRequired] = useState(false);
-    const alreadyApproved = queries[queryRecord.query] !== undefined ??
-        queries[queryRecord.query].dateApproved !== undefined;
-
-    const handleLocalQueryResponse = (q: QueryRecord) => {
+    const queryRecordQuery = type === 'do' ? pageContext.doQuery :
+        type === 'avoid' ? pageContext.avoidQuery :
+            type === 'redirection' ? pageContext.redirectionQuery :
+                pageContext.symptomsQuery;
+    const queryRecord = queries[queryRecordQuery];
+    console.log(queries);
+    console.log(queryRecordQuery);
+    console.log("query record query");
+    const setQueryRecord = (q: QueryRecord) => {
         setQueries({
             ...queries,
             [q.query]: q
         });
-        setQueryRecord(q);
-        setEditedResponse(q.queryResponse);
-    };
-    const makeQuery = async (q: string) => {
-        console.log("MAKE QUERY!");
-        setLoadingResponse(true);
-        setEditingDirectly(false);
-        setFeedbackInputOpen(false);
-        await askQuery(q, handleLocalQueryResponse,
-            pageContext.selectedCRProgramEvents,
-            currentUser?.email as string,
-            pageContext.selectedCR, queries);
-        setForceUpdateRequired(true);
-        setLoadingResponse(false);
-    };
-
-    const updateWithFeedback = async () => {
-        setLoadingResponse(true);
-        setFeedbackInput('');
-        await modifyWithFeedback(feedbackInput,
-            queryRecord,
-            handleLocalQueryResponse,
-            pageContext.selectedCRProgramEvents,
-            currentUser?.email as string,
-            pageContext.selectedCR, queries);
-        setForceUpdateRequired(true);
-        setLoadingResponse(false);
-    };
+    }
+    const [editedResponse, setEditedResponse] = useState(queryRecord
+        .queryResponse);
+    const alreadyApproved = queryRecord.dateApproved !== undefined;
 
     const submitApprovalFeedback = async () => {
         setLoadingResponse(true);
@@ -110,56 +84,36 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = (props) => {
         await respondToApprovalFeedback(
             approvedQuery);
         setQueryRecord(approvedQuery);
-        setQueries({
-            ...queries,
-            [approvedQuery.query]: approvedQuery
-        });
         setLoadingResponse(false);
     };
     const approve = () => {
         submitApprovalFeedback();
-        delayThenDo(() => setForceUpdateRequired(true), 100);
-        setFeedbackInputOpen(false);
         setEditingDirectly(false);
-        setFeedbackInput('');
     };
-
-    useEffect(() => {
-        async function doAsync() {
-            makeQuery(queryRecord.query);
-        }
-        doAsync()
-    }, [])
 
     return (
         <Paper>
-            <Stack style={{minHeight: 300}}>
+            <Stack style={{ minHeight: 300 }}>
                 <Group justify='flex-end' h={"auto"}>
                     {responseChip(loadingResponse, alreadyApproved)}
                 </Group>
                 <Center>
                     <Title order={1} c={type == 'avoid' ? 'red' : 'dark'}>{title(props)}</Title>
                 </Center>
-                <WYSIWYGEditor loading={loadingResponse}
-                    readOnly={!editingDirectly}
-                    update={forceUpdateRequired}
-                    updateCallback={(f) => {
-                        if (queries[
-                            queryRecord.query] !== undefined) {
-                            setEditedResponse(queries[
-                                queryRecord.query].queryResponse);
-                            setEditedResponse(queries[
-                                queryRecord.query].queryResponse);
-                        }
-                        setForceUpdateRequired(false);
-                        f();
-                    }}
-                    defaultMessage=
-                    'Type in a question above and click "get insights"'
-                    showDefaultMessage={false}
-                    markdown={editedResponse}
-                    onChange={setEditedResponse}
-                />
+                {!editingDirectly ? <Text
+                    style={{
+                        "white-space": "pre-wrap"
+                    }} fz="sm" lh="md">
+                    {editedResponse}
+                </Text> :
+                    <Textarea
+                        label="Make edits below"
+                        value={editedResponse}
+                        onChange={(event) => setEditedResponse(event.currentTarget.value)}
+                        autosize
+                        minRows={2}
+                    />
+                }
             </Stack>
             <Stack
                 align="flex-end"
@@ -182,7 +136,6 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = (props) => {
                                             queryRecord.query].queryResponse);
                                     }
                                     setEditingDirectly(false);
-                                    setFeedbackInputOpen(false);
                                 }}
                                 leftSection={<IconX size={14} />}>
                                 Cancel </Button> : <></>
@@ -190,9 +143,7 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = (props) => {
                     <Button variant="outline"
                         disabled={editingDirectly}
                         onClick={() => {
-                            setForceUpdateRequired(true);
                             setEditingDirectly(true);
-                            setFeedbackInputOpen(false);
                             setEditedResponse(pageContext
                                 .insightsQuery
                                 .queryResponse);
@@ -205,5 +156,21 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = (props) => {
         </Paper>
     );
 };
+
+const QuickFactsBox: React.FC<QuickFactsBoxProps> = (props) => {
+    const { type } = props;
+    // const { currentUser } = useContext(AuthContext);
+    const [pageContext, setPageContext] = useRecoilState(pageContextState);
+    const [loadingResponse, setLoadingResponse] = useState(false);
+    const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
+    const queryRecordQuery = type === 'do' ? pageContext.doQuery :
+        type === 'avoid' ? pageContext.avoidQuery :
+            type === 'redirection' ? pageContext.redirectionQuery :
+                pageContext.symptomsQuery;
+    return (
+        <>{queries[queryRecordQuery] !== undefined ? <QuickFactsBoxInner type={type} /> : <CircularProgress />
+        }
+        </>);
+}
 
 export default QuickFactsBox;

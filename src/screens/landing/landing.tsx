@@ -37,11 +37,13 @@ function Home() {
       console.log(email, password);
       const userCredential = await signInUser(email, password);
 
+      console.log('user credentials');
       console.log(userCredential);
 
       if (userCredential) {
         resetFormFields();
-        navigate('/summaryInsights');
+        console.log('navigate to INFO');
+        navigate('/info');
       } else {
         alert('User Sign In Failed');
       }
