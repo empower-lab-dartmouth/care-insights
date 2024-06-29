@@ -95,7 +95,8 @@ export async function askQuery(
   allCREvents: CRProgramEvents,
   CGUUID: string,
   CRUUID: string,
-  allCRQueries: Record<string, QueryRecord>
+  allCRQueries: Record<string, QueryRecord>,
+  overwritePrior: boolean,
 ) {
   console.log(inputQuery);
   const existingQueryMatchesExactly = allCRQueries[inputQuery];
@@ -103,8 +104,12 @@ export async function askQuery(
     console.log('queries match exactly');
     console.log(existingQueryMatchesExactly);
     console.log(allCRQueries);
-    handleLocalResponse(existingQueryMatchesExactly);
-    return;
+    if (!overwritePrior) {
+      console.log('pulling prior response for ' + existingQueryMatchesExactly.query);
+      handleLocalResponse(existingQueryMatchesExactly);
+      return existingQueryMatchesExactly;
+    }
+    console.log('overwriting existing for ' + existingQueryMatchesExactly.query);
   }
   const relevantQueries = await getRelevantQueries(inputQuery, allCRQueries);
   const relevantQueryResponses: String[] = [];
@@ -140,6 +145,7 @@ export async function askQuery(
     CRUUID,
   };
   handleLocalResponse(completedQuery);
+  return completedQuery;
 }
 
 // TODO: Bansharee (do this after the above functions are working)

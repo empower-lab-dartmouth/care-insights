@@ -24,8 +24,8 @@ export default function CareTeam() {
         }}
       >
         <SelectFacility />
-        <Typography variant='h2'>Your care group</Typography>
-        <CareGroupTable />
+        {/* <Typography variant='h2'>Your care group</Typography>
+        <CareGroupTable /> */}
         <Typography variant='h2'>Your care recipients</Typography>
         <CareRecipientTable />
         <Typography variant='h2'>Your care team</Typography>

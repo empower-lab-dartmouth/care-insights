@@ -70,7 +70,7 @@ const SessionTracker = () => {
           ...eventCount,
           videoAnalysis: eventCount.videoAnalysis + 1,
         });
-      } else if (location.pathname.includes('summaryInsights')) {
+      } else if (location.pathname.includes('info')) {
         setEventCount({
           ...eventCount,
           summaryInsights: eventCount.summaryInsights + 1,
@@ -90,7 +90,7 @@ const SessionTracker = () => {
        time: number) => SessionActivityEvent = (session, time) => {
          const idleTime = isActive ? 0 : time;
          const activeTime = !isActive ? 0 : time;
-         if (location.pathname.includes('videoAnalysis')) {
+         if (location.pathname.includes('program-events')) {
            return {
              ...session,
              facilitator: {
@@ -99,7 +99,7 @@ const SessionTracker = () => {
                activeTime: session.videoAnalysis.activeTime + activeTime,
              },
            };
-         } else if (location.pathname.includes('summaryInsights')) {
+         } else if (location.pathname.includes('info')) {
            return {
              ...session,
              progress: {

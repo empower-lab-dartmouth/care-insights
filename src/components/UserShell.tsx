@@ -11,7 +11,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { Link, useLocation } from 'react-router-dom';
 import Nav from '../screens/nav/NavBar';
 
-import { FileQuestion, LogOut, SquarePlay, UsersRound } from 'lucide-react';
+import { FileQuestion, LogOut, SquarePlay, UsersRound, Info } from 'lucide-react';
 import { primaryColor } from '../constants';
 import { useContext } from 'react';
 import { AuthContext } from '../state/context/auth-context';
@@ -79,15 +79,21 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
         <div className='flex flex-col justify-between h-full'>
           <div className='flex flex-col gap-2'>
             <MenuButton
-              path='/summaryInsights'
+              path='/info'
+              icon={<Info size={18} />}
+            >
+              Quick Info
+            </MenuButton>
+            <MenuButton
+              path='/questions'
               icon={<FileQuestion size={18} />}
             >
-              Summary Insights
+              Follow up questions
             </MenuButton>
-            <MenuButton path='/videoAnalysis' icon={<SquarePlay size={18} />}>
+            <MenuButton path='/program-events' icon={<SquarePlay size={18} />}>
               Program Events
             </MenuButton>
-            <MenuButton path='/careTeam' icon={<UsersRound size={18} />}>
+            <MenuButton path='/care-team' icon={<UsersRound size={18} />}>
               Care Team
             </MenuButton>
           </div>

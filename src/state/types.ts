@@ -1,3 +1,4 @@
+import { Query } from "firebase/firestore"
 import { QueryRecord } from "./queryingTypes"
 
 export type UserUUID = string
@@ -8,6 +9,10 @@ export type PageState = {
     selectedCR: UserUUID,
     selectedCRProgramEvents: CRProgramEvents
     insightsQuery: QueryRecord,
+    avoidQuery: string,
+    doQuery: string,
+    symptomsQuery: string,
+    redirectionQuery: string,
     addEventModalOpen: boolean,
     selectedFacilityID: string
     suggestedQueries: QueryRecord[],
@@ -105,12 +110,18 @@ export type CareGroupInfo = {
     editPermissions: Features[]
 }
 
+export type InfoBox = {
+    label: string
+    value: string
+}
+
 export type CareRecipientInfo = {
     imageURL: string
     facilityID: string
     dateCreated:number
     name: string
     uuid: string
+    infoBox: InfoBox[]
     deletedDate?: number
 }
 

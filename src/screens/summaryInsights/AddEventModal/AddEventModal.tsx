@@ -53,8 +53,7 @@ const AddEvent = ({ close }: { close: () => void }) => {
         <Text className='text-sm'>
           {' '}
           Record an event for{' '}
-          <span className='font-semibold italic text-sm'>{CRname}</span>. After
-          saving, you can edit this further in the table{' '}
+          <span className='font-semibold text-sm'>{CRname}</span>.{' '}
         </Text>
 
         <Textarea
@@ -62,7 +61,7 @@ const AddEvent = ({ close }: { close: () => void }) => {
           className='mt-3'
           rows={6}
           value={eventDescription}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+          onChange={(event) => {
             setEventDescription(event.target.value);
           }}
         />
