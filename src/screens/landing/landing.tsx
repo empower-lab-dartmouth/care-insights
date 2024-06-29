@@ -9,8 +9,8 @@ import SignUp from './signup';
 import { Button, Paper, Text, Input, Title, TextInput } from '@mantine/core';
 
 const defaultFormFields = {
-  email: '',
-  password: '',
+  email: 'papisline2222@gmail.com',
+  password: '221298',
 };
 
 function Home() {

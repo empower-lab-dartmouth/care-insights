@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Chip, Stack } from '@mui/material';
+import { Chip, Stack } from '@mui/material';
+import { Button } from '@mantine/core';
 import { QueryRecord } from '../../../state/queryingTypes';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 
@@ -38,7 +39,13 @@ const SuggestedText: React.FC<SuggestedTextProps> = props => {
         ))}
       </Stack>
       {hasMoreSuggestions ? (
-        <Button startIcon={<CloudDownloadIcon />} onClick={loadMoreSuggestions}>
+        <Button
+          variant='transparent'
+          color='blue'
+          leftSection={<CloudDownloadIcon />}
+          onClick={loadMoreSuggestions}
+          className='w-[300px] pl-0'
+        >
           Load more suggested prompts
         </Button>
       ) : (
