@@ -48,41 +48,12 @@ const AutocompleteUserSearch = () => {
   );
 
   return (
-    // <Autocomplete
-    //   disablePortal
-    //   id='combo-box-demo'
-    //   options={options}
-    //   value={value}
-    //   sx={{
-    //     'width': 400,
-    //     'input:focus, input:valid, textarea:valid': {
-    //       outline: 'none',
-    //       border: 'none',
-    //     },
-    //   }}
-    //   getOptionLabel={option => option.label}
-    //   isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
-    //   onChange={(event, newValue) => {
-    //     console.log(newValue);
-    //     const newUUID = newValue === null ? 'NONE' : newValue.uuid;
-    //     console.log(newUUID);
-    //     const newPageState = {
-    //       ...pageContext,
-    //       selectedCR: newUUID,
-    //       loadingCRInfo: false,
-    //     };
-    //     setPartialPageContext(newPageState);
-    //     loadCRData(newPageState, setPageContext, setQueries);
-    //   }}
-    //   // inputValue={{label: inputValue, uuid: 'test'}}
-    //   renderInput={params => <TextField {...params} label='Name' />}
-    // />
     <div className='flex flex-col items-start gap-2'>
       <Text className='text-sm font-semibold'>Current patient: </Text>
       <Select
         placeholder='Select a care recipient'
         data={options}
-        searchable
+        clearable
         defaultSearchValue={value.label}
         className='w-80'
         renderOption={renderSelectOption}
@@ -94,7 +65,12 @@ const AutocompleteUserSearch = () => {
             loadingCRInfo: false,
           };
           setPartialPageContext(newPageState);
-          loadCRData(newPageState, setPageContext, setQueries, careRecipientsInfo);
+          loadCRData(
+            newPageState,
+            setPageContext,
+            setQueries,
+            careRecipientsInfo
+          );
         }}
       />
     </div>

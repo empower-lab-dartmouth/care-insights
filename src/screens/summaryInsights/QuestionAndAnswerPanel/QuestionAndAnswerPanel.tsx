@@ -3,12 +3,10 @@ import {
   pageContextState,
   queriesForCurrentCGState,
 } from '../../../state/recoil';
-import Paper from '@mui/material/Paper';
 import { useRecoilState } from 'recoil';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import SuggestedText from '../SuggestedText/SuggestedText';
-import Button from '@mui/material/Button';
 import SearchIcon from '@mui/icons-material/Search';
 import { QueryRecord } from '../../../state/queryingTypes';
 import {
@@ -29,6 +27,10 @@ import WYSIWYGEditor from '../WYSIWYGEditor/WYSIWYGEditor';
 import { PageState } from '../../../state/types';
 import { delayThenDo } from '../../../state/sampleData';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import SearchBox from './SearchBox';
+
+import { Title, Text, Paper, Button, TextInput, Textarea } from '@mantine/core';
+import { IconThumbUp, IconX } from '@tabler/icons-react';
 
 const inputStyles = {
   'width': '100%',
@@ -49,26 +51,14 @@ const responseChip = (
   }
   if (pageState.insightsQuery.dateApproved !== undefined) {
     if (alreadyApproved) {
-      return (
-        <Chip
-          icon={<CheckCircleOutlineIcon />}
-          color='success'
-          label='You approved this'
-        />
-      );
+      return <Text className='text-green-600 italic'>(Approved by you)</Text>;
     } else {
       return (
-        <Chip
-          icon={<CheckCircleOutlineIcon />}
-          color='info'
-          label='Someone else approved this'
-        />
+        <Text className='text-primary italic'>(Approved by someone else)</Text>
       );
     }
   }
-  return (
-    <Chip icon={<WarningAmberIcon />} color='warning' label='AI generated' />
-  );
+  return <Text className='text-orange-600 italic'>(AI generated)</Text>;
 };
 
 const QuestionAndAnswerPanel: React.FC = () => {
@@ -160,47 +150,147 @@ const QuestionAndAnswerPanel: React.FC = () => {
   };
   const queryModified = pageContext.insightsQuery.query !== editingQuery;
   return (
-    <>
-      <Paper
-        elevation={1}
-        sx={{
-          padding: '12px',
-        }}
-      >
-        <Stack direction={'row'}>
-          <TextField
-            id='standard-multiline-static'
-            label='Search Care Insights'
-            multiline
-            sx={{
-              'width': '100%',
-              'input:focus, textarea:valid': {
-                outline: 'none',
-                border: 'none',
-              },
-            }}
-            variant='standard'
-            value={editingQuery}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              if (event.target.value.endsWith('\n')) {
-                makeQuery(editingQuery);
-              } else {
-                setEditingQuery(event.target.value);
+    <div className='relative min-h-[82vh]'>
+      <Paper className='mt-[30px] border border-gray-200' p='lg'>
+        {editingQuery && (
+          <div className='flex flex-col gap-2'>
+            <Title order={5}>Question:</Title>
+            <Text>{editingQuery}</Text>
+          </div>
+        )}
+
+        {editedResponse && (
+          <div className='mt-4'>
+            <div className='flex gap-3'>
+              <Title order={5}>Response:</Title>
+              {responseChip(
+                loadingResponse,
+                queryModified,
+                pageContext,
+                alreadyApproved
+              )}
+            </div>
+            <WYSIWYGEditor
+              loading={loadingResponse}
+              readOnly={!editingDirectly}
+              update={forceUpdateRequired}
+              updateCallback={f => {
+                setEditedResponse(pageContext.insightsQuery.queryResponse);
+                setForceUpdateRequired(false);
+                f();
+              }}
+              defaultMessage='Type in a question above and click "get insights"'
+              showDefaultMessage={
+                editingQuery !== pageContext.insightsQuery.query
               }
-            }}
-          />
-          <Button
-            variant='contained'
-            sx={{ 'max-width': '200px' }}
-            color='success'
-            startIcon={<SearchIcon />}
-            onClick={() => {
-              makeQuery(editingQuery);
-            }}
-          >
-            Search
-          </Button>
-        </Stack>
+              markdown={editedResponse}
+              onChange={setEditedResponse}
+            />
+          </div>
+        )}
+        {queryModified ? (
+          <></>
+        ) : (
+          <>
+            <Title order={5}>Help us:</Title>
+            <Text>
+              Our AI learns from your feedback! Please improve the model with a
+              review:
+            </Text>
+            {feedbackInputOpen ? (
+              <Textarea
+                id='outlined-basic'
+                label='Include more detail about...'
+                value={feedbackInput}
+                className='mt-3'
+                onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
+                  setFeedbackInput(event.target.value);
+                }}
+              />
+            ) : (
+              <></>
+            )}
+            <div className='flex gap-4 mt-3'>
+              {alreadyApproved && !editingDirectly ? (
+                <></>
+              ) : (
+                <Button
+                  leftSection={<IconThumbUp className='text-green-600' />}
+                  onClick={approve}
+                  variant='outline'
+                  className='text-green-600 hover:text-green-600 border-green-600'
+                  size='xs'
+                >
+                  This is helpful{' '}
+                </Button>
+              )}
+              {feedbackInputOpen ? (
+                <Button
+                  leftSection={<LoopIcon />}
+                  disabled={feedbackInput === ''}
+                  variant='outline'
+                  onClick={updateWithFeedback}
+                  size='xs'
+                >
+                  Update response to incoprorate feedback
+                </Button>
+              ) : (
+                <></>
+              )}
+              {feedbackInputOpen || editingDirectly ? (
+                <Button
+                  leftSection={<IconX className='red-red-600' />}
+                  color='red'
+                  variant='outline'
+                  size='xs'
+                  onClick={() => {
+                    setFeedbackInput('');
+                    setEditedResponse(pageContext.insightsQuery.queryResponse);
+                    setEditingQuery(pageContext.insightsQuery.query);
+                    setEditingDirectly(false);
+                    setFeedbackInputOpen(false);
+                  }}
+                >
+                  Cancel{' '}
+                </Button>
+              ) : (
+                <></>
+              )}
+              <Button
+                leftSection={<EditIcon />}
+                disabled={editingDirectly}
+                variant='outline'
+                size='xs'
+                onClick={() => {
+                  setEditingDirectly(true);
+                  setFeedbackInputOpen(false);
+                  setFeedbackInput('');
+                  setEditedResponse(pageContext.insightsQuery.queryResponse);
+                }}
+              >
+                Let me just fix something...{' '}
+              </Button>
+              <Button
+                leftSection={<ChatBubbleIcon />}
+                disabled={feedbackInputOpen}
+                variant='outline'
+                size='xs'
+                onClick={() => {
+                  setFeedbackInput('');
+                  setEditingDirectly(false);
+                  setEditingQuery(pageContext.insightsQuery.query);
+                  setEditedResponse(pageContext.insightsQuery.queryResponse);
+                  setFeedbackInputOpen(true);
+                }}
+              >
+                Suggest changes...{' '}
+              </Button>
+            </div>
+            <Stack direction={'row'}></Stack>
+          </>
+        )}
+      </Paper>
+      <div className='absolute w-full bottom-0 flex flex-col gap-6'>
         <SuggestedText
           textSuggestions={pageContext.suggestedQueries}
           currentText={editingQuery}
@@ -220,125 +310,19 @@ const QuestionAndAnswerPanel: React.FC = () => {
             Object.values(queries).length
           }
         />
-        <br />
-        <br />
-        <Stack direction={'row'}>
-          <Typography variant='h6' gutterBottom>
-            Response:
-          </Typography>
-          {responseChip(
-            loadingResponse,
-            queryModified,
-            pageContext,
-            alreadyApproved
-          )}
-        </Stack>
-        <WYSIWYGEditor
-          loading={loadingResponse}
-          readOnly={!editingDirectly}
-          update={forceUpdateRequired}
-          updateCallback={f => {
-            setEditedResponse(pageContext.insightsQuery.queryResponse);
-            setForceUpdateRequired(false);
-            f();
+        <SearchBox
+          value={editingQuery}
+          onSearch={() => makeQuery(editingQuery)}
+          onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
+            if (event.target.value.endsWith('\n')) {
+              makeQuery(editingQuery);
+            } else {
+              setEditingQuery(event.target.value);
+            }
           }}
-          defaultMessage='Type in a question above and click "get insights"'
-          showDefaultMessage={editingQuery !== pageContext.insightsQuery.query}
-          markdown={editedResponse}
-          onChange={setEditedResponse}
         />
-        {queryModified ? (
-          <></>
-        ) : (
-          <>
-            <Typography variant='h6' gutterBottom>
-              Our AI learns from your feedback! Please improve the model with a
-              review:
-            </Typography>
-            {feedbackInputOpen ? (
-              <TextField
-                id='outlined-basic'
-                label='Include more detail about...'
-                multiline
-                value={feedbackInput}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setFeedbackInput(event.target.value);
-                }}
-                sx={inputStyles}
-              />
-            ) : (
-              <></>
-            )}
-            <Stack direction={'row'}>
-              {alreadyApproved && !editingDirectly ? (
-                <></>
-              ) : (
-                <Button
-                  startIcon={<ThumbUpIcon color='success' />}
-                  onClick={approve}
-                >
-                  This is helpful{' '}
-                </Button>
-              )}
-              {feedbackInputOpen ? (
-                <Button
-                  startIcon={<LoopIcon />}
-                  disabled={feedbackInput === ''}
-                  onClick={updateWithFeedback}
-                >
-                  Update response to incoprorate feedback
-                </Button>
-              ) : (
-                <></>
-              )}
-              {feedbackInputOpen || editingDirectly ? (
-                <Button
-                  startIcon={<CancelIcon />}
-                  onClick={() => {
-                    setFeedbackInput('');
-                    setEditedResponse(pageContext.insightsQuery.queryResponse);
-                    setEditingQuery(pageContext.insightsQuery.query);
-                    setEditingDirectly(false);
-                    setFeedbackInputOpen(false);
-                  }}
-                >
-                  Cancel{' '}
-                </Button>
-              ) : (
-                <></>
-              )}
-            </Stack>
-            <Stack direction={'row'}>
-              <Button
-                startIcon={<EditIcon />}
-                disabled={editingDirectly}
-                onClick={() => {
-                  setEditingDirectly(true);
-                  setFeedbackInputOpen(false);
-                  setFeedbackInput('');
-                  setEditedResponse(pageContext.insightsQuery.queryResponse);
-                }}
-              >
-                Let me just fix something...{' '}
-              </Button>
-              <Button
-                startIcon={<ChatBubbleIcon />}
-                disabled={feedbackInputOpen}
-                onClick={() => {
-                  setFeedbackInput('');
-                  setEditingDirectly(false);
-                  setEditingQuery(pageContext.insightsQuery.query);
-                  setEditedResponse(pageContext.insightsQuery.queryResponse);
-                  setFeedbackInputOpen(true);
-                }}
-              >
-                Suggest changes...{' '}
-              </Button>
-            </Stack>
-          </>
-        )}
-      </Paper>
-    </>
+      </div>
+    </div>
   );
 };
 

@@ -15,7 +15,7 @@ const SummaryInsights = () => {
     <UserShell>
       <CommonCRActions page={'care-insights'} />
 
-      <Paper shadow='xs' p={12} className='mt-8'>
+      <>
         {pageContext.loadingCRInfo ? (
           <CircularProgress />
         ) : pageContext.selectedCR === NO_CR_SELECTED ? (
@@ -23,7 +23,7 @@ const SummaryInsights = () => {
         ) : (
           <QuestionAndAnswerPanel />
         )}
-      </Paper>
+      </>
     </UserShell>
   );
 };
