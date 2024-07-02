@@ -11,11 +11,16 @@ import { useDisclosure } from '@mantine/hooks';
 import { Link, useLocation } from 'react-router-dom';
 import Nav from '../screens/nav/NavBar';
 
-import { FileQuestion, LogOut, SquarePlay, UsersRound, Info } from 'lucide-react';
+import {
+  FileQuestion,
+  LogOut,
+  SquarePlay,
+  UsersRound,
+  Info,
+} from 'lucide-react';
 import { primaryColor } from '../constants';
 import { useContext } from 'react';
 import { AuthContext } from '../state/context/auth-context';
-import { SignOutUser } from '../state/firebase/firebase';
 
 const MenuButton = ({
   children,
@@ -46,7 +51,7 @@ const MenuButton = ({
 
 const UserShell = ({ children }: { children: React.ReactNode }) => {
   const [opened, { toggle }] = useDisclosure();
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser, signOut } = useContext(AuthContext);
 
   return (
     <AppShell
@@ -78,16 +83,10 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
       <AppShell.Navbar p='sm' className='bg-[#f9f9f9]'>
         <div className='flex flex-col justify-between h-full'>
           <div className='flex flex-col gap-2'>
-            <MenuButton
-              path='/info'
-              icon={<Info size={18} />}
-            >
+            <MenuButton path='/info' icon={<Info size={18} />}>
               Quick Info
             </MenuButton>
-            <MenuButton
-              path='/questions'
-              icon={<FileQuestion size={18} />}
-            >
+            <MenuButton path='/questions' icon={<FileQuestion size={18} />}>
               Follow up questions
             </MenuButton>
             <MenuButton path='/program-events' icon={<SquarePlay size={18} />}>
@@ -101,7 +100,7 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
             <Divider className='pb-4' />
             <UnstyledButton
               className='pl-2 flex gap-2 text-sm font-semibold text-red-500 items-center'
-              onClick={SignOutUser}
+              onClick={() => signOut()}
             >
               {' '}
               <LogOut size={18} /> Sign Out

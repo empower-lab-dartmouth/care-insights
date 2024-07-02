@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }: Props) => {
     const unsubscribe = userStateListener(user => {
       if (user) {
         setCurrentUser(user);
+        navigate('/info');
       }
     });
     return unsubscribe;
