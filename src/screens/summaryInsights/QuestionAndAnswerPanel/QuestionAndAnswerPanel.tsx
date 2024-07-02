@@ -29,7 +29,15 @@ import { delayThenDo } from '../../../state/sampleData';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import SearchBox from './SearchBox';
 
-import { Title, Text, Paper, Button, TextInput, Textarea } from '@mantine/core';
+import {
+  Title,
+  Text,
+  Paper,
+  Button,
+  TextInput,
+  Textarea,
+  Card,
+} from '@mantine/core';
 import { IconThumbUp, IconX } from '@tabler/icons-react';
 
 const inputStyles = {
@@ -151,7 +159,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
   const queryModified = pageContext.insightsQuery.query !== editingQuery;
   return (
     <div className='relative min-h-[82vh]'>
-      <Paper className='mt-[30px] border border-gray-200' p='lg'>
+      <Card className='mt-[30px] border border-gray-200' shadow='xs' p='lg'>
         {editingQuery && (
           <div className='flex flex-col gap-2'>
             <Title order={5}>Question:</Title>
@@ -289,7 +297,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
             <Stack direction={'row'}></Stack>
           </>
         )}
-      </Paper>
+      </Card>
       <div className='absolute w-full bottom-0 flex flex-col gap-6'>
         <SuggestedText
           textSuggestions={pageContext.suggestedQueries}

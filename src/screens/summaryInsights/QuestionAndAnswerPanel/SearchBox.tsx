@@ -11,7 +11,7 @@ const InputBox = ({
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }) => {
   return (
-    <div className='bg-[#f9f9f9]  gap-1.5 rounded-3xl flex items-center'>
+    <div className='bg-gray-200  gap-1.5 rounded-3xl flex items-center'>
       <div className='flex items-center w-full py-2 px-4  rounded-full shadow-sm'>
         <textarea
           className='flex-1 p-2 bg-transparent border-none outline-none resize-none text-gray-700 placeholder-gray-500'
