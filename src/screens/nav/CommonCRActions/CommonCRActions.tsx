@@ -12,6 +12,8 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 import { Button, Modal, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Plus } from 'lucide-react';
+import ShareButton from '../../../components/ShareButton';
+import { useLocation } from 'react-router-dom';
 
 type CommonCRActionsProps = {
   page: 'care-insights' | 'program-events' | 'care-team';
@@ -33,6 +35,7 @@ function convertToTitleCase(input: string) {
 
 const CommonCRActions: React.FC<CommonCRActionsProps> = ({ page }) => {
   const [opened, { open, close }] = useDisclosure(false);
+  const { pathname } = useLocation();
 
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
   const handleOpen = () => {
@@ -64,7 +67,7 @@ const CommonCRActions: React.FC<CommonCRActionsProps> = ({ page }) => {
   return (
     <>
       <div className='flex justify-between flex-col lg:flex-row'>
-        <div className='flex justify-between gap-4'>
+        <div className='flex justify-between items-end gap-4'>
           <Title order={3}>{convertToTitleCase(page)}</Title>
           <div className='hidden lg:block'>
             <AddNewEventButton />
@@ -72,6 +75,11 @@ const CommonCRActions: React.FC<CommonCRActionsProps> = ({ page }) => {
         </div>
         <div className='flex items-end justify-between gap-4 pt-5 lg:p-0'>
           <AutocompleteCRSearch />
+          <ShareButton
+            title='Share Quick Info'
+            showButton={pathname === '/info'}
+          />
+
           {page === 'program-events' ? (
             <div className='block lg:hidden'>
               <AddNewEventButton />

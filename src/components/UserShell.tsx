@@ -84,7 +84,7 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
               M
             </Avatar>
             <UnstyledButton color='red' onClick={signOut}>
-              <IconLogout size={24} color='red' />
+              <IconLogout size={24} color='	#db2b29' />
             </UnstyledButton>
           </div>
         </div>

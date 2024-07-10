@@ -26,6 +26,7 @@ import { useDisclosure } from '@mantine/hooks';
 import Label from './Label';
 import dayjs from 'dayjs';
 import { tableStyles } from './tableStyles';
+import ShareButton from '../../../components/ShareButton';
 
 type CommonRowFields = {
   label: string;
@@ -126,6 +127,12 @@ const columns: TableColumn<Row>[] = [
     name: 'Caregiver',
     selector: (row: Row) => row.CGName,
     sortable: true,
+  },
+  {
+    name: 'Actions',
+    selector: (row: Row) => (
+      <ShareButton variant='subtle' title='Share Event' />
+    ),
   },
 ];
 
