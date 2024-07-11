@@ -94,10 +94,10 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
         <div className='flex flex-col justify-between h-full'>
           <div className='flex flex-col gap-2'>
             <MenuButton path='/info' icon={<Info size={18} />}>
-              Quick Info
+              Snapshot
             </MenuButton>
             <MenuButton path='/questions' icon={<FileQuestion size={18} />}>
-              Follow up questions
+            Tell me more
             </MenuButton>
             <MenuButton path='/program-events' icon={<SquarePlay size={18} />}>
               Program Events
