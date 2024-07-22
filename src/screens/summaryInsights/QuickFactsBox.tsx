@@ -29,13 +29,7 @@ import {
   Divider,
 } from '@mantine/core';
 import WYSIWYGEditor from './WYSIWYGEditor/WYSIWYGEditor';
-import {
-  MDXEditor,
-  headingsPlugin,
-  imagePlugin,
-  linkDialogPlugin,
-  listsPlugin,
-} from '@mdxeditor/editor';
+
 import { AuthContext } from '../../state/context/auth-context';
 import { QueryRecord } from '../../state/queryingTypes';
 import {
@@ -53,6 +47,8 @@ import {
 } from '@tabler/icons-react';
 import { PageState } from '../../state/types';
 import { Divide } from 'lucide-react';
+
+import '@mdxeditor/editor/style.css';
 
 export const LOADING_STRING = 'Loading...';
 
@@ -200,12 +196,15 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
               {editedResponse}
             </Text>
           ) : (
-            <Textarea
-              label='Make edits below'
-              value={editedResponse}
-              onChange={event => setEditedResponse(event.currentTarget.value)}
-              autosize
-              minRows={2}
+            <WYSIWYGEditor
+              readOnly={false}
+              markdown={editedResponse}
+              loading={false}
+              showDefaultMessage={false}
+              defaultMessage={''}
+              update={false}
+              onChange={setEditedResponse}
+              updateCallback={() => {}}
             />
           )}
         </div>

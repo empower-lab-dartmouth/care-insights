@@ -298,26 +298,28 @@ const QuestionAndAnswerPanel: React.FC = () => {
           </>
         )}
       </Card>
-      <div className='absolute w-full bottom-0 flex flex-col gap-6'>
-        <SuggestedText
-          textSuggestions={pageContext.suggestedQueries}
-          currentText={editingQuery}
-          onSelected={async option => {
-            console.log('use query string: ' + option.query);
-            setEditingQuery(option.query);
-            makeQuery(option.query);
-          }}
-          loadMoreSuggestions={() =>
-            setPageContext({
-              ...pageContext,
-              suggestedQueries: Object.values(queries),
-            })
-          }
-          hasMoreSuggestions={
-            pageContext.suggestedQueries.length !==
-            Object.values(queries).length
-          }
-        />
+      <div className='block lg:absolute w-full bottom-0 lg:flex flex-col gap-6'>
+        <div className='mt-8'>
+          <SuggestedText
+            textSuggestions={pageContext.suggestedQueries}
+            currentText={editingQuery}
+            onSelected={async option => {
+              console.log('use query string: ' + option.query);
+              setEditingQuery(option.query);
+              makeQuery(option.query);
+            }}
+            loadMoreSuggestions={() =>
+              setPageContext({
+                ...pageContext,
+                suggestedQueries: Object.values(queries),
+              })
+            }
+            hasMoreSuggestions={
+              pageContext.suggestedQueries.length !==
+              Object.values(queries).length
+            }
+          />
+        </div>
         <SearchBox
           value={editingQuery}
           onSearch={() => makeQuery(editingQuery)}
