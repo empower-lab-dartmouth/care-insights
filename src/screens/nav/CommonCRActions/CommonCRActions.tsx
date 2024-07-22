@@ -67,13 +67,13 @@ const CommonCRActions: React.FC<CommonCRActionsProps> = ({ page }) => {
   return (
     <>
       <div className='flex justify-between flex-col lg:flex-row'>
-        <div className='flex justify-between items-end gap-4'>
+        <div className='flex justify-between items-start gap-4'>
           <Title order={3}>{convertToTitleCase(page)}</Title>
           <div className='hidden lg:block'>
             <AddNewEventButton />
           </div>
         </div>
-        <div className='flex items-end justify-between gap-4 pt-5 lg:p-0'>
+        <div className='md:flex items-end justify-between gap-4 pt-5 lg:p-0'>
           <AutocompleteCRSearch />
           <ShareButton
             title='Share Quick Info'

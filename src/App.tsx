@@ -32,14 +32,19 @@ const App = () => {
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
   const [caregiverInfo, setCaregiversInfo] =
     useRecoilState(caregiversInfoState);
-  const [careRecipientInfo, setCareRecipientInfo] = useRecoilState(careRecipientsInfoState);
+  const [careRecipientInfo, setCareRecipientInfo] = useRecoilState(
+    careRecipientsInfoState
+  );
   const [___, setCareFacilityInfo] = useRecoilState(careFacilitiesState);
-
 
   useEffect(() => {
     async function fetch() {
       if (currentUser && pageState.insightsQuery.queryResponse === 'loading') {
-        await loadCareRecipientsInfo(pageState, setPageState, setCareRecipientInfo);
+        await loadCareRecipientsInfo(
+          pageState,
+          setPageState,
+          setCareRecipientInfo
+        );
         await loadPageDataFromFB(
           currentUser?.email as string,
           setPageState,
@@ -56,64 +61,62 @@ const App = () => {
       }
     }
 
-    fetch()
-  }, [currentUser])
+    fetch();
+  }, [currentUser]);
 
+  return (
+    <Routes>
+      <Route index element={<Landing />} />
+      <Route path='/' element={<Landing />} />
+      <Route path='/signup' element={<SignUp />} />
 
-return (
-  <Routes>
-    <Route index element={<Landing />} />
-    <Route path='/' element={<Landing />} />
-    <Route path='/signup' element={<SignUp />} />
+      <Route
+        path='/'
+        element={
+          <RequireAuth>
+            <SummaryInsights />
+          </RequireAuth>
+        }
+      />
 
-    <Route
-      path='/'
-      element={
-        <RequireAuth>
-          <SummaryInsights />
-        </RequireAuth>
-      }
-    />
+      <Route
+        path='/info'
+        element={
+          <RequireAuth>
+            <CareInsightsPage />
+          </RequireAuth>
+        }
+      />
 
-    <Route
-      path='/info'
-      element={
-        <RequireAuth>
-          <CareInsightsPage />
+      <Route
+        path='/questions'
+        element={
+          <RequireAuth>
+            <SummaryInsights />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path='/program-events'
+        element={
+          <RequireAuth>
+            <VideoAnalysis />
+          </RequireAuth>
+        }
+      />
 
-        </RequireAuth>
-      }
-    />
+      <Route
+        path='/care-team'
+        element={
+          <RequireAuth>
+            <CareTeam />
+          </RequireAuth>
+        }
+      />
 
-    <Route
-      path='/questions'
-      element={
-        <RequireAuth>
-          <SummaryInsights />
-        </RequireAuth>
-      }
-    />
-    <Route
-      path='/program-events'
-      element={
-        <RequireAuth>
-          <VideoAnalysis />
-        </RequireAuth>
-      }
-    />
-
-    <Route
-      path='/care-team'
-      element={
-        <RequireAuth>
-          <CareTeam />
-        </RequireAuth>
-      }
-    />
-
-    <Route path='*' element={<FallBack />} />
-  </Routes>
-);
+      <Route path='*' element={<FallBack />} />
+    </Routes>
+  );
 };
 
 const FallBack = () => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { User } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { SignOutUser, userStateListener } from '../firebase/firebase';
 import { createContext, useState, useEffect, ReactNode } from 'react';
 
@@ -18,12 +18,14 @@ export const AuthContext = createContext({
 export const AuthProvider = ({ children }: Props) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const unsubscribe = userStateListener(user => {
       if (user) {
         setCurrentUser(user);
-        navigate('/info');
+        const path = location.pathname !== '/' ? location.pathname : '/info';
+        navigate(path);
       }
     });
     return unsubscribe;

@@ -48,7 +48,7 @@ const AutocompleteUserSearch = () => {
   );
 
   return (
-    <div className='flex flex-col items-start gap-2'>
+    <div className='flex flex-col items-start gap-2 pb-4 md:pb-0'>
       <Text className='text-sm font-semibold'>Current patient: </Text>
       <Select
         placeholder='Select a care recipient'
