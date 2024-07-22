@@ -63,7 +63,7 @@ const CareInsightsPage = () => {
     <div className='min-h-screen flex flex-col'>
       <UserShell>
         <div>
-          <CommonCRActions page={'care-insights'} />
+          <CommonCRActions page={'snapshot'} />
 
           {pageContext.loadingCRInfo ? (
             <CircularProgress />

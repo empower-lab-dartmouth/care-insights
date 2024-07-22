@@ -25,6 +25,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const [showVideo, setShowVideo] = useState(false);
   return (
     <>
+    <p>{JSON.stringify(programEvent)}</p>
       <Stack
         direction='row'
         justifyContent='space-between'

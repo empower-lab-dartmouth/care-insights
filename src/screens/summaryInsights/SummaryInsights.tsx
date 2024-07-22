@@ -13,7 +13,7 @@ const SummaryInsights = () => {
   const pageContext = useRecoilValue(pageContextState);
   return (
     <UserShell>
-      <CommonCRActions page={'care-insights'} />
+      <CommonCRActions page={'tell-me-more'} />
 
       <>
         {pageContext.loadingCRInfo ? (

@@ -40,7 +40,7 @@ type HeatmapData = {
 
 type TranscriptSegment = { // On the frontend, I don't care about what the duration of a transcript segment is, we can choose something reasonable, i.e. 30-60 seconds
    text: string // Transcript text for this segment
-   startTime: number // Relative start time of this segment. Used on front end to enable clicking into a particular segment of the video.
+   startTime: number // Relative start time of this segment in milliseconds. Used on front end to enable clicking into a particular segment of the video.
 }
 
 
@@ -49,6 +49,7 @@ export type MusicProgramEventSpec = {
    videoUrl: string, // This will be the MUX link, not the Google cloud bucket url. Figuring out what this is is a TODO.
    meaningfulMoments: Record<string, MeaningfulMoment>, // A uuid -> meaningfulMoment mapping of the meaningful moments in the video. Let's require 2-6 meaningful moments per video.
    transcript: TranscriptSegment[], // Reduce the transcript to segments that have no repetition.
+   heatmap: HeatmapData
    label: string, // Use the Memcara program name, i.e. "Sights and sounds music therapy program" this should be defined in the JSON.
    date: number, // Epoc start time of the video
    uuid: string, // Generate a UUID for the event itself so we can distinguish it. use a package like this one: https://www.npmjs.com/package/uuid
@@ -58,3 +59,63 @@ export type MusicProgramEventSpec = {
    engagement: EngagementLevel, // Predict engagement level of user. Let's do a rules based approach to this for now based on meaningful moments data (i.e. are there lots of positive moments?). This is not a priority. Once we have user labels (from caregivers editing these values) we can retrain on those
    redirection: RedirectionLevel, // were there moments of redirection in the video? Let's do a rules based approach to this for now based on meaningful moments (i.e. is there a redirection moment?) This is not a priority. Once we have user labels (from caregivers editing these values) we can retrain on those
 }
+
+
+export const event: MusicProgramEventSpec =
+{
+   "CRUUID":"1efb914b-8e62-4532-b8c4-e234f47a30db",
+   "redirection":"success",
+   "heatmap": {
+      "dataPointDuration": 30,
+      "minValue": 0,
+      "maxValue": 1,
+      "factorsOfEngagement": {
+         "attention": [0, 0, 0.3, 0.3, 0.3, 0.3, 0.3, 0, 0, 0],
+         "memory-recall": [0, 0.1, 0, 0, 0, 0, 0.5, 1, 0.1, 0],
+         "positive-emotions": [0, 0, 0, 0, 0.4, 0.9, 0.9, 0, 0, 0],
+         "reaction": [0, 0, 0, 0,0, 0, 0.98, .9, 0, 0],
+         "concerning-response": [0.2, 0.3, 0, 0, 0, 0, 0, 0, 0.1],
+      }
+   },
+   transcript: [{
+      text: "Hello, let's start this music therapy session",
+      startTime: 50,
+   },
+   {
+      text: "I'm going to play a song by Elvis Presley",
+      startTime: 200,
+   },
+   {
+      text: "What a great song. I remember I used to listen to Elvis when I was a kid.",
+      startTime: 300,
+   }],
+   "meaningfulMoments":{
+      "c":{
+         "uuid":"c",
+         "startTime":1317376,
+         "type":"memory-recall",
+         "description":"Jane recalled memories of her experiences in marching band in high school."
+      },
+      "b":{
+         "uuid":"b",
+         "description":"Jane had an above average positive reaction to the song \"Autumn leaves.\"",
+         "startTime":4028006,
+         "type":"positive-music"
+      },
+      "a":{
+         "startTime":4905820,
+         "type":"redirection",
+         "uuid":"a",
+         "description":"Jane showed symptoms of wandering, was offered MMB playlist"
+      }
+   },
+   "uuid":"8336e194-224c-4809-8e9e-65dc50e76794",
+   "type":"music-event",
+   "date":10030010,
+   "description":"Memory care program event 2",
+   "label":"Sights and sounds music therapy program",
+   "CGUUID":"1efb914b-8e62-4532-b8c4-e234f47a30db",
+   "videoUrl":"https://www.googleCloudBucketurl.com",
+   "engagement":"high"
+};
+
