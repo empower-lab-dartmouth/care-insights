@@ -95,7 +95,7 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
           </div>
         </AppShell.Header>
 
-        <AppShell.Navbar p='sm' className='bg-primary z-0'>
+        <AppShell.Navbar p='sm' className='bg-primary z-inherit z-1 xl:z-0'>
           <MenuButtons />
         </AppShell.Navbar>
 
