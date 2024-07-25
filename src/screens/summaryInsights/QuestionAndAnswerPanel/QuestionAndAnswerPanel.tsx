@@ -276,9 +276,9 @@ const QuestionAndAnswerPanel: React.FC = () => {
                   setEditedResponse(pageContext.insightsQuery.queryResponse);
                 }}
               >
-                Let me just fix something...{' '}
+                Fix a problem
               </Button>
-              <Button
+              {/* <Button
                 leftSection={<ChatBubbleIcon />}
                 disabled={feedbackInputOpen}
                 variant='outline'
@@ -292,7 +292,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
                 }}
               >
                 Suggest changes...{' '}
-              </Button>
+              </Button> */}
             </div>
             <Stack direction={'row'}></Stack>
           </>

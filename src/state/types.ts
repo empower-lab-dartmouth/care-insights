@@ -92,7 +92,7 @@ export type CaregiverInfo = {
     uuid: string // this is also the email.
     dateCreated: number,
     memberOfGroupsUUID: string[]
-    adminForFacilities: string[]
+    // adminForFacilities: string[]
     deletedDate?: number
 }
 

@@ -84,9 +84,9 @@ export default function SelectFacility() {
         setFacilityInfo(newFacility);
         const updatedCaregiverInfo = {
             ...caregiverInfo[currentUser?.email as string],
-            adminForFacilities: [
-                ...caregiverInfo[currentUser?.email as string]
-                    .adminForFacilities, newFacility.uuid]
+            // adminForFacilities: [
+            //     ...caregiverInfo[currentUser?.email as string]
+            //         .adminForFacilities, newFacility.uuid]
         };
         setCaregiverInfoLocal({
             ...caregiverInfo,

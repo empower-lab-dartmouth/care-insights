@@ -19,7 +19,6 @@ import {
 import {
   loadCareGiverInfo,
   loadCareRecipientsInfo,
-  loadFacilitiesInfo,
   loadPageDataFromFB,
 } from './state/fetching';
 import CareTeam from './screens/care-team/CareTeam';
@@ -35,7 +34,6 @@ const App = () => {
   const [careRecipientInfo, setCareRecipientInfo] = useRecoilState(
     careRecipientsInfoState
   );
-  const [___, setCareFacilityInfo] = useRecoilState(careFacilitiesState);
 
   useEffect(() => {
     async function fetch() {
@@ -55,7 +53,6 @@ const App = () => {
           pageState,
           setPageState,
           setCaregiversInfo,
-          setCareFacilityInfo,
           currentUser?.email as string
         );
       }

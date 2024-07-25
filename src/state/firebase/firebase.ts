@@ -10,6 +10,8 @@ import {
 import { app, db } from './firebase-config';
 import { doc, setDoc } from 'firebase/firestore';
 import { UserLoginEvent } from '../recoil';
+import { partnerAuth } from '../partner-firebase';
+import { convertEmailToMemcaraEmail } from '../fetching-integrated';
 
 const auth = getAuth(app);
 
@@ -36,7 +38,7 @@ const logUserSignIn = async (username: string) => {
 export const signInUser = async (email: string, password: string) => {
   if (!email && !password) return;
   logUserSignIn(email);
-  return await signInWithEmailAndPassword(auth, email, password);
+  return await signInWithEmailAndPassword(partnerAuth, convertEmailToMemcaraEmail(email), password);
 };
 
 export const userStateListener = (callback: NextOrObserver<User>) => {
