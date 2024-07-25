@@ -36,6 +36,7 @@ export const loadCRData = async (
   setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>,
   careRecipientsInfo: Record<string, CareRecipientInfo>,
 ) => {
+  console.log('loading care recipient data');
   if (pageState.selectedCR !== 'NONE') {
     // Pull sepcific CR's data
     setPageContext({

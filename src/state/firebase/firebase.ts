@@ -7,13 +7,14 @@ import {
   User,
   createUserWithEmailAndPassword,
 } from 'firebase/auth';
-import { app, db } from './firebase-config';
+import { db } from './firebase-config';
 import { doc, setDoc } from 'firebase/firestore';
 import { UserLoginEvent } from '../recoil';
 import { partnerAuth } from '../partner-firebase';
 import { convertEmailToMemcaraEmail } from '../fetching-integrated';
 
-const auth = getAuth(app);
+
+// const auth = getAuth(app);
 
 const logUserSignIn = async (username: string) => {
   const d = new Date();
@@ -42,17 +43,17 @@ export const signInUser = async (email: string, password: string) => {
 };
 
 export const userStateListener = (callback: NextOrObserver<User>) => {
-  return onAuthStateChanged(auth, callback);
+  return onAuthStateChanged(partnerAuth, callback);
 };
 
-export const SignOutUser = async () => await signOut(auth);
+export const SignOutUser = async () => await signOut(partnerAuth);
 
 export const handleSignUp = async (
   email: string,
   password: string,
   name: string
 ) => {
-  return createUserWithEmailAndPassword(auth, email, password)
+  return createUserWithEmailAndPassword(partnerAuth, email, password)
     .then(async userCredential => {
       // Signed in
       const user = userCredential.user;

@@ -14,16 +14,20 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   const location = useLocation();
 
   if (!currentUser) {
+    console.log('are we getting here?', 'test', currentUser)
     // Redirect the user to the home page.
     // Please! Close the mustache {{}}
     return <Navigate to='/' state={{ from: location }} replace />;
   } else {
+    console.log('are we getting here 2?')
     if (
       currentUser.email !== null &&
       pageState.insightsQuery.queryResponse === 'loading'
     ) {
       console.log('pulling info from remote');
       loadPageDataFromFB(currentUser.email, setPageState, setQueries, careRecipientInfo);
+    } else{
+      console.log('are we getting here 3?')
     }
   }
 

@@ -38,6 +38,7 @@ const QuickInfo = ({ value, label }: { value: string; label: string }) => {
 };
 
 const CareInsightsPage = () => {
+  console.log('LOAD CARE INSIGHTS PAGE');
   const pageContext = useRecoilValue(pageContextState);
   const careRecipients = useRecoilValue(careRecipientsInfoState);
   const CRName =
