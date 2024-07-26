@@ -1,5 +1,4 @@
 import {
-  getAuth,
   onAuthStateChanged,
   signOut,
   signInWithEmailAndPassword,
@@ -12,7 +11,6 @@ import { doc, setDoc } from 'firebase/firestore';
 import { UserLoginEvent } from '../recoil';
 import { partnerAuth } from '../partner-firebase';
 import { convertEmailToMemcaraEmail } from '../fetching-integrated';
-
 
 // const auth = getAuth(app);
 

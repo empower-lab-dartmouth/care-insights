@@ -187,7 +187,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
                 setForceUpdateRequired(false);
                 f();
               }}
-              defaultMessage='Type in a question above and click "get insights"'
+              defaultMessage='Type in a question below and click the search icon'
               showDefaultMessage={
                 editingQuery !== pageContext.insightsQuery.query
               }
