@@ -47,9 +47,9 @@ const MenuButtons = () => {
         <MenuButton path='/program-events' icon={<SquarePlay size={18} />}>
           Program Events
         </MenuButton>
-        <MenuButton path='/care-team' icon={<UsersRound size={18} />}>
+        {/* <MenuButton path='/care-team' icon={<UsersRound size={18} />}>
           Care Team
-        </MenuButton>
+        </MenuButton> */}
       </div>
     </div>
   );

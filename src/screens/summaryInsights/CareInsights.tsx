@@ -38,6 +38,7 @@ const QuickInfo = ({ value, label }: { value: string; label: string }) => {
 };
 
 const CareInsightsPage = () => {
+  console.log('LOAD CARE INSIGHTS PAGE');
   const pageContext = useRecoilValue(pageContextState);
   const careRecipients = useRecoilValue(careRecipientsInfoState);
   const CRName =
@@ -84,8 +85,9 @@ const CareInsightsPage = () => {
                 />
                 <div className=''>
                   <Title order={4}>{CRName}</Title>
-                  <div className='flex-row md:flex pt-4'>
-                    {careRecipients[pageContext.selectedCR].infoBox ? (
+                  {/* <div className='flex-row md:flex pt-4'>
+                    {careRecipients[pageContext.selectedCR].infoBox &&
+                      careRecipients[pageContext.selectedCR].infoBox.length > 0 ? (
                       careRecipients[pageContext.selectedCR].infoBox.map(i => (
                         <QuickInfo
                           value={i.value}
@@ -96,7 +98,7 @@ const CareInsightsPage = () => {
                     ) : (
                       <></>
                     )}
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </Card>

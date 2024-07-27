@@ -13,8 +13,9 @@ const storage = getStorage();
 export const setRemoteProgramEvent = async (event: ProgramEvent) => {
   const programEventRef = collection(db, 'CRProgramEvents');
   try {
-    await setDoc(doc(programEventRef, event.uuid), event);
-    console.log('updated CRProgramEvents!');
+    console.log("about to update remote program events");
+    const res = await setDoc(doc(programEventRef, event.uuid), event);
+    console.log('updated CRProgramEvents!', res);
   } catch (e) {
     console.log('error writing to fb');
     console.log(e);

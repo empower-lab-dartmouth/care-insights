@@ -71,11 +71,13 @@ export default function SignUp(props: any) {
     <Modal
       opened={opened}
       onClose={closeModal}
-      title='Create new account'
+      title='Get support logging in'
       centered
     >
       <div className='flex flex-col gap-4 p-2'>
-        <TextInput
+        <p>You can use your existing Memcara CareSuite account to login. 
+          If you have trouble, please contact Christina at christina@memcara.com and our team will help you get set up right away. Thank you!</p>
+        {/* <TextInput
           label='Name'
           type='text'
           name='name'
@@ -115,7 +117,7 @@ export default function SignUp(props: any) {
           <span className='text-sm text-red-600 text-center'>{message}</span>
         )}
 
-        <Button onClick={handleSubmit}>New Account</Button>
+        <Button onClick={handleSubmit}>New Account</Button> */}
       </div>
       {/* <div className='modal'>
         <div className='landing-card'>

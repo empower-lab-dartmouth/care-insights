@@ -21,7 +21,7 @@ export const defaultQueryLoading: QueryRecord = {
 
 export const defaultQueryEmpty: QueryRecord = {
   query: '',
-  queryResponse: 'Type in a question above and click "get insights"',
+  queryResponse: 'Type in a question below and click the search icon',
   queryUUID: '',
   CGUUID: '',
   CRUUID: '',

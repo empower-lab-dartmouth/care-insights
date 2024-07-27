@@ -68,7 +68,7 @@ export default function Nav() {
               Program events
             </Stack>
           </NavLink>
-          <NavLink to='/careTeam' className='nav-item'>
+          {/* <NavLink to='/careTeam' className='nav-item'>
             <Stack
               direction='column'
               justifyContent='flex-start'
@@ -77,7 +77,7 @@ export default function Nav() {
               <Diversity1Icon />
               Care team
             </Stack>
-          </NavLink>
+          </NavLink> */}
           <div
             onClick={() => setLogoutModalOpen(true)}
             style={{
