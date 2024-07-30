@@ -23,6 +23,8 @@ import {
 } from './state/fetching';
 import CareTeam from './screens/care-team/CareTeam';
 import CareInsightsPage from './screens/summaryInsights/CareInsights';
+import { CookiesProvider } from 'react-cookie';
+
 
 const App = () => {
   const { currentUser } = useContext(AuthContext);
@@ -62,57 +64,59 @@ const App = () => {
   }, [currentUser]);
 
   return (
-    <Routes>
-      <Route index element={<Landing />} />
-      <Route path='/' element={<Landing />} />
-      <Route path='/signup' element={<SignUp />} />
+    <CookiesProvider defaultSetOptions={{ path: '/' }}>
+      <Routes>
+        <Route index element={<Landing />} />
+        <Route path='/' element={<Landing />} />
+        <Route path='/signup' element={<SignUp />} />
 
-      <Route
-        path='/'
-        element={
-          <RequireAuth>
-            <SummaryInsights />
-          </RequireAuth>
-        }
-      />
+        <Route
+          path='/'
+          element={
+            <RequireAuth>
+              <SummaryInsights />
+            </RequireAuth>
+          }
+        />
 
-      <Route
-        path='/info'
-        element={
-          <RequireAuth>
-            <CareInsightsPage />
-          </RequireAuth>
-        }
-      />
+        <Route
+          path='/info'
+          element={
+            <RequireAuth>
+              <CareInsightsPage />
+            </RequireAuth>
+          }
+        />
 
-      <Route
-        path='/questions'
-        element={
-          <RequireAuth>
-            <SummaryInsights />
-          </RequireAuth>
-        }
-      />
-      <Route
-        path='/program-events'
-        element={
-          <RequireAuth>
-            <VideoAnalysis />
-          </RequireAuth>
-        }
-      />
+        <Route
+          path='/questions'
+          element={
+            <RequireAuth>
+              <SummaryInsights />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path='/program-events'
+          element={
+            <RequireAuth>
+              <VideoAnalysis />
+            </RequireAuth>
+          }
+        />
 
-      <Route
-        path='/care-team'
-        element={
-          <RequireAuth>
-            <CareTeam />
-          </RequireAuth>
-        }
-      />
+        <Route
+          path='/care-team'
+          element={
+            <RequireAuth>
+              <CareTeam />
+            </RequireAuth>
+          }
+        />
 
-      <Route path='*' element={<FallBack />} />
-    </Routes>
+        <Route path='*' element={<FallBack />} />
+      </Routes>
+    </CookiesProvider>
   );
 };
 

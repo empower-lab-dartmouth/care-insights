@@ -23,6 +23,7 @@ import { QueryRecord } from './queryingTypes';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { askQuery, respondToApprovalFeedback } from './querying';
 import { loadCareRecipientsInfoFromCaresuite } from './fetching-integrated';
+import { setRemoteQueryRecord } from './setting';
 
 // export function getSelectedCRProgramEvents(v: string) {
 //     return fetchSampleProgramData(v);
@@ -38,6 +39,7 @@ export const loadCRData = async (
 ) => {
   console.log('loading care recipient data');
   if (pageState.selectedCR !== 'NONE') {
+    console.log('Load care recipient data 1', pageState.selectedCR);
     // Pull sepcific CR's data
     setPageContext({
       ...pageState,
@@ -71,8 +73,10 @@ export const loadCRData = async (
       loadingCRInfo: false,
     };
     setPageContext(updatedPageState);
-    loadQueriesForCR(updatedPageState, careRecipientsInfo, setPageContext, setLocalQueries);
+    console.log('loading queries for !', updatedPageState);
+    await loadQueriesForCR(updatedPageState, careRecipientsInfo, setPageContext, setLocalQueries);
   } else {
+    console.log('pull all cr data');
     // Pull all CRs' data
     setPageContext({
       ...pageState,
@@ -152,13 +156,21 @@ export const generateQuickFactsQueries = async (
       pageState.username,
       pageState.selectedCR,
       queries,
-      false)]).then((res) => setLocalQueries({
+      false)]).then((res) => {
+        setLocalQueries({
         ...queries,
         [res[0].query]: res[0],
         [res[1].query]: res[1],
         [res[2].query]: res[2],
         [res[3].query]: res[3]
-      }));
+      });
+      setRemoteQueryRecord(res[0]);
+      setRemoteQueryRecord(res[1]);
+      setRemoteQueryRecord(res[2]);
+      setRemoteQueryRecord(res[3]);
+    }
+    );
+      
 }
 
 export const loadQueriesForCR = async (
@@ -167,11 +179,13 @@ export const loadQueriesForCR = async (
   setPageContext: SetterOrUpdater<PageState>,
   setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>
 ) => {
+  console.log("pull CR query data 1");
   // Pull all CRs' data
   setPageContext({
     ...pageState,
     loadingCRInfo: true,
   });
+  console.log('query for queries by: ', pageState.selectedCR);
   const q = query(
     collection(db, `QueryRecord`),
     where('CRUUID', '==', pageState.selectedCR)
@@ -190,6 +204,7 @@ export const loadQueriesForCR = async (
   }
   const CRName = careRecipientsInfo[pageState.selectedCR].name;
   if (querySnapshot.empty) {
+    console.log("pull CR query data 2");
     setLocalQueries({});
     setPageContext({
       ...pageState,
@@ -197,7 +212,18 @@ export const loadQueriesForCR = async (
       insightsQuery: defaultQueryEmpty,
       loadingCRInfo: false,
     });
+    await generateQuickFactsQueries(pageState, {}, setLocalQueries);
+    const updatedPageContext = {
+      ...pageState,
+      doQuery: sampleDoQuery(CRName),
+      avoidQuery: sampleAvoidQuery(CRName),
+      redirectionQuery: sampleRedirectQuery(CRName),
+      symptomsQuery: sampleSymptomsQuery(CRName),
+      loadingCRInfo: false,
+    };
+    setPageContext(updatedPageContext);
   } else {
+    console.log("pull CR query data 3");
     const docs: QueryRecord[] = querySnapshot.docs
       .map((doc: any) => {
         const d = doc.data() as any as QueryRecord;
@@ -223,7 +249,14 @@ export const loadQueriesForCR = async (
       insightsQuery: docs[0],
       loadingCRInfo: false,
     };
-    await generateQuickFactsQueries(updatedPageContext, queries, setLocalQueries);
+    console.log('LOAD queries for care recipient');
+    if (!(docs.map((d) => d.query).includes(updatedPageContext.doQuery) && 
+    docs.map((d) => d.query).includes(updatedPageContext.avoidQuery) &&
+    docs.map((d) => d.query).includes(updatedPageContext.redirectionQuery) &&
+    docs.map((d) => d.query).includes(updatedPageContext.symptomsQuery))) {
+       console.log("REGEN QUICK FACTS");
+      await generateQuickFactsQueries(updatedPageContext, queries, setLocalQueries);
+    }
     setPageContext(updatedPageContext);
   }
 };
