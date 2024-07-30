@@ -156,7 +156,7 @@ export const generateQuickFactsQueries = async (
       pageState.username,
       pageState.selectedCR,
       queries,
-      false)]).then((res) => {
+      false)]).then(async (res) => {
         setLocalQueries({
         ...queries,
         [res[0].query]: res[0],
@@ -164,12 +164,13 @@ export const generateQuickFactsQueries = async (
         [res[2].query]: res[2],
         [res[3].query]: res[3]
       });
-      setRemoteQueryRecord(res[0]);
-      setRemoteQueryRecord(res[1]);
-      setRemoteQueryRecord(res[2]);
-      setRemoteQueryRecord(res[3]);
-    }
-    );
+      await setRemoteQueryRecord(res[0]);
+      await setRemoteQueryRecord(res[1]);
+      await setRemoteQueryRecord(res[2]);
+      await setRemoteQueryRecord(res[3]);
+    }).then((res) => {
+      location.reload();
+    });
       
 }
 

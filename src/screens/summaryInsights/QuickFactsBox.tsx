@@ -172,7 +172,7 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
                   disabled={editingDirectly}
                   onClick={() => {
                     setEditingDirectly(true);
-                    setEditedResponse(pageContext.insightsQuery.queryResponse);
+                    // setEditedResponse(pageContext.insightsQuery.queryResponse);
                   }}
                   leftSection={<IconEdit size={14} />}
                 >
@@ -186,15 +186,25 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
 
         <div className='px-6 pt-2 pb-8'>
           {!editingDirectly ? (
-            <Text
-              style={{
-                'white-space': 'pre-wrap',
-              }}
-              fz='sm'
-              lh='md'
-            >
-              {editedResponse}
-            </Text>
+            <WYSIWYGEditor
+            readOnly={true}
+            markdown={editedResponse}
+            loading={false}
+            showDefaultMessage={false}
+            defaultMessage={''}
+            update={false}
+            onChange={(t: string) => {}}
+            updateCallback={() => {}}
+          />
+            // <Text
+            //   style={{
+            //     'white-space': 'pre-wrap',
+            //   }}
+            //   fz='sm'
+            //   lh='md'
+            // >
+            //   {editedResponse}
+            // </Text>
           ) : (
             <WYSIWYGEditor
               readOnly={false}

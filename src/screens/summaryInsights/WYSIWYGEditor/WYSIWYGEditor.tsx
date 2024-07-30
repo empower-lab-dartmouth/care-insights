@@ -18,6 +18,8 @@ import {
 } from '@mdxeditor/editor';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Typography } from '@mui/material';
+import Markdown from 'react-markdown'
+
 // import { uploadFile } from '../../../state/setting';
 
 async function imageUploadHandler(image: File) {
@@ -35,6 +37,14 @@ type WYSIWYGEditorProps = {
   update: boolean;
   updateCallback: (forceUpdate: React.DispatchWithoutAction) => void;
 };
+
+const cleanLink = (t: string) => t.replaceAll('-', '').replaceAll('*', '').replaceAll(' ', '_').trim();
+
+const wrapAsLink = (text: string) => {
+  const newLineSplitText = text.split(/\n/);
+  const wrappedBullets = newLineSplitText.map((t) => `[${t}](https://www.google.com/${cleanLink(t)})`);
+  return wrappedBullets.join('\n\n\n');
+}
 
 const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   readOnly,
@@ -63,20 +73,7 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   }
   if (readOnly) {
     return (
-      <MDXEditor
-        markdown={markdown}
-        readOnly={true}
-        contentEditableClassName='prose'
-        plugins={[
-          headingsPlugin(),
-          listsPlugin(),
-          linkDialogPlugin(),
-          imagePlugin({ imageUploadHandler }),
-          toolbarPlugin({
-            toolbarContents: () => <></>,
-          }),
-        ]}
-      />
+      <Markdown>{wrapAsLink(markdown)}</Markdown>
     );
   }
   return (
