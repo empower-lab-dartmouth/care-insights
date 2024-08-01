@@ -8,11 +8,12 @@ import RequireAuth from './state/context/require-auth';
 import VideoAnalysis from './screens/videoAnalysis/VideoAnalysis';
 import SummaryInsights from './screens/summaryInsights/SummaryInsights';
 import Landing from './screens/landing/landing';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import {
   careFacilitiesState,
   careRecipientsInfoState,
   caregiversInfoState,
+  onOpenLoadingState,
   pageContextState,
   queriesForCurrentCGState,
   searchState,
@@ -27,6 +28,8 @@ import {
 import CareTeam from './screens/care-team/CareTeam';
 import CareInsightsPage from './screens/summaryInsights/CareInsights';
 import { CookiesProvider } from 'react-cookie';
+import CircularProgress from '@mui/material/CircularProgress';
+import UserShell from './components/UserShell';
 
 
 const App = () => {
@@ -40,24 +43,29 @@ const App = () => {
     careRecipientsInfoState
   );
   const [searchURL, setSearchURL] = useRecoilState(searchState);
+  const [loading, setLoading] = useRecoilState(onOpenLoadingState);
 
   useEffect(() => {
     async function fetch() {
       if (currentUser && pageState.insightsQuery.queryResponse === 'loading') {
+        setLoading(true);
         await loadCareRecipientsInfo(
           pageState,
           setPageState,
           setCareRecipientInfo
         );
-        await fetchOnOpen(
-          pageState,
-          setPageState,
-          queries,
-          setQueries,
-          searchURL,
-          currentUser?.email as string,
-          careRecipientInfo,
-        );
+        // const q = await fetchOnOpen(
+        //   pageState,
+        //   setPageState,
+        //   queries,
+        //   setQueries,
+        //   searchURL,
+        //   currentUser?.email as string,
+        //   careRecipientInfo,
+        //   setSearchURL,
+        //   setLoading
+        // );
+          setLoading(false);
       }
     }
 
@@ -75,7 +83,9 @@ const App = () => {
           path='/'
           element={
             <RequireAuth>
-              <SummaryInsights />
+              {loading ? <UserShell>
+                <CircularProgress />
+              </UserShell> : <SummaryInsights />}
             </RequireAuth>
           }
         />
@@ -84,7 +94,9 @@ const App = () => {
           path='/info'
           element={
             <RequireAuth>
-              <CareInsightsPage />
+              {loading ? <UserShell>
+                <CircularProgress />
+              </UserShell> : <CareInsightsPage />}
             </RequireAuth>
           }
         />
@@ -93,7 +105,9 @@ const App = () => {
           path='/questions'
           element={
             <RequireAuth>
-              <SummaryInsights />
+              {loading ? <UserShell>
+                <CircularProgress />
+              </UserShell> : <SummaryInsights />}
             </RequireAuth>
           }
         />
@@ -101,7 +115,9 @@ const App = () => {
           path='/program-events'
           element={
             <RequireAuth>
-              <VideoAnalysis />
+              {loading ? <UserShell>
+                <CircularProgress />
+              </UserShell> : <VideoAnalysis />}
             </RequireAuth>
           }
         />

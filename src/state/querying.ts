@@ -130,7 +130,8 @@ export async function askQuery(
         ${inputQuery}. Answer the question. Your response
         should use information from past responses,
         namely: ${relevantQueryResponses}. You can also draw on the following records you have, ${relevantRecords} 
-        Format your response as a short list of bullet points, where each bullet is a short sentence or phrase.`;
+        Format your response as a short list of bullet points, 
+        where each bullet is a short sentence or phrase (no more than eight words).`;
 
   const queryResponse = await openai.chat.completions.create({
     messages: [{ role: 'user', content: prompt }],

@@ -51,6 +51,7 @@ import { PageState } from '../../state/types';
 import { Divide } from 'lucide-react';
 
 import '@mdxeditor/editor/style.css';
+import { sampleAvoidQuery, sampleDoQuery, sampleRedirectQuery, sampleSymptomsQuery } from '../../state/fetching';
 
 export const LOADING_STRING = 'Loading...';
 
@@ -89,14 +90,16 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
   const [editingDirectly, setEditingDirectly] = useState(false);
+  const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
+  const CRName = careRecipientsInfo[pageContext.selectedCR].name;
   const queryRecordQuery =
     type === 'do'
-      ? pageContext.doQuery
+      ? sampleDoQuery(CRName)
       : type === 'avoid'
-      ? pageContext.avoidQuery
+      ? sampleAvoidQuery(CRName)
       : type === 'redirection'
-      ? pageContext.redirectionQuery
-      : pageContext.symptomsQuery;
+      ? sampleRedirectQuery(CRName)
+      : sampleSymptomsQuery(CRName);
   const queryRecord = queries[queryRecordQuery];
   console.log(queries);
   console.log(queryRecordQuery);
@@ -162,7 +165,7 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
                   className='text-green-600 hover:text-green-600 border-green-600'
                   size='xs'
                 >
-                  This is helpful
+                  {editingDirectly ? 'Save' : 'This is helpful'}
                 </Button>
                 }
 
@@ -193,7 +196,7 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
                   }}
                   leftSection={<IconEdit size={14} />}
                 >
-                  Make changes
+                  Fix a problem
                 </Button>
               </Group>
             </Stack>
@@ -246,17 +249,20 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = props => {
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
+  const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
+  const CRName = careRecipientsInfo[pageContext.selectedCR].name;
   const queryRecordQuery =
     type === 'do'
-      ? pageContext.doQuery
+      ? sampleDoQuery(CRName)
       : type === 'avoid'
-      ? pageContext.avoidQuery
+      ? sampleAvoidQuery(CRName)
       : type === 'redirection'
-      ? pageContext.redirectionQuery
-      : pageContext.symptomsQuery;
+      ? sampleRedirectQuery(CRName)
+      : sampleSymptomsQuery(CRName);
   return (
     <>
-      {queries[queryRecordQuery] !== undefined ? (
+      {queries[queryRecordQuery] !== undefined
+      ? (
         <QuickFactsBoxInner type={type} />
       ) : (
         <CircularProgress />

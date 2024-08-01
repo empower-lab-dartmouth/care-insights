@@ -75,6 +75,11 @@ export const pageContextState = selector<PageState>({
   }
 });
 
+export const onOpenLoadingState = atom<boolean>({
+  key: 'on-open-loading',
+  default: true,
+});
+
 export const pageContextStateFields = atom<PageState>({
   key: 'page-state-fields',
   default: {

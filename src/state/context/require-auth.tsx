@@ -4,7 +4,7 @@ import { AuthContext } from './auth-context';
 import { Navigate, useLocation } from 'react-router-dom';
 import { fetchOnOpen, loadPageDataFromFB } from '../fetching';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { careRecipientsInfoState, pageContextState, queriesForCurrentCGState, searchState } from '../recoil';
+import { careRecipientsInfoState, onOpenLoadingState, pageContextState, queriesForCurrentCGState, searchState } from '../recoil';
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const { currentUser } = useContext(AuthContext);
@@ -14,7 +14,7 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   const location = useLocation();
   const { search } = useLocation();
   const [searchURL, setSearchURL] = useRecoilState(searchState);
-
+  const [_, setLoading] = useRecoilState(onOpenLoadingState);
 
   if (!currentUser) {
     // Redirect the user to the home page.
@@ -35,9 +35,11 @@ function RequireAuth({ children }: { children: JSX.Element }) {
         searchURL,
         currentUser?.email as string,
         careRecipientInfo,
+        setSearchURL,
+        setLoading
       );
     } else{
-      console.log('No need to load data', currentUser.email, pageState.insightsQuery.queryResponse);
+      // console.log('No need to load data', currentUser.email, pageState.insightsQuery.queryResponse);
     }
   }
 
