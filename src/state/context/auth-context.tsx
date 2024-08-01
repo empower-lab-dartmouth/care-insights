@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }: Props) => {
     const unsubscribe = userStateListener(user => {
       if (user) {
         setCurrentUser(user);
+        console.log('!!!!!!navigate');
         const path = location.pathname !== '/' ? location.pathname : '/info';
         navigate(`${path}${search}`);
       }

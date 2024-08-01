@@ -19,6 +19,9 @@ import {
 import CircularProgress from '@mui/material/CircularProgress';
 import { Typography } from '@mui/material';
 import Markdown from 'react-markdown'
+import { useLocation } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { pageContextState } from '../../../state/recoil';
 
 // import { uploadFile } from '../../../state/setting';
 
@@ -38,11 +41,15 @@ type WYSIWYGEditorProps = {
   updateCallback: (forceUpdate: React.DispatchWithoutAction) => void;
 };
 
-const cleanLink = (t: string) => t.replaceAll('-', '').replaceAll('*', '').replaceAll(' ', '_').trim();
+const cleanLink = (t: string) => t.replaceAll('-', '').replaceAll('*', '').replaceAll(' ', '%20').trim();
 
-const wrapAsLink = (text: string) => {
+const wrapAsLink = (text: string, pathname: string, currentCR: string) => {
   const newLineSplitText = text.split(/\n/);
-  const wrappedBullets = newLineSplitText.map((t) => `[${t}](https://www.google.com/${cleanLink(t)})`);
+  const baseURLLocal = 'http://localhost:3000/';
+  const path = 'questions/'
+  const promptPreface = 'Tell me more about: '.replaceAll(' ', '%20');
+  const prompt = (t: string) => promptPreface + cleanLink(t);
+  const wrappedBullets = newLineSplitText.map((t) => `[${t}](${baseURLLocal}${path}?cr="${currentCR}"&q="${prompt(t)}")`);
   return wrappedBullets.join('\n\n\n');
 }
 
@@ -62,6 +69,8 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   // If there are problems with this, try replacing mdx or using the
   // ref hook.
   const [, forceUpdate] = useReducer(x => x + 1, 0);
+  const {pathname} = useLocation();
+  const pageState = useRecoilValue(pageContextState);
   if (update) {
     updateCallback(forceUpdate);
   }
@@ -73,7 +82,7 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   }
   if (readOnly) {
     return (
-      <Markdown>{wrapAsLink(markdown)}</Markdown>
+      <Markdown>{wrapAsLink(markdown, pathname, pageState.selectedCR)}</Markdown>
     );
   }
   return (

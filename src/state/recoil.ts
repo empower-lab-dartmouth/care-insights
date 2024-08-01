@@ -89,6 +89,12 @@ export const selectedCRState = atom<string>({
   effects: [syncEffect({ refine: string() })],
 });
 
+export const searchState = atom<string>({
+  key: 'q',
+  default: '',
+  effects: [syncEffect({ refine: string() })],
+});
+
 export const careFacilitiesState = atom<Record<string,
   FacilityInfo>>({
     key: 'facilityInfo',

@@ -46,8 +46,8 @@ export async function getRelevantQueries(
     }
   }
 
-  console.log('here are the relevant queries:');
-  console.log(relevantQueries);
+  // console.log('here are the relevant queries:');
+  // console.log(relevantQueries);
   return relevantQueries;
 }
 
@@ -83,8 +83,8 @@ export async function getRelevantRecords(
     }
   }
 
-  console.log('here are the relevant events:');
-  console.log(relevantEvents);
+  // console.log('here are the relevant events:');
+  // console.log(relevantEvents);
   return relevantEvents;
 }
 
@@ -98,7 +98,7 @@ export async function askQuery(
   allCRQueries: Record<string, QueryRecord>,
   overwritePrior: boolean,
 ) {
-  console.log(inputQuery);
+  console.log('input query: ', inputQuery);
   const existingQueryMatchesExactly = allCRQueries[inputQuery];
   if (existingQueryMatchesExactly !== undefined) {
     console.log('queries match exactly');
@@ -120,8 +120,8 @@ export async function askQuery(
     relevantQueryResponses.push(q.queryResponse);
   }
 
-  console.log('here are the responses to relevant queries:');
-  console.log(relevantQueryResponses);
+  // console.log('here are the responses to relevant queries:');
+  // console.log(relevantQueryResponses);
 
   const fakeName = CRUUID;
   const prompt = `you are an expert memory loss therapist

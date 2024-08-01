@@ -73,7 +73,6 @@ export const loadCRData = async (
       loadingCRInfo: false,
     };
     setPageContext(updatedPageState);
-    console.log('loading queries for !', updatedPageState);
     await loadQueriesForCR(updatedPageState, careRecipientsInfo, setPageContext, setLocalQueries);
   } else {
     console.log('pull all cr data');
@@ -136,28 +135,28 @@ export const generateQuickFactsQueries = async (
     pageState.selectedCR,
     queries,
     false),
-    askQuery(pageState.doQuery,
-      handleLocalQueryResponse,
-      pageState.selectedCRProgramEvents,
-      pageState.username,
-      pageState.selectedCR,
-      queries,
-      false),
-    askQuery(pageState.redirectionQuery,
-      handleLocalQueryResponse,
-      pageState.selectedCRProgramEvents,
-      pageState.username,
-      pageState.selectedCR,
-      queries,
-      false),
-    askQuery(pageState.symptomsQuery,
-      handleLocalQueryResponse,
-      pageState.selectedCRProgramEvents,
-      pageState.username,
-      pageState.selectedCR,
-      queries,
-      false)]).then(async (res) => {
-        setLocalQueries({
+  askQuery(pageState.doQuery,
+    handleLocalQueryResponse,
+    pageState.selectedCRProgramEvents,
+    pageState.username,
+    pageState.selectedCR,
+    queries,
+    false),
+  askQuery(pageState.redirectionQuery,
+    handleLocalQueryResponse,
+    pageState.selectedCRProgramEvents,
+    pageState.username,
+    pageState.selectedCR,
+    queries,
+    false),
+  askQuery(pageState.symptomsQuery,
+    handleLocalQueryResponse,
+    pageState.selectedCRProgramEvents,
+    pageState.username,
+    pageState.selectedCR,
+    queries,
+    false)]).then(async (res) => {
+      setLocalQueries({
         ...queries,
         [res[0].query]: res[0],
         [res[1].query]: res[1],
@@ -169,7 +168,7 @@ export const generateQuickFactsQueries = async (
       await setRemoteQueryRecord(res[2]);
       await setRemoteQueryRecord(res[3]);
     });
-      
+
 }
 
 export const loadQueriesForCR = async (
@@ -249,11 +248,11 @@ export const loadQueriesForCR = async (
       loadingCRInfo: false,
     };
     console.log('LOAD queries for care recipient');
-    if (!(docs.map((d) => d.query).includes(updatedPageContext.doQuery) && 
-    docs.map((d) => d.query).includes(updatedPageContext.avoidQuery) &&
-    docs.map((d) => d.query).includes(updatedPageContext.redirectionQuery) &&
-    docs.map((d) => d.query).includes(updatedPageContext.symptomsQuery))) {
-       console.log("REGEN QUICK FACTS");
+    if (!(docs.map((d) => d.query).includes(updatedPageContext.doQuery) &&
+      docs.map((d) => d.query).includes(updatedPageContext.avoidQuery) &&
+      docs.map((d) => d.query).includes(updatedPageContext.redirectionQuery) &&
+      docs.map((d) => d.query).includes(updatedPageContext.symptomsQuery))) {
+      console.log("REGEN QUICK FACTS");
       await generateQuickFactsQueries(updatedPageContext, queries, setLocalQueries);
     }
     setPageContext(updatedPageContext);
@@ -265,7 +264,7 @@ export const loadPageDataFromFB = async (
   setPageContext: SetterOrUpdater<PageState>,
   setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>,
   careRecipientsInfo: Record<string, CareRecipientInfo>,
-  pageContext: PageState
+  pageContext: PageState,
 ) => {
   console.log('loading session data from fb');
   const ref = doc(db, 'PageContext', username);
@@ -291,6 +290,58 @@ export const loadPageDataFromFB = async (
     );
   }
 };
+
+export const loadQueryFromURL = async (
+  pageState: PageState,
+  setPageContext: SetterOrUpdater<PageState>,
+  queries: Record<string, QueryRecord>,
+  setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>,
+  searchQuery: string,
+) => {
+  if (searchQuery !== '') {
+    const handleLocalQueryResponse = (q: QueryRecord) => { };
+    const query = await askQuery(searchQuery,
+      handleLocalQueryResponse,
+      pageState.selectedCRProgramEvents,
+      pageState.username,
+      pageState.selectedCR,
+      queries,
+      false);
+    setLocalQueries({
+      ...queries,
+      [searchQuery]: query,
+    });
+    setPageContext({
+      ...pageState,
+      insightsQuery: query,
+    });
+  }
+}
+
+export const fetchOnOpen = async (
+  pageState: PageState,
+  setPageContext: SetterOrUpdater<PageState>,
+  queries: Record<string, QueryRecord>,
+  setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>,
+  searchQuery: string,
+  username: string,
+  careRecipientsInfo: Record<string, CareRecipientInfo>,
+) => {
+  await loadPageDataFromFB(
+    username,
+    setPageContext,
+    setLocalQueries,
+    careRecipientsInfo,
+    pageState
+  );
+  await loadQueryFromURL(
+    pageState,
+    setPageContext,
+    queries,
+    setLocalQueries,
+    searchQuery
+  );
+}
 
 export async function downloadFile(
   path: string,
@@ -389,19 +440,19 @@ export const loadCareRecipientsInfo = async (
   //       return d;
   //     })
   //     .sort((a, b) => (b.dateCreated as number) - (a.dateCreated as number));
-    // const temp: Record<string, CareRecipientInfo> = {};
-    // const careRecipients: Record<string, CareRecipientInfo> = docs.reduce(
-    //   (acc, curr) => ({
-    //     ...acc,
-    //     [curr.uuid]: curr,
-    //   }),
-    //   temp
-    // );
-    // setCareRecipientInfo(careRecipients);
-    // setPageContext({
-    //   ...pageState,
-    //   loadingCRInfo: false,
-    // });
+  // const temp: Record<string, CareRecipientInfo> = {};
+  // const careRecipients: Record<string, CareRecipientInfo> = docs.reduce(
+  //   (acc, curr) => ({
+  //     ...acc,
+  //     [curr.uuid]: curr,
+  //   }),
+  //   temp
+  // );
+  // setCareRecipientInfo(careRecipients);
+  // setPageContext({
+  //   ...pageState,
+  //   loadingCRInfo: false,
+  // });
   // }
 };
 

@@ -15,11 +15,14 @@ import {
   caregiversInfoState,
   pageContextState,
   queriesForCurrentCGState,
+  searchState,
 } from './state/recoil';
 import {
+  fetchOnOpen,
   loadCareGiverInfo,
   loadCareRecipientsInfo,
   loadPageDataFromFB,
+  loadQueryFromURL,
 } from './state/fetching';
 import CareTeam from './screens/care-team/CareTeam';
 import CareInsightsPage from './screens/summaryInsights/CareInsights';
@@ -36,6 +39,7 @@ const App = () => {
   const [careRecipientInfo, setCareRecipientInfo] = useRecoilState(
     careRecipientsInfoState
   );
+  const [searchURL, setSearchURL] = useRecoilState(searchState);
 
   useEffect(() => {
     async function fetch() {
@@ -45,17 +49,14 @@ const App = () => {
           setPageState,
           setCareRecipientInfo
         );
-        await loadPageDataFromFB(
-          currentUser?.email as string,
-          setPageState,
-          setQueries,
-          careRecipientInfo
-        );
-        await loadCareGiverInfo(
+        await fetchOnOpen(
           pageState,
           setPageState,
-          setCaregiversInfo,
-          currentUser?.email as string
+          queries,
+          setQueries,
+          searchURL,
+          currentUser?.email as string,
+          careRecipientInfo,
         );
       }
     }

@@ -2,9 +2,9 @@ import React from 'react';
 import { useContext } from 'react';
 import { AuthContext } from './auth-context';
 import { Navigate, useLocation } from 'react-router-dom';
-import { loadPageDataFromFB } from '../fetching';
+import { fetchOnOpen, loadPageDataFromFB } from '../fetching';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { careRecipientsInfoState, pageContextState, queriesForCurrentCGState } from '../recoil';
+import { careRecipientsInfoState, pageContextState, queriesForCurrentCGState, searchState } from '../recoil';
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const { currentUser } = useContext(AuthContext);
@@ -13,23 +13,31 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   const careRecipientInfo = useRecoilValue(careRecipientsInfoState);
   const location = useLocation();
   const { search } = useLocation();
+  const [searchURL, setSearchURL] = useRecoilState(searchState);
 
 
   if (!currentUser) {
-    console.log('are we getting here?', 'test', currentUser)
     // Redirect the user to the home page.
     // Please! Close the mustache {{}}
     return <Navigate to={`/${search}`} state={{ from: location }} replace />;
   } else {
-    console.log('are we getting here 2?')
     if (
       currentUser.email !== null &&
       pageState.insightsQuery.queryResponse === 'loading'
     ) {
       console.log('pulling info from remote');
-      loadPageDataFromFB(currentUser.email, setPageState, setQueries, careRecipientInfo, pageState);
+      // loadPageDataFromFB(currentUser.email, setPageState, setQueries, careRecipientInfo, pageState);
+      fetchOnOpen(
+        pageState,
+        setPageState,
+        queries,
+        setQueries,
+        searchURL,
+        currentUser?.email as string,
+        careRecipientInfo,
+      );
     } else{
-      console.log('are we getting here 3?')
+      console.log('No need to load data', currentUser.email, pageState.insightsQuery.queryResponse);
     }
   }
 

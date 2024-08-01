@@ -55,8 +55,8 @@ function Home() {
 
       if (userCredential) {
         resetFormFields();
-        console.log('navigate to INFO');
-        navigate(`/info${search}`);
+        // console.log('navigate to INFO');
+        // navigate(`/info${search}`);
       } else {
         // setError('Sign in failed');
         alert('User Sign In Failed');
