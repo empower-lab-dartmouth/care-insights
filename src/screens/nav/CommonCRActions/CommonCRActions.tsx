@@ -5,6 +5,8 @@ import AutocompleteCRSearch from '../AutocompleteCRSearch/AutocompleteCRSearch';
 import { NO_CR_SELECTED, pageContextState } from '../../../state/recoil';
 import { useRecoilState } from 'recoil';
 import EditNoteIcon from '@mui/icons-material/EditNote';
+
+
 // import { setRemoteProgramEvent } from '../../../state/setting';
 // import { newMusicProgramEvent } from '../../../state/sampleData';
 // import { setRemoteProgramEvent } from '../../../state/setting';
@@ -76,7 +78,7 @@ const CommonCRActions: React.FC<CommonCRActionsProps> = ({ page }) => {
         <div className='md:flex items-end justify-between gap-4 pt-5 lg:p-0'>
           <AutocompleteCRSearch />
           <ShareButton
-            title='Share Quick Info'
+            title='QR code for this page'
             showButton={pathname === '/info'}
           />
 
