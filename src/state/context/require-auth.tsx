@@ -12,12 +12,14 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
   const careRecipientInfo = useRecoilValue(careRecipientsInfoState);
   const location = useLocation();
+  const { search } = useLocation();
+
 
   if (!currentUser) {
     console.log('are we getting here?', 'test', currentUser)
     // Redirect the user to the home page.
     // Please! Close the mustache {{}}
-    return <Navigate to='/' state={{ from: location }} replace />;
+    return <Navigate to={`/${search}`} state={{ from: location }} replace />;
   } else {
     console.log('are we getting here 2?')
     if (

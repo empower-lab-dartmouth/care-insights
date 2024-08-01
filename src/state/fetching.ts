@@ -168,8 +168,6 @@ export const generateQuickFactsQueries = async (
       await setRemoteQueryRecord(res[1]);
       await setRemoteQueryRecord(res[2]);
       await setRemoteQueryRecord(res[3]);
-    }).then((res) => {
-      location.reload();
     });
       
 }
@@ -267,6 +265,7 @@ export const loadPageDataFromFB = async (
   setPageContext: SetterOrUpdater<PageState>,
   setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>,
   careRecipientsInfo: Record<string, CareRecipientInfo>,
+  pageContext: PageState
 ) => {
   console.log('loading session data from fb');
   const ref = doc(db, 'PageContext', username);
@@ -274,8 +273,13 @@ export const loadPageDataFromFB = async (
   if (docSnap.exists()) {
     console.log('past session exists');
     const data = docSnap.data() as PageState;
-    setPageContext(data as PageState);
-    await loadCRData(data, setPageContext, setLocalQueries, careRecipientsInfo);
+    const selectedCR = pageContext.selectedCR === 'NONE' ? data.selectedCR : pageContext.selectedCR;
+    const newPageState: PageState = {
+      ...data,
+      selectedCR
+    };
+    setPageContext(newPageState);
+    await loadCRData(newPageState, setPageContext, setLocalQueries, careRecipientsInfo);
   } else {
     console.log('past session does not exits');
     setPageContext(samplePageState(username));

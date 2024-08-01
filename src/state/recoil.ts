@@ -1,10 +1,12 @@
-import { atom } from 'recoil';
+import { DefaultValue, atom, selector } from 'recoil';
 import {
   PageState, CGInfo,
   CaregiverInfo, CareGroupInfo, CareRecipientInfo,
   FacilityInfo
 } from './types';
 import { QueryRecord } from './queryingTypes';
+import { syncEffect } from 'recoil-sync';
+import { string } from '@recoiljs/refine';
 
 export const trackingTimeUntilNextPush = atom<number>({
   key: 'tracking-elapsed-time',
@@ -51,12 +53,40 @@ export const samplePageState: (
     loadingCRInfo: false,
   });
 
-export const pageContextState = atom<PageState>({
+export const pageContextState = selector<PageState>({
   key: 'page-state',
+  get: ({get}) => {
+    const allFields = get(pageContextStateFields);
+    const selectedCR = get(selectedCRState)
+    return ({
+      ...allFields,
+      selectedCR
+    })
+  },
+  set: ({set, reset}, newValue) => {
+    if (!(newValue instanceof DefaultValue)) {
+      const selectedCR  = newValue.selectedCR;
+      set(selectedCRState, selectedCR);
+      set(pageContextStateFields, newValue);
+    } else {
+      reset(pageContextStateFields);
+      reset(selectedCRState);
+    }
+  }
+});
+
+export const pageContextStateFields = atom<PageState>({
+  key: 'page-state-fields',
   default: {
     ...samplePageState('not-set'),
     insightsQuery: defaultQueryLoading
   }
+});
+
+export const selectedCRState = atom<string>({
+  key: 'cr',
+  default: 'NONE',
+  effects: [syncEffect({ refine: string() })],
 });
 
 export const careFacilitiesState = atom<Record<string,

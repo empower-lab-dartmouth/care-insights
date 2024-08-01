@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import LiveHelpIcon from '@mui/icons-material/LiveHelp';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import './navbar.css';
 import logo from '../../assets/care_insights_logo_heart.png';
 import AppBar from '@mui/material/AppBar';
@@ -17,6 +17,7 @@ import Diversity1Icon from '@mui/icons-material/Diversity1';
 export default function Nav() {
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const { currentUser } = useContext(AuthContext);
+  const { search } = useLocation();
 
   return (
     <AppBar component='nav'>
@@ -48,7 +49,7 @@ export default function Nav() {
           spacing={2}
           sx={{ paddingRight: '40px' }}
         >
-          <NavLink to='/summaryInsights' className='nav-item'>
+          <NavLink to={`/summaryInsights${search}`} className='nav-item'>
             <Stack
               direction='column'
               justifyContent='flex-start'
@@ -58,7 +59,7 @@ export default function Nav() {
               Care Insights
             </Stack>
           </NavLink>
-          <NavLink to='/videoAnalysis' className='nav-item'>
+          <NavLink to={`/videoAnalysis${search}`} className='nav-item'>
             <Stack
               direction='column'
               justifyContent='flex-start'

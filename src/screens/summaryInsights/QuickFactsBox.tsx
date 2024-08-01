@@ -8,6 +8,7 @@ import {
   careRecipientsInfoState,
   pageContextState,
   queriesForCurrentCGState,
+  selectedCRState,
 } from '../../state/recoil';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -44,6 +45,7 @@ import {
   IconX,
   IconEdit,
   IconInfoCircle,
+  IconThumbUp,
 } from '@tabler/icons-react';
 import { PageState } from '../../state/types';
 import { Divide } from 'lucide-react';
@@ -82,6 +84,7 @@ const responseChip = (loading: boolean, alreadyApproved: boolean) => {
 const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
   const { type } = props;
   // const { currentUser } = useContext(AuthContext);
+  const [temp, setTemp] = useRecoilState(selectedCRState);
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
@@ -141,7 +144,9 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
             </div>
             <Stack align='flex-end' justify='flex-end'>
               <Group justify='flex-end' h={'auto'}>
-                <Button
+                {
+                  alreadyApproved && !editingDirectly ?
+                  <Button
                   variant='transparent'
                   onClick={approve}
                   disabled={alreadyApproved && !editingDirectly}
@@ -149,6 +154,18 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
                 >
                   {alreadyApproved && !editingDirectly ? 'Endorsed' : 'Endorse'}
                 </Button>
+                  :
+                  <Button
+                  leftSection={<IconThumbUp className='text-green-600' />}
+                  onClick={approve}
+                  variant='outline'
+                  className='text-green-600 hover:text-green-600 border-green-600'
+                  size='xs'
+                >
+                  This is helpful
+                </Button>
+                }
+
                 {editingDirectly ? (
                   <Button
                     variant='transparent'

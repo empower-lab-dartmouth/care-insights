@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { signInUser } from '../../state/firebase/firebase';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 // import '../../App.css';
 // import './landing.css';
 import SignUp from './signup';
@@ -18,6 +18,7 @@ function Home() {
   const [open, setOpen] = React.useState(false);
   const [error, setError] = React.useState('');
   const [cookies, setCookie] = useCookies(['careInsightsUsername', 'careInsightsPassword']);
+  const { search } = useLocation();
 
   const handleClose = () => {
     setOpen(false);
@@ -55,7 +56,7 @@ function Home() {
       if (userCredential) {
         resetFormFields();
         console.log('navigate to INFO');
-        navigate('/info');
+        navigate(`/info${search}`);
       } else {
         // setError('Sign in failed');
         alert('User Sign In Failed');
