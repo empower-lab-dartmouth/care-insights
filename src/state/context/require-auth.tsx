@@ -27,7 +27,7 @@ function RequireAuth({ children }: { children: JSX.Element }) {
       pageState.insightsQuery.queryResponse === 'loading'
     ) {
       console.log('pulling info from remote');
-      loadPageDataFromFB(currentUser.email, setPageState, setQueries, careRecipientInfo);
+      loadPageDataFromFB(currentUser.email, setPageState, setQueries, careRecipientInfo, pageState);
     } else{
       console.log('are we getting here 3?')
     }
