@@ -39,7 +39,10 @@ const SummaryInsights = () => {
 
       <>
         {pageContext.loadingCRInfo ? (
-          <CircularProgress />
+           <>
+           <CircularProgress />
+           If this takes more than twenty seconds, try reloading the web page.
+           </>
         ) : pageContext.selectedCR === NO_CR_SELECTED ? (
           <></>
         ) : (

@@ -265,7 +265,10 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = props => {
       ? (
         <QuickFactsBoxInner type={type} />
       ) : (
-        <CircularProgress />
+        <>
+            <CircularProgress />
+            If this takes more than twenty seconds, try reloading the web page.
+            </>
       )}
     </>
   );

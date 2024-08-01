@@ -80,7 +80,10 @@ const CareInsightsPage = () => {
           generateQuickFactsQueries(updatedPageContext, queries, setQueries, setPageContext, true);
         }}><RefreshCw size={17} className='mr-1' />Refresh insights</Button>
           {pageContext.loadingCRInfo ? (
+            <>
             <CircularProgress />
+            If this takes more than twenty seconds, try reloading the web page.
+            </>
           ) : pageContext.selectedCR === NO_CR_SELECTED ? (
             <p>No care recipient selected</p>
           ) : (
