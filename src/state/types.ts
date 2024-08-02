@@ -132,3 +132,8 @@ export type FacilityInfo = {
     uuid: string
     deletedDate?: number
 }
+
+export type CookieData = {
+    username: string
+    password: string
+} | undefined

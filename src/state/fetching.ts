@@ -23,6 +23,7 @@ import { QueryRecord } from './queryingTypes';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { askQuery, respondToApprovalFeedback } from './querying';
 import { loadCareRecipientsInfoFromCaresuite } from './fetching-integrated';
+import { setRemoteQueryRecord } from './setting';
 
 // export function getSelectedCRProgramEvents(v: string) {
 //     return fetchSampleProgramData(v);
@@ -38,6 +39,7 @@ export const loadCRData = async (
 ) => {
   console.log('loading care recipient data');
   if (pageState.selectedCR !== 'NONE') {
+    console.log('Load care recipient data 1', pageState.selectedCR);
     // Pull sepcific CR's data
     setPageContext({
       ...pageState,
@@ -71,8 +73,9 @@ export const loadCRData = async (
       loadingCRInfo: false,
     };
     setPageContext(updatedPageState);
-    loadQueriesForCR(updatedPageState, careRecipientsInfo, setPageContext, setLocalQueries);
+    await loadQueriesForCR(updatedPageState, careRecipientsInfo, setPageContext, setLocalQueries);
   } else {
+    console.log('pull all cr data');
     // Pull all CRs' data
     setPageContext({
       ...pageState,
@@ -108,15 +111,17 @@ export const loadCRData = async (
   }
 };
 
-const sampleAvoidQuery = (name: string) => `What specific things should you as a caregiver avoid when working with ${name}?`;
-const sampleDoQuery = (name: string) => `What things should you as a caregiver do more of when working with ${name}?`;
-const sampleSymptomsQuery = (name: string) => `What common symptoms does ${name} show?`;
-const sampleRedirectQuery = (name: string) => `What things should you do as a dementia caregiver to redirect ${name} show?`;
+export const sampleAvoidQuery = (name: string) => `What specific things should you as a caregiver avoid when working with ${name}?`;
+export const sampleDoQuery = (name: string) => `What things should you as a caregiver do more of when working with ${name}?`;
+export const sampleSymptomsQuery = (name: string) => `What common symptoms does ${name} show?`;
+export const sampleRedirectQuery = (name: string) => `What things should you do as a dementia caregiver to redirect ${name} show?`;
 
 export const generateQuickFactsQueries = async (
   pageState: PageState,
   queries: Record<string, QueryRecord>,
-  setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>) => {
+  setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>,
+  setPageContext: SetterOrUpdater<PageState>,
+override=false) => {
   const handleLocalQueryResponse = (q: QueryRecord) => {
     // setLocalQueries({
     //   ...queries,
@@ -131,34 +136,48 @@ export const generateQuickFactsQueries = async (
     pageState.username,
     pageState.selectedCR,
     queries,
-    false),
-    askQuery(pageState.doQuery,
-      handleLocalQueryResponse,
-      pageState.selectedCRProgramEvents,
-      pageState.username,
-      pageState.selectedCR,
-      queries,
-      false),
-    askQuery(pageState.redirectionQuery,
-      handleLocalQueryResponse,
-      pageState.selectedCRProgramEvents,
-      pageState.username,
-      pageState.selectedCR,
-      queries,
-      false),
-    askQuery(pageState.symptomsQuery,
-      handleLocalQueryResponse,
-      pageState.selectedCRProgramEvents,
-      pageState.username,
-      pageState.selectedCR,
-      queries,
-      false)]).then((res) => setLocalQueries({
+    override),
+  askQuery(pageState.doQuery,
+    handleLocalQueryResponse,
+    pageState.selectedCRProgramEvents,
+    pageState.username,
+    pageState.selectedCR,
+    queries,
+    override),
+  askQuery(pageState.redirectionQuery,
+    handleLocalQueryResponse,
+    pageState.selectedCRProgramEvents,
+    pageState.username,
+    pageState.selectedCR,
+    queries,
+    override),
+  askQuery(pageState.symptomsQuery,
+    handleLocalQueryResponse,
+    pageState.selectedCRProgramEvents,
+    pageState.username,
+    pageState.selectedCR,
+    queries,
+    override)]).then(async (res) => {
+      console.log("UPDATE LOCAL QUERIES");
+      setLocalQueries({
         ...queries,
         [res[0].query]: res[0],
         [res[1].query]: res[1],
         [res[2].query]: res[2],
         [res[3].query]: res[3]
-      }));
+      });
+      await setRemoteQueryRecord(res[0]);
+      await setRemoteQueryRecord(res[1]);
+      await setRemoteQueryRecord(res[2]);
+      await setRemoteQueryRecord(res[3]);
+      if (override) {
+        setPageContext({
+          ...pageState,
+          loadingCRInfo: false,
+        })
+      }
+    });
+
 }
 
 export const loadQueriesForCR = async (
@@ -167,11 +186,13 @@ export const loadQueriesForCR = async (
   setPageContext: SetterOrUpdater<PageState>,
   setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>
 ) => {
+  console.log("pull CR query data 1");
   // Pull all CRs' data
   setPageContext({
     ...pageState,
     loadingCRInfo: true,
   });
+  console.log('query for queries by: ', pageState.selectedCR);
   const q = query(
     collection(db, `QueryRecord`),
     where('CRUUID', '==', pageState.selectedCR)
@@ -190,6 +211,7 @@ export const loadQueriesForCR = async (
   }
   const CRName = careRecipientsInfo[pageState.selectedCR].name;
   if (querySnapshot.empty) {
+    console.log("pull CR query data 2");
     setLocalQueries({});
     setPageContext({
       ...pageState,
@@ -197,7 +219,18 @@ export const loadQueriesForCR = async (
       insightsQuery: defaultQueryEmpty,
       loadingCRInfo: false,
     });
+    await generateQuickFactsQueries(pageState, {}, setLocalQueries, setPageContext);
+    const updatedPageContext = {
+      ...pageState,
+      doQuery: sampleDoQuery(CRName),
+      avoidQuery: sampleAvoidQuery(CRName),
+      redirectionQuery: sampleRedirectQuery(CRName),
+      symptomsQuery: sampleSymptomsQuery(CRName),
+      loadingCRInfo: false,
+    };
+    setPageContext(updatedPageContext);
   } else {
+    console.log("pull CR query data 3");
     const docs: QueryRecord[] = querySnapshot.docs
       .map((doc: any) => {
         const d = doc.data() as any as QueryRecord;
@@ -223,7 +256,14 @@ export const loadQueriesForCR = async (
       insightsQuery: docs[0],
       loadingCRInfo: false,
     };
-    await generateQuickFactsQueries(updatedPageContext, queries, setLocalQueries);
+    console.log('LOAD queries for care recipient');
+    if (!(docs.map((d) => d.query).includes(updatedPageContext.doQuery) &&
+      docs.map((d) => d.query).includes(updatedPageContext.avoidQuery) &&
+      docs.map((d) => d.query).includes(updatedPageContext.redirectionQuery) &&
+      docs.map((d) => d.query).includes(updatedPageContext.symptomsQuery))) {
+      console.log("REGEN QUICK FACTS");
+      await generateQuickFactsQueries(updatedPageContext, queries, setLocalQueries, setPageContext);
+    }
     setPageContext(updatedPageContext);
   }
 };
@@ -233,6 +273,7 @@ export const loadPageDataFromFB = async (
   setPageContext: SetterOrUpdater<PageState>,
   setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>,
   careRecipientsInfo: Record<string, CareRecipientInfo>,
+  pageContext: PageState,
 ) => {
   console.log('loading session data from fb');
   const ref = doc(db, 'PageContext', username);
@@ -240,8 +281,13 @@ export const loadPageDataFromFB = async (
   if (docSnap.exists()) {
     console.log('past session exists');
     const data = docSnap.data() as PageState;
-    setPageContext(data as PageState);
-    await loadCRData(data, setPageContext, setLocalQueries, careRecipientsInfo);
+    const selectedCR = pageContext.selectedCR === 'NONE' ? data.selectedCR : pageContext.selectedCR;
+    const newPageState: PageState = {
+      ...data,
+      selectedCR
+    };
+    setPageContext(newPageState);
+    await loadCRData(newPageState, setPageContext, setLocalQueries, careRecipientsInfo);
   } else {
     console.log('past session does not exits');
     setPageContext(samplePageState(username));
@@ -253,6 +299,75 @@ export const loadPageDataFromFB = async (
     );
   }
 };
+
+export const loadQueryFromURL = async (
+  pageState: PageState,
+  setPageContext: SetterOrUpdater<PageState>,
+  queries: Record<string, QueryRecord>,
+  setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>,
+  searchQuery: string,
+) => {
+  console.log('load query from url', queries);
+  if (searchQuery !== '' && 
+    pageState.insightsQuery.query !== searchQuery && 
+    Object.values(queries).length > 0) {
+      console.log("loading search from url query");
+    const handleLocalQueryResponse = (q: QueryRecord) => { };
+    setPageContext({
+      ...pageState,
+      loadingCRInfo: true,
+    });
+    const query = await askQuery(searchQuery,
+      handleLocalQueryResponse,
+      pageState.selectedCRProgramEvents,
+      pageState.username,
+      pageState.selectedCR,
+      queries,
+      false);
+    setRemoteQueryRecord(query);
+    console.log('the queries are', queries, "our query is: ", query);
+    setLocalQueries({
+      ...queries,
+      [searchQuery]: query,
+    });
+    setPageContext({
+      ...pageState,
+      loadingCRInfo: false,
+      insightsQuery: query,
+    });
+  }
+}
+
+export const fetchOnOpen = async (
+  pageState: PageState,
+  setPageContext: SetterOrUpdater<PageState>,
+  queries: Record<string, QueryRecord>,
+  setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>,
+  searchQuery: string,
+  username: string,
+  careRecipientsInfo: Record<string, CareRecipientInfo>,
+  setSearchQuery: SetterOrUpdater<string>,
+  setLoading: SetterOrUpdater<boolean>,
+) => {
+  // setLoading(true);
+  // setSearchQuery('');
+  await loadPageDataFromFB(
+    username,
+    setPageContext,
+    setLocalQueries,
+    careRecipientsInfo,
+    pageState
+  );
+  // await loadQueryFromURL(
+  //   pageState,
+  //   setPageContext,
+  //   queries,
+  //   setLocalQueries,
+  //   searchQuery
+  // );
+  // setLoading(false);
+  // setSearchQuery('');
+}
 
 export async function downloadFile(
   path: string,
@@ -278,7 +393,7 @@ export const loadCareGiverInfo = async (
   console.log('loading info on all caregivers');
   setPageContext({
     ...pageState,
-    loadingCRInfo: true,
+    // loadingCRInfo: true,
   });
   const q = query(collection(db, `CaregiverInfo`));
   const querySnapshot = await getDocs(q);
@@ -351,19 +466,19 @@ export const loadCareRecipientsInfo = async (
   //       return d;
   //     })
   //     .sort((a, b) => (b.dateCreated as number) - (a.dateCreated as number));
-    // const temp: Record<string, CareRecipientInfo> = {};
-    // const careRecipients: Record<string, CareRecipientInfo> = docs.reduce(
-    //   (acc, curr) => ({
-    //     ...acc,
-    //     [curr.uuid]: curr,
-    //   }),
-    //   temp
-    // );
-    // setCareRecipientInfo(careRecipients);
-    // setPageContext({
-    //   ...pageState,
-    //   loadingCRInfo: false,
-    // });
+  // const temp: Record<string, CareRecipientInfo> = {};
+  // const careRecipients: Record<string, CareRecipientInfo> = docs.reduce(
+  //   (acc, curr) => ({
+  //     ...acc,
+  //     [curr.uuid]: curr,
+  //   }),
+  //   temp
+  // );
+  // setCareRecipientInfo(careRecipients);
+  // setPageContext({
+  //   ...pageState,
+  //   loadingCRInfo: false,
+  // });
   // }
 };
 

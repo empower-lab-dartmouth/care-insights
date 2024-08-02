@@ -8,6 +8,7 @@ import {
   careRecipientsInfoState,
   pageContextState,
   queriesForCurrentCGState,
+  selectedCRState,
 } from '../../state/recoil';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -44,11 +45,13 @@ import {
   IconX,
   IconEdit,
   IconInfoCircle,
+  IconThumbUp,
 } from '@tabler/icons-react';
 import { PageState } from '../../state/types';
 import { Divide } from 'lucide-react';
 
 import '@mdxeditor/editor/style.css';
+import { sampleAvoidQuery, sampleDoQuery, sampleRedirectQuery, sampleSymptomsQuery } from '../../state/fetching';
 
 export const LOADING_STRING = 'Loading...';
 
@@ -82,18 +85,21 @@ const responseChip = (loading: boolean, alreadyApproved: boolean) => {
 const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
   const { type } = props;
   // const { currentUser } = useContext(AuthContext);
+  const [temp, setTemp] = useRecoilState(selectedCRState);
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
   const [editingDirectly, setEditingDirectly] = useState(false);
+  const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
+  const CRName = careRecipientsInfo[pageContext.selectedCR].name;
   const queryRecordQuery =
     type === 'do'
-      ? pageContext.doQuery
+      ? sampleDoQuery(CRName)
       : type === 'avoid'
-      ? pageContext.avoidQuery
+      ? sampleAvoidQuery(CRName)
       : type === 'redirection'
-      ? pageContext.redirectionQuery
-      : pageContext.symptomsQuery;
+      ? sampleRedirectQuery(CRName)
+      : sampleSymptomsQuery(CRName);
   const queryRecord = queries[queryRecordQuery];
   console.log(queries);
   console.log(queryRecordQuery);
@@ -141,7 +147,9 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
             </div>
             <Stack align='flex-end' justify='flex-end'>
               <Group justify='flex-end' h={'auto'}>
-                <Button
+                {
+                  alreadyApproved && !editingDirectly ?
+                  <Button
                   variant='transparent'
                   onClick={approve}
                   disabled={alreadyApproved && !editingDirectly}
@@ -149,6 +157,18 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
                 >
                   {alreadyApproved && !editingDirectly ? 'Endorsed' : 'Endorse'}
                 </Button>
+                  :
+                  <Button
+                  leftSection={<IconThumbUp className='text-green-600' />}
+                  onClick={approve}
+                  variant='outline'
+                  className='text-green-600 hover:text-green-600 border-green-600'
+                  size='xs'
+                >
+                  {editingDirectly ? 'Save' : 'This is helpful'}
+                </Button>
+                }
+
                 {editingDirectly ? (
                   <Button
                     variant='transparent'
@@ -172,11 +192,11 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
                   disabled={editingDirectly}
                   onClick={() => {
                     setEditingDirectly(true);
-                    setEditedResponse(pageContext.insightsQuery.queryResponse);
+                    // setEditedResponse(pageContext.insightsQuery.queryResponse);
                   }}
                   leftSection={<IconEdit size={14} />}
                 >
-                  Make changes
+                  Fix a problem
                 </Button>
               </Group>
             </Stack>
@@ -186,15 +206,25 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
 
         <div className='px-6 pt-2 pb-8'>
           {!editingDirectly ? (
-            <Text
-              style={{
-                'white-space': 'pre-wrap',
-              }}
-              fz='sm'
-              lh='md'
-            >
-              {editedResponse}
-            </Text>
+            <WYSIWYGEditor
+            readOnly={true}
+            markdown={editedResponse}
+            loading={false}
+            showDefaultMessage={false}
+            defaultMessage={''}
+            update={false}
+            onChange={(t: string) => {}}
+            updateCallback={() => {}}
+          />
+            // <Text
+            //   style={{
+            //     'white-space': 'pre-wrap',
+            //   }}
+            //   fz='sm'
+            //   lh='md'
+            // >
+            //   {editedResponse}
+            // </Text>
           ) : (
             <WYSIWYGEditor
               readOnly={false}
@@ -219,20 +249,26 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = props => {
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
+  const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
+  const CRName = careRecipientsInfo[pageContext.selectedCR].name;
   const queryRecordQuery =
     type === 'do'
-      ? pageContext.doQuery
+      ? sampleDoQuery(CRName)
       : type === 'avoid'
-      ? pageContext.avoidQuery
+      ? sampleAvoidQuery(CRName)
       : type === 'redirection'
-      ? pageContext.redirectionQuery
-      : pageContext.symptomsQuery;
+      ? sampleRedirectQuery(CRName)
+      : sampleSymptomsQuery(CRName);
   return (
     <>
-      {queries[queryRecordQuery] !== undefined ? (
+      {queries[queryRecordQuery] !== undefined
+      ? (
         <QuickFactsBoxInner type={type} />
       ) : (
-        <CircularProgress />
+        <>
+            <CircularProgress />
+            If this takes more than twenty seconds, try reloading the web page.
+            </>
       )}
     </>
   );

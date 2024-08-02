@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { RecoilRoot } from 'recoil';
+import { RecoilRoot} from 'recoil';
 import { BrowserRouter } from 'react-router-dom';
+import { RecoilURLSyncJSON } from 'recoil-sync';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from './state/context/auth-context';
@@ -22,7 +23,9 @@ root.render(
       <BrowserRouter>
         <AuthProvider>
           <RecoilRoot>
+          <RecoilURLSyncJSON location={{part: 'queryParams'}}>
             <App />
+            </RecoilURLSyncJSON>
           </RecoilRoot>
         </AuthProvider>
       </BrowserRouter>

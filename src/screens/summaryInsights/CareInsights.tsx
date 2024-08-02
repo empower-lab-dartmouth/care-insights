@@ -27,6 +27,8 @@ import {
 } from '@mantine/core';
 import QuickFactsBox, { LOADING_STRING } from './QuickFactsBox';
 import { QueryRecord } from '../../state/queryingTypes';
+import { generateQuickFactsQueries, sampleAvoidQuery, sampleDoQuery, sampleRedirectQuery, sampleSymptomsQuery } from '../../state/fetching';
+import { RefreshCcw, RefreshCw } from 'lucide-react';
 
 const QuickInfo = ({ value, label }: { value: string; label: string }) => {
   return (
@@ -38,9 +40,9 @@ const QuickInfo = ({ value, label }: { value: string; label: string }) => {
 };
 
 const CareInsightsPage = () => {
-  console.log('LOAD CARE INSIGHTS PAGE');
-  const pageContext = useRecoilValue(pageContextState);
+  const [pageContext, setPageContext] = useRecoilState(pageContextState);
   const careRecipients = useRecoilValue(careRecipientsInfoState);
+  const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
   const CRName =
     careRecipients[pageContext.selectedCR] !== undefined
       ? careRecipients[pageContext.selectedCR].name
@@ -65,9 +67,23 @@ const CareInsightsPage = () => {
       <UserShell>
         <div>
           <CommonCRActions page={'snapshot'} />
-
+        <Button onClick={() => {
+          const updatedPageContext = {
+            ...pageContext,
+            doQuery: sampleDoQuery(CRName),
+            avoidQuery: sampleAvoidQuery(CRName),
+            redirectionQuery: sampleRedirectQuery(CRName),
+            symptomsQuery: sampleSymptomsQuery(CRName),
+            loadingCRInfo: true,
+          };
+          setPageContext(updatedPageContext);
+          generateQuickFactsQueries(updatedPageContext, queries, setQueries, setPageContext, true);
+        }}><RefreshCw size={17} className='mr-1' />Refresh insights</Button>
           {pageContext.loadingCRInfo ? (
+            <>
             <CircularProgress />
+            If this takes more than twenty seconds, try reloading the web page.
+            </>
           ) : pageContext.selectedCR === NO_CR_SELECTED ? (
             <p>No care recipient selected</p>
           ) : (
@@ -106,7 +122,7 @@ const CareInsightsPage = () => {
         </div>
 
         {pageContext.loadingCRInfo ? (
-          <CircularProgress />
+          <CircularProgress /> 
         ) : (
           <>
             {CRName !== 'NONE' ? (

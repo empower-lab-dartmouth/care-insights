@@ -11,6 +11,7 @@ import { doc, setDoc } from 'firebase/firestore';
 import { UserLoginEvent } from '../recoil';
 import { partnerAuth } from '../partner-firebase';
 import { convertEmailToMemcaraEmail } from '../fetching-integrated';
+import { CookieData } from '../types';
 
 // const auth = getAuth(app);
 
@@ -34,10 +35,20 @@ const logUserSignIn = async (username: string) => {
   }
 };
 
-export const signInUser = async (email: string, password: string) => {
+export const signInUser = async (email: string, password: string, 
+  setCookie: (name: "careInsightsUsername" | "careInsightsPassword", 
+    value: any) => void) => {
   if (!email && !password) return;
   logUserSignIn(email);
-  return await signInWithEmailAndPassword(partnerAuth, convertEmailToMemcaraEmail(email), password);
+  const auth = await signInWithEmailAndPassword(partnerAuth, convertEmailToMemcaraEmail(email), password);
+  if(auth) {
+    setCookie('careInsightsUsername', email);
+    setCookie('careInsightsPassword', password);
+  } else {
+    setCookie('careInsightsUsername', '');
+    setCookie('careInsightsPassword', '');
+  }
+  return auth;
 };
 
 export const userStateListener = (callback: NextOrObserver<User>) => {

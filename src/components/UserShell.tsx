@@ -6,6 +6,8 @@ import { FileQuestion, SquarePlay, UsersRound, Info } from 'lucide-react';
 import { useContext } from 'react';
 import { AuthContext } from '../state/context/auth-context';
 import { IconLogout, IconMenu2, IconX } from '@tabler/icons-react';
+import { useCookies } from 'react-cookie';
+
 
 const MenuButton = ({
   children,
@@ -16,9 +18,9 @@ const MenuButton = ({
   path: string;
   icon: React.ReactNode;
 }) => {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   return (
-    <Link to={path}>
+    <Link to={{pathname: path, search}}>
       <UnstyledButton
         className={`px-2 py-3 hover:bg-slate-100 rounded-md w-full flex items-center gap-2 text-sm`}
         style={{
@@ -58,6 +60,7 @@ const MenuButtons = () => {
 const UserShell = ({ children }: { children: React.ReactNode }) => {
   const [opened, { toggle }] = useDisclosure();
   const { currentUser, signOut } = useContext(AuthContext);
+  const [cookies, setCookie] = useCookies(['careInsightsUsername', 'careInsightsPassword']);
 
   return (
     <div>
@@ -88,7 +91,11 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
               <Avatar radius='xl' size='md' color='blue'>
                 {currentUser?.email ? currentUser.email[0].toUpperCase() : ''}
               </Avatar>
-              <UnstyledButton color='red' onClick={signOut}>
+              <UnstyledButton color='red' onClick={() => {
+                signOut();
+                setCookie('careInsightsUsername', '');
+                setCookie('careInsightsPassword', '');
+              }}>
                 <IconLogout size={24} color='	#db2b29' />
               </UnstyledButton>
             </div>

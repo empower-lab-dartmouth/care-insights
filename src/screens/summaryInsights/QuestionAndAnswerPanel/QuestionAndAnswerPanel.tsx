@@ -59,7 +59,7 @@ const responseChip = (
   }
   if (pageState.insightsQuery.dateApproved !== undefined) {
     if (alreadyApproved) {
-      return <Text className='text-green-600 italic'>(Approved by you)</Text>;
+      return <Text className='text-green-600 italic'>(Endorsed)</Text>;
     } else {
       return (
         <Text className='text-primary italic'>(Approved by someone else)</Text>
@@ -200,11 +200,11 @@ const QuestionAndAnswerPanel: React.FC = () => {
           <></>
         ) : (
           <>
-            <Title order={5}>Help us:</Title>
+            {/* <Title order={5}>Help us:</Title>
             <Text>
               Our AI learns from your feedback! Please improve the model with a
               review:
-            </Text>
+            </Text> */}
             {feedbackInputOpen ? (
               <Textarea
                 id='outlined-basic'
@@ -229,7 +229,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
                   className='text-green-600 hover:text-green-600 border-green-600'
                   size='xs'
                 >
-                  This is helpful{' '}
+                  {editingDirectly ? 'Save' : 'This is helpful'}
                 </Button>
               )}
               {feedbackInputOpen ? (

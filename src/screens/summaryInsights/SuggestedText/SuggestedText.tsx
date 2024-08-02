@@ -3,6 +3,8 @@ import { Chip, Stack } from '@mui/material';
 import { Button } from '@mantine/core';
 import { QueryRecord } from '../../../state/queryingTypes';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import { useRecoilValue } from 'recoil';
+import { pageContextState } from '../../../state/recoil';
 
 type SuggestedTextProps = {
   textSuggestions: QueryRecord[];
@@ -20,6 +22,7 @@ const SuggestedText: React.FC<SuggestedTextProps> = props => {
     hasMoreSuggestions,
     loadMoreSuggestions,
   } = props;
+  const pageContext = useRecoilValue(pageContextState);
   return (
     <>
       <Stack
@@ -28,7 +31,9 @@ const SuggestedText: React.FC<SuggestedTextProps> = props => {
         flexWrap='wrap'
         spacing={{ xs: 1 }}
       >
-        {textSuggestions.map(option => (
+        {textSuggestions
+        .filter(option => option.CRUUID === pageContext.selectedCR)
+        .map(option => (
           <Chip
             key={option.queryUUID}
             disabled={currentText === option.query}

@@ -49,10 +49,11 @@ const AutocompleteUserSearch = () => {
 
   return (
     <div className='flex flex-col items-start gap-2 pb-4 md:pb-0'>
-      <Text className='text-sm font-semibold'>Current patient: </Text>
+      <Text className='text-sm font-semibold'>Showing care recipient: </Text>
       <Select
         placeholder='Select a care recipient'
         data={options}
+        value={pageContext.selectedCR}
         clearable
         defaultSearchValue={value.label}
         className='w-80'

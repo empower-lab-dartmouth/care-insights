@@ -19,13 +19,15 @@ export const AuthProvider = ({ children }: Props) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { search } = useLocation();
 
   useEffect(() => {
     const unsubscribe = userStateListener(user => {
       if (user) {
         setCurrentUser(user);
+        console.log('!!!!!!navigate');
         const path = location.pathname !== '/' ? location.pathname : '/info';
-        navigate(path);
+        navigate(`${path}${search}`);
       }
     });
     return unsubscribe;
