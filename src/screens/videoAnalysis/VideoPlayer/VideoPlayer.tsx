@@ -9,6 +9,7 @@ import EventsTimeline from '../Timeline/Timeline';
 import Stack from '@mui/material/Stack';
 import HeatMap from '../HeatMap/HeatMap';
 import Transcript from '../Transcript/Transcript';
+import { StreamGraphPageViewsDemo } from '../programEventsTable/StreamGraph/StreamGraphPageViewsDemo';
 
 type VideoPlayerProps = {
   videoSrc: string;
