@@ -45,7 +45,7 @@ const cleanLink = (t: string) => t.replaceAll('-', '').replaceAll('*', '').repla
 
 const wrapAsLink = (text: string, pathname: string, currentCR: string) => {
   const newLineSplitText = text.split(/\n/);
-  const baseURLLocal = 'http://localhost:3000/';
+  const baseURLLocal = 'https://main--care-insights.netlify.app/';//'http://localhost:3000/';
   const path = 'questions/'
   const promptPreface = 'Tell me more about: '.replaceAll(' ', '%20');
   const prompt = (t: string) => promptPreface + cleanLink(t);
