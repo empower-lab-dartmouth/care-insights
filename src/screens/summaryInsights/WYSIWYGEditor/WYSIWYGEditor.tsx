@@ -45,8 +45,8 @@ const cleanLink = (t: string) => t.replaceAll('-', '').replaceAll('*', '').repla
 
 const wrapAsLink = (text: string, pathname: string, currentCR: string) => {
   const newLineSplitText = text.split(/\n/);
-  const baseURLLocal = 'https://main--care-insights.netlify.app/';//'http://localhost:3000/';
-  const path = 'questions/'
+  const baseURLLocal = 'https://main--care-insights.netlify.app/'; //http://localhost:3000/';
+  const path = 'questions'
   const promptPreface = 'Tell me more about: '.replaceAll(' ', '%20');
   const prompt = (t: string) => promptPreface + cleanLink(t);
   const wrappedBullets = newLineSplitText.map((t) => `[${t}](${baseURLLocal}${path}?cr="${currentCR}"&q="${prompt(t)}")`);
