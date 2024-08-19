@@ -140,7 +140,9 @@ export const loadCareRecipientsInfoFromCaresuite = async (
   setExtendedAttributes(formatAsExtendedAttributes(careRecipientExtendedAttributes));
 
   const temp: Record<string, CareRecipientInfo> = {};
-  const careRecipients: Record<string, CareRecipientInfo> = result.reduce(
+  const careRecipients: Record<string, CareRecipientInfo> = result
+  .filter((v) => v.facilityID)
+  .reduce(
     (acc, curr) => ({
       ...acc,
       [curr.uuid]: curr,

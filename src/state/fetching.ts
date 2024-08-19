@@ -83,8 +83,10 @@ export const loadCRData = async (
       ...pageState,
       loadingCRInfo: true,
     });
+    const facilityId = 'NONE'; // TODO Update this later //Object.values(careRecipientsInfo).length > 0 ? Object.values(careRecipientsInfo)[0].facilityID : 'NONE';
     const q = query(
       collection(db, `CRProgramEvents`),
+      where('facilityId', '==', facilityId),
       limit(QUERY_LIMIT),
       orderBy('date', 'desc')
     );

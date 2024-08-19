@@ -30,6 +30,8 @@ const AutocompleteUserSearch = () => {
   
   const options = Object.values(allCGInfo)
     .filter(v => v.uuid !== NO_CR_SELECTED)
+    .filter(v => extendedAttributes[v.uuid] && extendedAttributes[v.uuid].roomNumber &&
+      extendedAttributes[v.uuid].roomNumber != 'Not reported')
     .map(v => ({
       label: caregiverName(v.uuid, v.name, extendedAttributes),
       uuid: v.uuid,
