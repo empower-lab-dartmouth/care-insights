@@ -138,6 +138,7 @@ const refreshIfStillLoading = () => {
       <UserShell>
         <div>
           <CommonCRActions page={'snapshot'} />
+          { CRName !== 'NONE' ?
           <Button onClick={() => {
             const updatedPageContext = {
               ...pageContext,
@@ -149,7 +150,7 @@ const refreshIfStillLoading = () => {
             };
             setPageContext(updatedPageContext);
             generateQuickFactsQueries(updatedPageContext, queries, setQueries, setPageContext, CRName, extendedAttributes[pageContext.selectedCR], true);
-          }}><RefreshCw size={17} className='mr-1' />Refresh insights</Button>
+          }}><RefreshCw size={17} className='mr-1' />Refresh insights</Button> : <></>}
           {pageContext.loadingCRInfo ? (
             <>
               <CircularProgress />
