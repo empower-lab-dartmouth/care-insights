@@ -2,7 +2,8 @@ import { DefaultValue, atom, selector } from 'recoil';
 import {
   PageState, CGInfo,
   CaregiverInfo, CareGroupInfo, CareRecipientInfo,
-  FacilityInfo
+  FacilityInfo,
+  ExtendedAttributes
 } from './types';
 import { QueryRecord } from './queryingTypes';
 import { syncEffect } from 'recoil-sync';
@@ -28,6 +29,11 @@ export const defaultQueryEmpty: QueryRecord = {
   CGUUID: '',
   CRUUID: '',
 };
+
+export const extededAttributesState = atom<Record<string, ExtendedAttributes>>({
+  key: 'extended-attributes-state',
+  default: {}
+});
 
 export const reloadPageQuery: QueryRecord = {
   query: '<loading>',

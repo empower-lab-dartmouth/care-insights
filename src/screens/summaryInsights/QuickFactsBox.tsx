@@ -91,15 +91,15 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
   const [editingDirectly, setEditingDirectly] = useState(false);
   const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
-  const CRName = careRecipientsInfo[pageContext.selectedCR].name;
+  const CRName = careRecipientsInfo[pageContext.selectedCR] ? careRecipientsInfo[pageContext.selectedCR].name : 'Care recipient';
   const queryRecordQuery =
     type === 'do'
       ? sampleDoQuery(CRName)
       : type === 'avoid'
-      ? sampleAvoidQuery(CRName)
-      : type === 'redirection'
-      ? sampleRedirectQuery(CRName)
-      : sampleSymptomsQuery(CRName);
+        ? sampleAvoidQuery(CRName)
+        : type === 'redirection'
+          ? sampleRedirectQuery(CRName)
+          : sampleSymptomsQuery(CRName);
   const queryRecord = queries[queryRecordQuery];
   console.log(queries);
   console.log(queryRecordQuery);
@@ -149,24 +149,24 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
               <Group justify='flex-end' h={'auto'}>
                 {
                   alreadyApproved && !editingDirectly ?
-                  <Button
-                  variant='transparent'
-                  onClick={approve}
-                  disabled={alreadyApproved && !editingDirectly}
-                  leftSection={<IconCheck color='green' size={14} />}
-                >
-                  {alreadyApproved && !editingDirectly ? 'Endorsed' : 'Endorse'}
-                </Button>
-                  :
-                  <Button
-                  leftSection={<IconThumbUp className='text-green-600' />}
-                  onClick={approve}
-                  variant='outline'
-                  className='text-green-600 hover:text-green-600 border-green-600'
-                  size='xs'
-                >
-                  {editingDirectly ? 'Save' : 'This is helpful'}
-                </Button>
+                    <Button
+                      variant='transparent'
+                      onClick={approve}
+                      disabled={alreadyApproved && !editingDirectly}
+                      leftSection={<IconCheck color='green' size={14} />}
+                    >
+                      {alreadyApproved && !editingDirectly ? 'Endorsed' : 'Endorse'}
+                    </Button>
+                    :
+                    <Button
+                      leftSection={<IconThumbUp className='text-green-600' />}
+                      onClick={approve}
+                      variant='outline'
+                      className='text-green-600 hover:text-green-600 border-green-600'
+                      size='xs'
+                    >
+                      {editingDirectly ? 'Save' : 'This is helpful'}
+                    </Button>
                 }
 
                 {editingDirectly ? (
@@ -207,15 +207,15 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
         <div className='px-6 pt-2 pb-8'>
           {!editingDirectly ? (
             <WYSIWYGEditor
-            readOnly={true}
-            markdown={editedResponse}
-            loading={false}
-            showDefaultMessage={false}
-            defaultMessage={''}
-            update={false}
-            onChange={(t: string) => {}}
-            updateCallback={() => {}}
-          />
+              readOnly={true}
+              markdown={editedResponse}
+              loading={false}
+              showDefaultMessage={false}
+              defaultMessage={''}
+              update={false}
+              onChange={(t: string) => { }}
+              updateCallback={() => { }}
+            />
             // <Text
             //   style={{
             //     'white-space': 'pre-wrap',
@@ -234,7 +234,7 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
               defaultMessage={''}
               update={false}
               onChange={setEditedResponse}
-              updateCallback={() => {}}
+              updateCallback={() => { }}
             />
           )}
         </div>
@@ -250,26 +250,32 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = props => {
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
   const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
-  const CRName = careRecipientsInfo[pageContext.selectedCR].name;
+  const CRName = careRecipientsInfo[pageContext.selectedCR] ? careRecipientsInfo[pageContext.selectedCR].name : 'Care recipient';
   const queryRecordQuery =
     type === 'do'
       ? sampleDoQuery(CRName)
       : type === 'avoid'
-      ? sampleAvoidQuery(CRName)
-      : type === 'redirection'
-      ? sampleRedirectQuery(CRName)
-      : sampleSymptomsQuery(CRName);
+        ? sampleAvoidQuery(CRName)
+        : type === 'redirection'
+          ? sampleRedirectQuery(CRName)
+          : sampleSymptomsQuery(CRName);
   return (
     <>
       {queries[queryRecordQuery] !== undefined
-      ? (
-        <QuickFactsBoxInner type={type} />
-      ) : (
-        <>
-            <CircularProgress />
-            If this takes more than twenty seconds, try reloading the web page.
-            </>
-      )}
+        ? (
+          <QuickFactsBoxInner type={type} />
+        ) : (
+          <>
+            {
+              type === 'do' ?
+                <>
+                  <CircularProgress />
+                  If this takes more than several seconds, please refresh the page.
+                </>
+                : <></>
+            }
+          </>
+        )}
     </>
   );
 };

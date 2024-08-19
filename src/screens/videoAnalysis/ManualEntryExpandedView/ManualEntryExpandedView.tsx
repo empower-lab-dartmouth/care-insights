@@ -7,7 +7,6 @@ import { Button } from '@mantine/core';
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
 import WYSIWYGEditor from '../../summaryInsights/WYSIWYGEditor/WYSIWYGEditor';
-import { StreamGraphPageViewsDemo } from '../programEventsTable/StreamGraph/StreamGraphPageViewsDemo';
 
 type ManualEntryExpandedViewProps = {
   programEvent: ManualEntryEvent;
@@ -27,7 +26,6 @@ const ManualEntryExpandedView: React.FC<
   const [forceUpdateRequired, setForceUpdateRequired] = useState(false);
   return (
     <>
-    <StreamGraphPageViewsDemo />
       {editing ? (
         <>
           <Stack direction={'row'} spacing={1}>

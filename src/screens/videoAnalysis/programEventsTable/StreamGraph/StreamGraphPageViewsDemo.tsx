@@ -70,18 +70,24 @@ const shrinkData: (rows: InputRow[], max: number) => InputRow[] = (rows, max) =>
     return result;
 }
 
-export const StreamGraphPageViewsDemo = ({ width = 700, height = 300 }) => {
+type StreamGraphPageViewsDemoProps = {
+    width?: number,
+    height?: number,
+    heatmap: string
+}
+
+export const StreamGraphPageViewsDemo = ({ heatmap, width = 700, height = 300}: StreamGraphPageViewsDemoProps) => {
     const ref: any = useRef(null);
     const [w, setW] = useState(width);
     const [resolution, setResolution] = useState(100);
     useEffect(() => {
-        const Margin = 200;
-        setW(ref.current ? ref.current.offsetWidth - Margin : width);
+        const Margin = 50;
+        setW(ref.current ? ref.current.offsetWidth : width);
     //   console.log('width', ref.current ? ref.current.offsetWidth : 0);
     }, [ref.current]);
-    const inputData = sampleHeatmapData;
+    const inputData = JSON.parse(heatmap);
     const resolutionWindow = Math.max(1, Math.floor(inputData.length / resolution))
-    const data = reformatRows(shrinkData(sampleHeatmapData, resolution));
+    const data = reformatRows(shrinkData(inputData, resolution));
     return (
         //   <StreamGraphPageViews width={width} height={height} />
         <div ref={ref}>

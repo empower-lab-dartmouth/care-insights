@@ -57,6 +57,17 @@ const MenuButtons = () => {
   );
 };
 
+const formatUsername = (input: string| null | undefined) => {
+  if (input == undefined || input == null) {
+    return ''
+  }
+  if (input.indexOf('@') != -1) {
+    return input.split('@')[0] + '@';
+  } else {
+    return input;
+  }
+}
+
 const UserShell = ({ children }: { children: React.ReactNode }) => {
   const [opened, { toggle }] = useDisclosure();
   const { currentUser, signOut } = useContext(AuthContext);
@@ -87,7 +98,7 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
               </div>
             </div>
             <div className='flex items-center gap-2'>
-              <Text>{currentUser!.email}</Text>
+              <Text>{formatUsername(currentUser!.email)}</Text>
               <Avatar radius='xl' size='md' color='blue'>
                 {currentUser?.email ? currentUser.email[0].toUpperCase() : ''}
               </Avatar>

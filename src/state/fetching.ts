@@ -3,6 +3,7 @@ import {
   CRProgramEvents,
   CareRecipientInfo,
   CaregiverInfo,
+  ExtendedAttributes,
   FacilityInfo,
   PageState,
   ProgramEvent,
@@ -18,7 +19,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { db } from './firebase/firebase-config';
-import { defaultQueryEmpty, samplePageState } from './recoil';
+import { defaultQueryEmpty, extededAttributesState, samplePageState } from './recoil';
 import { QueryRecord } from './queryingTypes';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { askQuery, respondToApprovalFeedback } from './querying';
@@ -36,6 +37,7 @@ export const loadCRData = async (
   setPageContext: SetterOrUpdater<PageState>,
   setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>,
   careRecipientsInfo: Record<string, CareRecipientInfo>,
+  extendedAttributes: ExtendedAttributes | undefined
 ) => {
   console.log('loading care recipient data');
   if (pageState.selectedCR !== 'NONE') {
@@ -73,7 +75,7 @@ export const loadCRData = async (
       loadingCRInfo: false,
     };
     setPageContext(updatedPageState);
-    await loadQueriesForCR(updatedPageState, careRecipientsInfo, setPageContext, setLocalQueries);
+    await loadQueriesForCR(updatedPageState, careRecipientsInfo, setPageContext, setLocalQueries, extendedAttributes);
   } else {
     console.log('pull all cr data');
     // Pull all CRs' data
@@ -120,7 +122,7 @@ export const generateQuickFactsQueries = async (
   pageState: PageState,
   queries: Record<string, QueryRecord>,
   setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>,
-  setPageContext: SetterOrUpdater<PageState>,
+  setPageContext: SetterOrUpdater<PageState>, CRName: string, extendedAttributes: ExtendedAttributes | undefined,
 override=false) => {
   const handleLocalQueryResponse = (q: QueryRecord) => {
     // setLocalQueries({
@@ -136,28 +138,28 @@ override=false) => {
     pageState.username,
     pageState.selectedCR,
     queries,
-    override),
+    override, CRName, extendedAttributes),
   askQuery(pageState.doQuery,
     handleLocalQueryResponse,
     pageState.selectedCRProgramEvents,
     pageState.username,
     pageState.selectedCR,
     queries,
-    override),
+    override, CRName, extendedAttributes),
   askQuery(pageState.redirectionQuery,
     handleLocalQueryResponse,
     pageState.selectedCRProgramEvents,
     pageState.username,
     pageState.selectedCR,
     queries,
-    override),
+    override, CRName, extendedAttributes),
   askQuery(pageState.symptomsQuery,
     handleLocalQueryResponse,
     pageState.selectedCRProgramEvents,
     pageState.username,
     pageState.selectedCR,
     queries,
-    override)]).then(async (res) => {
+    override, CRName, extendedAttributes)]).then(async (res) => {
       console.log("UPDATE LOCAL QUERIES");
       setLocalQueries({
         ...queries,
@@ -184,7 +186,8 @@ export const loadQueriesForCR = async (
   pageState: PageState,
   careRecipientsInfo: Record<string, CareRecipientInfo>,
   setPageContext: SetterOrUpdater<PageState>,
-  setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>
+  setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>,
+  extendedAttributes: ExtendedAttributes | undefined
 ) => {
   console.log("pull CR query data 1");
   // Pull all CRs' data
@@ -219,7 +222,7 @@ export const loadQueriesForCR = async (
       insightsQuery: defaultQueryEmpty,
       loadingCRInfo: false,
     });
-    await generateQuickFactsQueries(pageState, {}, setLocalQueries, setPageContext);
+    await generateQuickFactsQueries(pageState, {}, setLocalQueries, setPageContext, CRName, extendedAttributes);
     const updatedPageContext = {
       ...pageState,
       doQuery: sampleDoQuery(CRName),
@@ -262,7 +265,7 @@ export const loadQueriesForCR = async (
       docs.map((d) => d.query).includes(updatedPageContext.redirectionQuery) &&
       docs.map((d) => d.query).includes(updatedPageContext.symptomsQuery))) {
       console.log("REGEN QUICK FACTS");
-      await generateQuickFactsQueries(updatedPageContext, queries, setLocalQueries, setPageContext);
+      await generateQuickFactsQueries(updatedPageContext, queries, setLocalQueries, setPageContext, CRName, extendedAttributes);
     }
     setPageContext(updatedPageContext);
   }
@@ -273,7 +276,7 @@ export const loadPageDataFromFB = async (
   setPageContext: SetterOrUpdater<PageState>,
   setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>,
   careRecipientsInfo: Record<string, CareRecipientInfo>,
-  pageContext: PageState,
+  pageContext: PageState, extendedAttributes: ExtendedAttributes
 ) => {
   console.log('loading session data from fb');
   const ref = doc(db, 'PageContext', username);
@@ -287,7 +290,7 @@ export const loadPageDataFromFB = async (
       selectedCR
     };
     setPageContext(newPageState);
-    await loadCRData(newPageState, setPageContext, setLocalQueries, careRecipientsInfo);
+    await loadCRData(newPageState, setPageContext, setLocalQueries, careRecipientsInfo, extendedAttributes);
   } else {
     console.log('past session does not exits');
     setPageContext(samplePageState(username));
@@ -295,7 +298,7 @@ export const loadPageDataFromFB = async (
       samplePageState(username),
       setPageContext,
       setLocalQueries,
-      careRecipientsInfo
+      careRecipientsInfo, extendedAttributes
     );
   }
 };
@@ -306,6 +309,8 @@ export const loadQueryFromURL = async (
   queries: Record<string, QueryRecord>,
   setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>,
   searchQuery: string,
+  CRName: string,
+  extendedAttributes: ExtendedAttributes | undefined
 ) => {
   console.log('load query from url', queries);
   if (searchQuery !== '' && 
@@ -323,7 +328,7 @@ export const loadQueryFromURL = async (
       pageState.username,
       pageState.selectedCR,
       queries,
-      false);
+      false, CRName, extendedAttributes);
     setRemoteQueryRecord(query);
     console.log('the queries are', queries, "our query is: ", query);
     setLocalQueries({
@@ -348,6 +353,7 @@ export const fetchOnOpen = async (
   careRecipientsInfo: Record<string, CareRecipientInfo>,
   setSearchQuery: SetterOrUpdater<string>,
   setLoading: SetterOrUpdater<boolean>,
+  extendedAttributes: ExtendedAttributes
 ) => {
   // setLoading(true);
   // setSearchQuery('');
@@ -356,7 +362,7 @@ export const fetchOnOpen = async (
     setPageContext,
     setLocalQueries,
     careRecipientsInfo,
-    pageState
+    pageState, extendedAttributes
   );
   // await loadQueryFromURL(
   //   pageState,
@@ -440,10 +446,13 @@ export const loadCareGiverInfo = async (
 export const loadCareRecipientsInfo = async (
   pageState: PageState,
   setPageContext: SetterOrUpdater<PageState>,
-  setCareRecipientInfo: SetterOrUpdater<Record<string, CareRecipientInfo>>
+  setCareRecipientInfo: SetterOrUpdater<Record<string, CareRecipientInfo>>,
+  email: string,
+  password: string,
+  setExtendedAttributes: SetterOrUpdater<Record<string, ExtendedAttributes>>,
 ) => {
   console.log('making calls to caresuite!');
-  await loadCareRecipientsInfoFromCaresuite(pageState, setPageContext, setCareRecipientInfo);
+  await loadCareRecipientsInfoFromCaresuite(pageState, setPageContext, setCareRecipientInfo, email, password, setExtendedAttributes);
   // console.log('loading info on all care recipients');
   // setPageContext({
   //   ...pageState,

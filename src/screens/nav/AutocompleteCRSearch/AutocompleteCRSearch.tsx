@@ -4,6 +4,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import {
   NO_CR_SELECTED,
   careRecipientsInfoState,
+  extededAttributesState,
   pageContextState,
   queriesForCurrentCGState,
 } from '../../../state/recoil';
@@ -12,18 +13,25 @@ import { loadCRData } from '../../../state/fetching';
 import { setPartialPageContext } from '../../../state/setting';
 import { Avatar, Group, Pill, Select, SelectProps, Text } from '@mantine/core';
 import { UserRound } from 'lucide-react';
+import { ExtendedAttributes } from '../../../state/types';
+
+
+const caregiverName = (id: string, d: string, extendedAttributes: Record<string, ExtendedAttributes>) => {
+  return extendedAttributes[id] ? extendedAttributes[id].firstName + ' ' + extendedAttributes[id].lastName :d;
+}
 
 const AutocompleteUserSearch = () => {
   const allCGInfo = useRecoilValue(careRecipientsInfoState);
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
   const selectedCGValue = allCGInfo[pageContext.selectedCR];
+  const [extendedAttributes, setExtendedAttributes] = useRecoilState(extededAttributesState);
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
   const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
-
+  
   const options = Object.values(allCGInfo)
     .filter(v => v.uuid !== NO_CR_SELECTED)
     .map(v => ({
-      label: v.name,
+      label: caregiverName(v.uuid, v.name, extendedAttributes),
       uuid: v.uuid,
       value: v.uuid,
     }));
@@ -36,7 +44,7 @@ const AutocompleteUserSearch = () => {
           value: 'NONE',
         }
       : {
-          label: selectedCGValue.name,
+          label: caregiverName(selectedCGValue.uuid, selectedCGValue.name, extendedAttributes),
           uuid: selectedCGValue.uuid,
           value: selectedCGValue.uuid,
         };
@@ -70,7 +78,8 @@ const AutocompleteUserSearch = () => {
             newPageState,
             setPageContext,
             setQueries,
-            careRecipientsInfo
+            careRecipientsInfo,
+            extendedAttributes[pageContext.selectedCR]
           );
         }}
       />

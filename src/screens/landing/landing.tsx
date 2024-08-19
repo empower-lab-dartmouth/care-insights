@@ -8,6 +8,9 @@ import SignUp from './signup';
 
 import { Button, Paper, Text, Input, Title, TextInput } from '@mantine/core';
 import { useCookies } from 'react-cookie';
+import { loadCareRecipientsInfo } from '../../state/fetching';
+import { useRecoilState } from 'recoil';
+import { careRecipientsInfoState, extededAttributesState, onOpenLoadingState, pageContextState } from '../../state/recoil';
 
 const defaultFormFields = {
   email: '',
@@ -19,6 +22,11 @@ function Home() {
   const [error, setError] = React.useState('');
   const [cookies, setCookie] = useCookies(['careInsightsUsername', 'careInsightsPassword']);
   const { search } = useLocation();
+  const [loading, setLoading] = useRecoilState(onOpenLoadingState);
+  const [careRecipientInfo, setCareRecipientInfo] = useRecoilState(
+    careRecipientsInfoState
+  );
+  const [pageState, setPageState] = useRecoilState(pageContextState);
 
   const handleClose = () => {
     setOpen(false);
@@ -27,7 +35,7 @@ function Home() {
   const handleOpen = () => {
     setOpen(true);
   };
-
+  const [extendedAttributes, setExtendedAttributes] = useRecoilState(extededAttributesState);
   const [formFields, setFormFields] = useState((cookies.careInsightsPassword !== undefined &&
     cookies.careInsightsPassword !== undefined &&
     cookies.careInsightsPassword !== '' &&
@@ -49,12 +57,20 @@ function Home() {
       // Send the email and password to firebase
       console.log(email, password);
       const userCredential = await signInUser(email, password, setCookie);
-
-      console.log('user credentials');
-      console.log(userCredential);
-
       if (userCredential) {
+        setLoading(true);
+        await loadCareRecipientsInfo(
+          pageState,
+          setPageState,
+          setCareRecipientInfo,
+          email,
+          password,
+          setExtendedAttributes
+          );
         resetFormFields();
+        console.log('user credentials');
+        console.log(userCredential);
+        setLoading(false);
         // console.log('navigate to INFO');
         // navigate(`/info${search}`);
       } else {
@@ -65,6 +81,7 @@ function Home() {
       }
     } catch (error: any) {
       // setError(error.message);
+      console.log('TESTING');
       alert(error.message);
       setCookie('careInsightsUsername', '');
       setCookie('careInsightsPassword', '');
@@ -129,3 +146,5 @@ function Home() {
 }
 
 export default Home;
+
+

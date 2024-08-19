@@ -19,24 +19,72 @@ export type PageState = {
     loadingCRInfo: boolean,
 }
 
+export type ExtendedAttributes = {
+    CRUUID: string,
+    firstName: string,
+    lastName: string,
+    yearOfBirth?: string,
+    gender?: string,
+    preferredLanguage?:string
+    roomNumber?:string,
+    hobbies?: string[],
+    music?:string,
+    mocaScore?:string,
+    hearing?:string,
+    symptoms?:string[],
+    communicationLevel?:string,
+    isolationLevel?:string,
+    eyesight?: string,
+    thingsToTalkAbout?:string,
+    activitiesToDo?:string,
+    avoid?:string,
+    waysToRedirect?:string,
+    historyOfIncidents?:string,
+}
+
 export type HeatMapDataPoint = number
 
 export type HeatmapData = {
     attention: HeatMapDataPoint[]
 }
 
-export type MomentType = 'positive-music' | 'redirection' | 'memory-recall' | 'note'
+export type ProgramEventMoment = {
+    type: 'programEvent'
+    startTime: number
+    endTime: number
+    uuid: string
+    programName: string
+    themeName: string
+    description: string
+}
+
+export type SongEventMoment = {
+    type: 'song'
+    startTime: number
+    endTime: number
+    uuid: string
+    programName: string
+    albumCover: string
+    description: string
+    songTitle: string
+    artistName: string
+    isrc: string
+}
+
+export type MomentType = 'positiveMusic' | 'redirection' | 'memoryRecall' | 'note' | 'frustration'
 export type SelectorValue<T = string> = {
     label: string
     value: T
 }
 
-export type MeaningfulMoment = {
+export type DescriptiveMoment = {
     startTime: number
     uuid: string,
     description: string,
     type: MomentType
 }
+
+export type MeaningfulMoment = DescriptiveMoment | ProgramEventMoment | SongEventMoment;
 
 export type CRAutoselectOption = {
     label: string,
@@ -75,11 +123,27 @@ export type CommonEventFields = {
     deleted?: 'true'
 }
 
+export type TranscriptSegment = {
+    text: string,
+    offsetSeconds: number,
+}
+
 export type MusicProgramEvent = {
     type: 'music-event',
+    facilityId: string,
     videoUrl: string,
-    meaningfulMoments: Record<string, MeaningfulMoment>
-    transcript?: string
+    muxPlaybackId: string,
+    muxAssetId: string,
+    postTestMood: string,
+    preTestMood: string,
+    symptom: string,
+    strategy: string,
+    therapyEffectiveness: string,
+    careRecipientName: string,
+    caregiverName: string,
+    heatmap: string,
+    meaningfulMoments: Record<string, MeaningfulMoment>,
+    transcript: TranscriptSegment[],
 } & CommonEventFields
 
 export type ManualEntryEvent = {

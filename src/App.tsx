@@ -13,6 +13,7 @@ import {
   careFacilitiesState,
   careRecipientsInfoState,
   caregiversInfoState,
+  extededAttributesState,
   onOpenLoadingState,
   pageContextState,
   queriesForCurrentCGState,
@@ -30,15 +31,31 @@ import CareInsightsPage from './screens/summaryInsights/CareInsights';
 import { CookiesProvider } from 'react-cookie';
 import CircularProgress from '@mui/material/CircularProgress';
 import UserShell from './components/UserShell';
+import { useCookies } from 'react-cookie';
 
+const defaultFormFields = {
+  email: '',
+  password: ''
+};
 
 const App = () => {
   const { currentUser } = useContext(AuthContext);
   const navigate = useNavigate();
   const [pageState, setPageState] = useRecoilState(pageContextState);
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
+  const [cookies, setCookie] = useCookies(['careInsightsUsername', 'careInsightsPassword']);
+  const [extendedAttributes, setExtendedAttributes] = useRecoilState(extededAttributesState);
   const [caregiverInfo, setCaregiversInfo] =
     useRecoilState(caregiversInfoState);
+    const [formFields, setFormFields] = React.useState((cookies.careInsightsPassword !== undefined &&
+      cookies.careInsightsPassword !== undefined &&
+      cookies.careInsightsPassword !== '' &&
+      cookies.careInsightsUsername !== '') ?
+      {
+        email: cookies.careInsightsUsername,
+        password: cookies.careInsightsPassword
+      } :
+      defaultFormFields);
   const [careRecipientInfo, setCareRecipientInfo] = useRecoilState(
     careRecipientsInfoState
   );
@@ -47,12 +64,15 @@ const App = () => {
 
   useEffect(() => {
     async function fetch() {
-      if (currentUser && pageState.insightsQuery.queryResponse === 'loading') {
+      if (currentUser && formFields.password !== '' && formFields.email !== '' && pageState.insightsQuery.queryResponse === 'loading') {
         setLoading(true);
         await loadCareRecipientsInfo(
           pageState,
           setPageState,
-          setCareRecipientInfo
+          setCareRecipientInfo,
+          formFields.email,
+          formFields.password,
+          setExtendedAttributes
         );
         // const q = await fetchOnOpen(
         //   pageState,

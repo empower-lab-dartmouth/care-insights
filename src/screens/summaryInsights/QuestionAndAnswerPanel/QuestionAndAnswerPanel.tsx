@@ -1,9 +1,11 @@
 import React, { useContext, useState } from 'react';
 import {
+  careRecipientsInfoState,
+  extededAttributesState,
   pageContextState,
   queriesForCurrentCGState,
 } from '../../../state/recoil';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import SuggestedText from '../SuggestedText/SuggestedText';
@@ -83,10 +85,13 @@ const QuestionAndAnswerPanel: React.FC = () => {
   const [editedResponse, setEditedResponse] = useState(
     pageContext.insightsQuery.queryResponse
   );
+  const extendedAttributes = useRecoilValue(extededAttributesState);
   const [forceUpdateRequired, setForceUpdateRequired] = useState(false);
+  const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
   const alreadyApproved =
     pageContext.insightsQuery.dateApproved !== undefined &&
     pageContext.insightsQuery.CGUUID === (currentUser?.email as string);
+  const CRName = careRecipientsInfo[pageContext.selectedCR] ? careRecipientsInfo[pageContext.selectedCR].name : 'Care recipient';
   const handleLocalQueryResponse = (q: QueryRecord) => {
     setQueries({
       ...queries,
@@ -109,7 +114,9 @@ const QuestionAndAnswerPanel: React.FC = () => {
       currentUser?.email as string,
       pageContext.selectedCR,
       queries,
-      false
+      false,
+      CRName,
+      extendedAttributes[pageContext.selectedCR]
     );
     setForceUpdateRequired(true);
     setLoadingResponse(false);
@@ -157,6 +164,9 @@ const QuestionAndAnswerPanel: React.FC = () => {
     setFeedbackInput('');
   };
   const queryModified = pageContext.insightsQuery.query !== editingQuery;
+  if (CRName == 'Care recipient') {
+    return (<Text>Use the dropdown above to choose a care recipient</Text>)
+  }
   return (
     <div className='relative min-h-[82vh]'>
       <Card className='mt-[30px] border border-gray-200' shadow='xs' p='lg'>

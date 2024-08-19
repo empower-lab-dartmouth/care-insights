@@ -5,7 +5,7 @@ import styles from "./streamgraph.module.css";
 import { Labels } from "./Labels";
 import { WideDataItem } from "./utils";
 
-const MARGIN = { top: 30, right: 300, bottom: 50, left: 50 };
+const MARGIN = { top: 30, right: 250, bottom: 50, left: 50 };
 
 export const attentionColumnName = 'Heightened attention to program';
 export const reactionColumnName = 'Heightened physical engagement in program';

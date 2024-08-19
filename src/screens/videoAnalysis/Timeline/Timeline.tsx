@@ -37,6 +37,8 @@ import { setRemoteProgramEvent } from '../../../state/setting';
 import CommonRowControls from '../CommonRowControls/CommonRowControls';
 import MovieIcon from '@mui/icons-material/Movie';
 import HideSourceIcon from '@mui/icons-material/HideSource';
+import { Avatar } from '@mantine/core';
+import { IconArrowBounce, IconCornerRightDown, IconCornerRightUp, IconMoodNervous, IconPlayerPlay } from '@tabler/icons-react';
 
 const inputStyles = {
   'width': '100%',
@@ -56,20 +58,26 @@ type TimelineProps = {
 
 function eventHeader(moment: MeaningfulMoment) {
   switch (moment.type) {
-    case 'memory-recall':
+    case 'memoryRecall':
       return 'Memory recall';
     case 'redirection':
       return 'Redirection';
     case 'note':
       return 'Note';
-    case 'positive-music':
-      return 'Positive response to music';
+    case 'positiveMusic':
+      return 'Heightened positive engagement';
+    case 'frustration':
+      return 'Frustration';
+    case 'song':
+      return '🎶' + moment.songTitle;
+    case 'programEvent':
+      return 'New care program started';
   }
 }
 
 function icon(moment: MeaningfulMoment) {
   switch (moment.type) {
-    case 'memory-recall':
+    case 'memoryRecall':
       return (
         <TimelineDot>
           <FavoriteIcon />
@@ -77,8 +85,8 @@ function icon(moment: MeaningfulMoment) {
       );
     case 'redirection':
       return (
-        <TimelineDot color='error'>
-          <ErrorOutlineIcon />
+        <TimelineDot>
+          <IconArrowBounce />
         </TimelineDot>
       );
     case 'note':
@@ -87,10 +95,34 @@ function icon(moment: MeaningfulMoment) {
           <NotesIcon />
         </TimelineDot>
       );
-    case 'positive-music':
+    case 'positiveMusic':
       return (
         <TimelineDot>
-          <MusicNoteIcon />
+          <IconCornerRightUp />
+        </TimelineDot>
+      );
+    case 'frustration':
+      return (
+        <TimelineDot>
+          <IconCornerRightDown />
+        </TimelineDot>
+      );
+    case 'song':
+      return (
+        // <TimelineDot>
+          <Avatar
+            variant='light'
+            // size={0}
+            src={moment.albumCover}
+            alt='Album cover'
+          />
+          ///* <MusicNoteIcon /> */
+        // </TimelineDot>
+      );
+    case 'programEvent':
+      return (
+        <TimelineDot>
+          <IconPlayerPlay />
         </TimelineDot>
       );
   }
@@ -118,15 +150,19 @@ const Options: React.FC<OptionsProps> = ({ moment, updateMomentType }) => {
     },
     {
       label: 'Positive response to music',
-      value: 'positive-music',
+      value: 'positiveMusic',
     },
     {
       label: 'Memory recall',
-      value: 'memory-recall',
+      value: 'memoryRecall',
     },
     {
       label: 'Note',
       value: 'note',
+    },
+    {
+      label: 'Frustration',
+      value: 'frustration',
     },
   ];
 

@@ -8,6 +8,7 @@ import {
   MusicProgramEvent,
   ProgramEvent,
   RedirectionLevel,
+  TranscriptSegment,
 } from '../../../state/types';
 import DataTable, { TableColumn } from 'react-data-table-component';
 
@@ -48,7 +49,7 @@ type MusicEventRow = CommonRowFields & {
   setMeaningfulMoments: (
     meaningfulMoments: Record<string, MeaningfulMoment>
   ) => void;
-  transcript?: string;
+  transcript: TranscriptSegment[];
 };
 
 type ManualEntryRow = CommonRowFields & {
@@ -187,13 +188,13 @@ const programEventsToRows: (
         ...l,
         description: l.description,
         date: new Date(l.date).toString(),
-        CRName: CRInfo[l.CRUUID].name,
+        CRName: l.careRecipientName, //CRInfo[l.CRUUID].name,
         programEvent: l,
         setMeaningfulMoments: updateMeaningfulMoments(l.uuid),
         setProgramEvent: updateProgramEvent(l.uuid),
         engagement: l.engagement,
         redirection: l.redirection,
-        CGName: l.CGUUID,
+        CGName: l.caregiverName, // TODO revert back
         defaultExpanded: false,
       };
     } else {
@@ -201,7 +202,7 @@ const programEventsToRows: (
         ...l,
         description: l.description,
         date: new Date(l.date).toString(),
-        CRName: CRInfo[l.CRUUID].name,
+        CRName: CRInfo[l.CRUUID] != undefined ? CRInfo[l.CRUUID].name : '',
         programEvent: l,
         engagement: l.engagement,
         CGName: l.CGUUID,
@@ -255,10 +256,11 @@ const ProgramEventsTable: React.FC = () => {
   const title =
     pageContext.selectedCR === NO_CR_SELECTED
       ? 'Showing recent events for ' + 'all care recipients'
-      : `Showing events for ${CRInfo[pageContext.selectedCR].name}`;
+      : `${CRInfo[pageContext.selectedCR] != undefined ? 'Showing events for ' + CRInfo[pageContext.selectedCR].name : ''}`;
 
   return (
     <div className='mt-12'>
+      {/* {JSON.stringify(pageContext.selectedCRProgramEvents)} */}
       <DataTable
         columns={columns}
         data={data}

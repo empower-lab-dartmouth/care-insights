@@ -1,9 +1,10 @@
 import { v4 } from 'uuid';
 import { QueryRecord } from './queryingTypes';
 import { timeout } from './sampleData';
-import { CRProgramEvents, ProgramEvent } from './types';
+import { CRProgramEvents, ExtendedAttributes, ProgramEvent } from './types';
 import { setRemoteQueryRecord } from './setting';
 import OpenAI from 'openai';
+import { formatExtendedAttributesAsInfoBox } from '../screens/summaryInsights/CareInsights';
 
 // Access the variable
 const openAPIKey = import.meta.env.VITE_REACT_APP_OPENAI_API_KEY;
@@ -51,14 +52,34 @@ export async function getRelevantQueries(
   return relevantQueries;
 }
 
+const getDescriptionOfEvent: (programEvent: ProgramEvent) => string = (p) => {
+  if (p.type == 'manual-entry-event') {
+    return p.description;
+  } else {
+    if (Object.values(p.meaningfulMoments).length > 0) {
+      return '';
+    } else {
+      const description = 'In this session, the following happened: '
+      return description + Object.values(p.meaningfulMoments).map((m) => {
+        m.description
+      }).join(' ');
+    }
+  }
+}
+
+
 // TODO: Bansharee (helper function)
 export async function getRelevantRecords(
   inputQuery: string,
   allCREvents: CRProgramEvents
 ) {
-  const relevantEvents: ProgramEvent[] = [];
+  const relevantEvents: string[] = [];
 
   for (const e of Object.values(allCREvents)) {
+    const eventDescription = getDescriptionOfEvent(e);
+    if (eventDescription == '') {
+      continue;
+    }
     // get gpt to figure out relevance
     const prompt = `You are the assistant to a therapist.
             The therapist takes notes during sessions with the patient.
@@ -79,7 +100,7 @@ export async function getRelevantRecords(
     // console.log(res.choices[0]);
     // console.log(res.choices[0].message.content);
     if (res.choices[0].message.content == 'Y') {
-      relevantEvents.push(e);
+      relevantEvents.push(eventDescription);
     }
   }
 
@@ -88,7 +109,24 @@ export async function getRelevantRecords(
   return relevantEvents;
 }
 
-// TODO: Bansharee
+const complileExtendedAttributesIntoPrompt = (e: ExtendedAttributes) => {
+  const start = formatExtendedAttributesAsInfoBox(e);
+  const checkIfReported = (i: string | undefined) => {
+    return i !== undefined && i !== '' && i !== 'Not reported';
+  }
+  const thingsToTalkAbout = checkIfReported(e.thingsToTalkAbout) ? 'Things to talk about: ' + e.thingsToTalkAbout + '. ' : '';
+  const activitiesToDo = checkIfReported(e.activitiesToDo) ? 'Activities to do: ' + e.activitiesToDo + '. ' : '';
+  const thingsToAvoid = checkIfReported(e.avoid) ? 'Things to avoid: ' + e.avoid + '. ' : '';
+  const symptoms = e.symptoms != undefined && e.symptoms.length > 0 ? 'Symptoms to watch for: ' + e.symptoms.join(', ') + '. ' : '';
+  const redirect = checkIfReported(e.waysToRedirect) ? 'Ways to redirect: ' + e.waysToRedirect + '. ' : '';
+  const hobbies = e.hobbies && e.hobbies.length > 0 ? 'Care recipients hobbies: ' + e.hobbies.join(', ') + '. ': '';
+  const history = checkIfReported(e.historyOfIncidents) ? 'Care recipients history of incidents: ' + e.historyOfIncidents + '. ': '';
+  const music = checkIfReported(e.music) ? 'Music preferences: ' + e.music + '. ': '';
+  const joined = [thingsToTalkAbout, activitiesToDo, thingsToAvoid, symptoms, redirect, hobbies, history, music]
+  .filter((v) => v !== '').join(' ');
+  return 'Details about the care recipient: ' + start.map((v) => v.label + ': ' + v.value + '.').join(' ') + joined;
+}
+
 export async function askQuery(
   inputQuery: string,
   handleLocalResponse: (q: QueryRecord) => void,
@@ -97,6 +135,8 @@ export async function askQuery(
   CRUUID: string,
   allCRQueries: Record<string, QueryRecord>,
   overwritePrior: boolean,
+  caregiverName: string,
+  extendedAttributes: ExtendedAttributes | undefined,
 ) {
   console.log('input query: ', inputQuery);
   const existingQueryMatchesExactly = allCRQueries[inputQuery];
@@ -111,33 +151,33 @@ export async function askQuery(
     }
     console.log('overwriting existing for ' + existingQueryMatchesExactly.query);
   }
-  const relevantQueries = await getRelevantQueries(inputQuery, allCRQueries);
+  const relevantQueries = (await getRelevantQueries(inputQuery, allCRQueries));
   const relevantQueryResponses: String[] = [];
-  const relevantRecords = getRelevantRecords(inputQuery, allCREvents);
+  const relevantRecords = (await getRelevantRecords(inputQuery, allCREvents)).join(', Next record: ');
 
   // we need query responses, not queries themselves
   for (const q of Object.values(relevantQueries)) {
-    relevantQueryResponses.push(q.queryResponse);
+    relevantQueryResponses.push('Question: ' + q.query + 'Response: ' + q.queryResponse);
   }
 
+  const ext = extendedAttributes ? complileExtendedAttributesIntoPrompt(extendedAttributes) : '';
   // console.log('here are the responses to relevant queries:');
   // console.log(relevantQueryResponses);
 
-  const fakeName = CRUUID;
   const prompt = `you are an expert memory loss therapist
-        with deep knowldge of ${fakeName}. A less knowlegable
+        with deep knowldge of ${caregiverName}. A less knowlegable
         peer caregiver asks you the question:
-        ${inputQuery}. Answer the question. Your response
-        should use information from past responses,
-        namely: ${relevantQueryResponses}. You can also draw on the following records you have, ${relevantRecords} 
-        Format your response as a short list of bullet points, 
-        where each bullet is a short sentence or phrase (no more than eight words).`;
+        "${inputQuery}"
+        Answer the question. Your response should use information from past responses, namely: ${relevantQueryResponses.join(', ')}. You should heavily draw on the following care note you have, created by caregivers. ${ext} Care notes: ${relevantRecords}. 
+
+
+        Format your response as a short list of bullet points, where each bullet is a short sentence or phrase (no more than five words). Again, heavily leverage the care records, reference specific info from the care notes, such as songs or family memories.`;
 
   const queryResponse = await openai.chat.completions.create({
     messages: [{ role: 'user', content: prompt }],
     model: 'gpt-3.5-turbo',
   });
-
+  console.log('PROMPT', prompt);
   const ChatGPTResponse = '' + queryResponse.choices[0].message.content;
   const completedQuery: QueryRecord = {
     query: inputQuery,

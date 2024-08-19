@@ -5,11 +5,13 @@ import {
   MusicProgramEvent,
   ProgramEvent,
 } from '../../../state/types';
+import MuxPlayer from '@mux/mux-player-react';
 import EventsTimeline from '../Timeline/Timeline';
 import Stack from '@mui/material/Stack';
 import HeatMap from '../HeatMap/HeatMap';
 import Transcript from '../Transcript/Transcript';
 import { StreamGraphPageViewsDemo } from '../programEventsTable/StreamGraph/StreamGraphPageViewsDemo';
+
 
 type VideoPlayerProps = {
   videoSrc: string;
@@ -23,10 +25,9 @@ type VideoPlayerProps = {
 const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const { videoSrc, setProgramEvent, programEvent, setMeaningfulMoments } =
     props;
-  const [showVideo, setShowVideo] = useState(false);
+  const [showVideo, setShowVideo] = useState(programEvent.transcript.length === 0);
   return (
     <>
-    <p>{JSON.stringify(programEvent)}</p>
       <Stack
         direction='row'
         justifyContent='space-between'
@@ -42,15 +43,39 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
         />
         {showVideo ? (
           <div>
-            <ReactPlayer url={videoSrc} />
-            <br />
-            <HeatMap />
+            {
+              videoSrc === 'video-missing' ?
+                <>
+                  <h1>MUX</h1>
+                  {programEvent.muxAssetId}
+                  {programEvent.muxPlaybackId}
+                  <MuxPlayer
+                    playbackId={programEvent.muxAssetId}
+                    tokens={{
+                      playback: programEvent.muxPlaybackId
+                    }}
+                    streamType="on-demand"
+                  />
+                </>
+                :
+                <>
+                  <ReactPlayer controls={true} url={videoSrc} />
+                  {
+                    programEvent.transcript.length > 0 ?
+                      <Transcript transcriptSegments={programEvent.transcript} /> :
+                      <></>
+                  }
+                </>
+            }
           </div>
         ) : (
           <></>
         )}
       </Stack>
-      <Transcript />
+      {
+        programEvent.heatmap != undefined && programEvent.heatmap.length > 4 ?
+          <StreamGraphPageViewsDemo heatmap={programEvent.heatmap} /> : <></>
+      }
     </>
   );
 };

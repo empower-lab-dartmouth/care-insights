@@ -3,6 +3,7 @@ import {
   CRProgramEvents,
   CareRecipientInfo,
   CaregiverInfo,
+  ExtendedAttributes,
   FacilityInfo,
   PageState,
   ProgramEvent,
@@ -27,8 +28,8 @@ import { partnerAuth, partnerDb } from './partner-firebase';
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { DEFAULT_PROFILE_IMAGE } from './sampleData';
 
-export const caregiverEmail = 'mmemcara@well'; //'bmorgan-at-oakwoodmanor@memcara.com';
-export const caregiverPassword = 'dartmouth';
+// export const caregiverEmail = 'mmemcara@well'; //'bmorgan-at-oakwoodmanor@memcara.com';
+// export const caregiverPassword = 'dartmouth';
 // export const caregiverEmail = 'bmorgan-at-oakwoodmanor@memcara.com';
 // export const caregiverPassword = 'samuelson';
 
@@ -39,60 +40,118 @@ export const convertEmailToMemcaraEmail = (input: string) => {
   return input.replaceAll("@", '-at-') + '@memcara.com';
 }
 
+const conditionallyGet = (obj: any, field: string) => {
+  if (field in obj) {
+    return obj[field];
+  } else {
+    return undefined;
+  }
+}
+
+const formatAsExtendedAttributes: (input: any[]) => Record<string, ExtendedAttributes> = (input) => {
+  const outputEmpty: Record<string, ExtendedAttributes> = {};
+  return input.filter((v) => v !== undefined && v.exists())
+    .map((v) => {
+      const data = v.data();
+      const CRUUID = v.id;
+      const result: ExtendedAttributes = {
+        CRUUID,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        yearOfBirth: conditionallyGet(data, 'yearOfBirth'),
+        gender: conditionallyGet(data, 'gender'),
+        preferredLanguage: conditionallyGet(data, 'preferredLanguage'),
+        roomNumber: conditionallyGet(data, 'roomNumber'),
+        hobbies: conditionallyGet(data, 'hobbies'),
+        music: conditionallyGet(data, 'music'),
+        mocaScore: conditionallyGet(data, 'mocaScore'),
+        hearing: conditionallyGet(data, 'hearing'),
+        symptoms: conditionallyGet(data, 'symptoms'),
+        communicationLevel: conditionallyGet(data, 'communicationLevel'),
+        isolationLevel: conditionallyGet(data, 'isolationLevel'),
+        eyesight: conditionallyGet(data, 'eyesight'),
+        thingsToTalkAbout: conditionallyGet(data, 'thingsToTalkAbout'),
+        activitiesToDo: conditionallyGet(data, 'activitiesToDo'),
+        avoid: conditionallyGet(data, 'avoid'),
+        waysToRedirect: conditionallyGet(data, 'waysToRedirect'),
+        historyOfIncidents: conditionallyGet(data, 'historyOfIncidents'),
+      };
+      // console.log('EXTENDED ATTRIBUTES', result, v);
+      return result;
+    }).reduce(
+      (acc, curr) => ({
+      ...acc,
+  [curr.CRUUID]: curr,
+    }),
+outputEmpty
+  );
+}
+
+
 export const loadCareRecipientsInfoFromCaresuite = async (
-    pageState: PageState,
-    setPageContext: SetterOrUpdater<PageState>,
-    setCareRecipientInfo: SetterOrUpdater<Record<string, CareRecipientInfo>>
-  ) => {
-    console.log('loading info on all care recipients from care suite');
-    setPageContext({
-      ...pageState,
-      loadingCRInfo: true,
-    });
-    // console.log('try to sign in');
+  pageState: PageState,
+  setPageContext: SetterOrUpdater<PageState>,
+  setCareRecipientInfo: SetterOrUpdater<Record<string, CareRecipientInfo>>,
+  caregiverEmail: string,
+  caregiverPassword: string,
+  setExtendedAttributes: SetterOrUpdater<Record<string, ExtendedAttributes>>,
+) => {
+  console.log('loading info on all care recipients from care suite');
+  setPageContext({
+    ...pageState,
+    loadingCRInfo: true,
+  });
+  // console.log('try to sign in');
   // Given the signed in user's credentials, let's enumerate all the Cr's that he/she can access
   console.log('try to sign in');
   const userCred = await signInWithEmailAndPassword(partnerAuth, convertEmailToMemcaraEmail(caregiverEmail), caregiverPassword);
   console.log('get authorized recipients', userCred);
   const snap = await getDoc(doc(partnerDb, 'account-users', userCred.user.uid));
   const accountId = snap.data()?.accountId;
-  
+
   const [snapAccount, snapCaregiver, snapRecipientsInAccount, snapRecipientsAssignedToCaregiver] = await Promise.all([
     getDoc(doc(partnerDb, 'accounts', accountId)),
     getDoc(doc(partnerDb, 'facility-caregivers', userCred.user.uid)),
     getDocs(query(collection(partnerDb, 'recipients'), where('accountId', '==', accountId), where('removed', '==', false))),
-    getDocs(query(collection(partnerDb, 'recipient-caregivers'), where('caregiverId', '==', userCred.user.uid)))
-    ]);
-    
-    const globalRecipientAccess = snapAccount.exists() ? (snapAccount.data().globalRecipientAccess ?? false) : false;
-    const caregiverPosition = snapCaregiver.exists() ? (snapCaregiver.data().position ?? 'unknown') : 'unknown';
-    const recipientsInAccount = snapRecipientsInAccount.docs.map(doc => ({ recipientId: doc.id, displayName: doc.data().displayName as string }));
-    const recipientsAssignedToCaregiver = snapRecipientsAssignedToCaregiver.docs.map(doc => ({ recipientId: doc.data().recipientId as string}));
-    
-    const pinnedRecipients = recipientsAssignedToCaregiver.map(rc => ({ recipientId: rc.recipientId, displayName: recipientsInAccount.find(r => r.recipientId === rc.recipientId)?.displayName ?? 'unknown'}));
-    const searchRecipients = (['Family', 'Volunteer'].includes(caregiverPosition) ? [] : (!globalRecipientAccess ? [] : (recipientsInAccount.map(r => ({ recipientId: r.recipientId, displayName: r.displayName})))));
-    await signOut(partnerAuth);
-    const result: CareRecipientInfo[] = snapRecipientsInAccount.docs.map((doc) => ({
-      imageURL: DEFAULT_PROFILE_IMAGE, // Not set yet
-      name: doc.data().displayName, 
-            infoBox: [],
-            facilityID: 'NA', // Not used anymore
-            dateCreated: 1, // Not used  anymore
-            uuid: doc.id,
-    }));
-    const temp: Record<string, CareRecipientInfo> = {};
-    const careRecipients: Record<string, CareRecipientInfo> = result.reduce(
-      (acc, curr) => ({
-        ...acc,
-        [curr.uuid]: curr,
-      }),
-      temp
-    );
-    setCareRecipientInfo(careRecipients);
-    setPageContext({
-      ...pageState,
-      loadingCRInfo: false,
-    });
-    // console.log('RESULT', result);
-    // return result;
-    }
+    getDocs(query(collection(partnerDb, 'recipient-caregivers'), where('caregiverId', '==', userCred.user.uid))),
+    // getDocs(query(collection(partnerDb, 'facility-recipients'), where('accountId', '==', 'rUIbBTZwy1RAxFuYS1B0'))),
+  ]);
+
+  // console.log('CAREGIVERS ASSIGNED TO ACCOUNT', snapRecipientsInAccount.docs.filter((d) => d.data()['displayName'] == 'b.bunny'));
+  // console.log('B_BUNNY EXTENDED ATTRIBUTES', snapFacilityRecipients.docs.map((d) => d.data()));
+  const globalRecipientAccess = snapAccount.exists() ? (snapAccount.data().globalRecipientAccess ?? false) : false;
+  const caregiverPosition = snapCaregiver.exists() ? (snapCaregiver.data().position ?? 'unknown') : 'unknown';
+  const recipientsInAccount = snapRecipientsInAccount.docs.map(doc => ({ recipientId: doc.id, displayName: doc.data().displayName as string }));
+  const recipientsAssignedToCaregiver = snapRecipientsAssignedToCaregiver.docs.map(doc => ({ recipientId: doc.data().recipientId as string }));
+
+  const pinnedRecipients = recipientsAssignedToCaregiver.map(rc => ({ recipientId: rc.recipientId, displayName: recipientsInAccount.find(r => r.recipientId === rc.recipientId)?.displayName ?? 'unknown' }));
+  const searchRecipients = (['Family', 'Volunteer'].includes(caregiverPosition) ? [] : (!globalRecipientAccess ? [] : (recipientsInAccount.map(r => ({ recipientId: r.recipientId, displayName: r.displayName })))));
+  // await signOut(partnerAuth);
+  const result: CareRecipientInfo[] = snapRecipientsInAccount.docs.map((doc) => ({
+    imageURL: DEFAULT_PROFILE_IMAGE, // Not set yet
+    name: doc.data().displayName,
+    infoBox: [],
+    facilityID: 'NA', // Not used anymore
+    dateCreated: 1, // Not used  anymore
+    uuid: doc.id,
+  }));
+  const careRecipientExtendedAttributes = await Promise.all(result.map((r) => getDoc(doc(partnerDb, "facility-recipients", r.uuid))));
+  // console.log('EXTENDED ATTRIBUTES', careRecipientExtendedAttributes);
+  setExtendedAttributes(formatAsExtendedAttributes(careRecipientExtendedAttributes));
+
+  const temp: Record<string, CareRecipientInfo> = {};
+  const careRecipients: Record<string, CareRecipientInfo> = result.reduce(
+    (acc, curr) => ({
+      ...acc,
+      [curr.uuid]: curr,
+    }),
+    temp
+  );
+  setCareRecipientInfo(careRecipients);
+  setPageContext({
+    ...pageState,
+    loadingCRInfo: false,
+  });
+  // console.log('RESULT', result);
+  // return result;
+}

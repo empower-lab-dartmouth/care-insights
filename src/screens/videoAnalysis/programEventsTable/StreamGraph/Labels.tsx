@@ -44,12 +44,12 @@ export const Labels = ({
           stroke-dasharray={2}
         />
         {/* Bar that creates a bar chart */}
-        <BarItem
+        {/* <BarItem
           color={label.color}
           x={xScale(0)}
           y={label.position - BAR_HEIGHT / 2}
           width={xScale(label.value) - xScale(0)}
-        />
+        /> */}
         {/* Name of the group */}
         <text
           x={xStart + PADDING_LEFT + 2}
@@ -60,7 +60,7 @@ export const Labels = ({
           stroke="#808080"
           fill="none"
         >
-          {label.name + " | " + cleanValue + "%"}
+          {label.name}
         </text>
       </g>
     );
