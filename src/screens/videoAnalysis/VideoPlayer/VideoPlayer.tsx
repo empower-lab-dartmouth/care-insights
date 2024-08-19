@@ -5,7 +5,6 @@ import {
   MusicProgramEvent,
   ProgramEvent,
 } from '../../../state/types';
-import MuxPlayer from '@mux/mux-player-react';
 import EventsTimeline from '../Timeline/Timeline';
 import Stack from '@mui/material/Stack';
 import HeatMap from '../HeatMap/HeatMap';
@@ -44,26 +43,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
         {showVideo ? (
           <div>
             {
-              videoSrc === 'video-missing' ?
-                <>
-                  <h1>MUX</h1>
-                  {programEvent.muxAssetId}
-                  {programEvent.muxPlaybackId}
-                  <MuxPlayer
-                    playbackId={programEvent.muxAssetId}
-                    tokens={{
-                      playback: programEvent.muxPlaybackId
-                    }}
-                    streamType="on-demand"
-                  />
-                </>
-                :
+              videoSrc === 'video-missing' ? <h3>This video is no longer available</h3> :
                 <>
                   <ReactPlayer controls={true} url={videoSrc} />
                   {
                     programEvent.transcript.length > 0 ?
-                      <Transcript transcriptSegments={programEvent.transcript} /> :
-                      <></>
+                  <Transcript transcriptSegments={programEvent.transcript} /> :
+                  <></>
                   }
                 </>
             }
