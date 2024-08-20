@@ -49,7 +49,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
                 <>
                 {/* <PlayMux />
                 {programEvent.muxPlaybackId} */}
-                {programEvent.muxAssetId}
+                {/* {programEvent.muxAssetId} */}
                   <ReactPlayer controls={true} url={videoSrc} />
                   {
                     programEvent.transcript.length > 0 ?
