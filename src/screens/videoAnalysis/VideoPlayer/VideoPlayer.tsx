@@ -47,9 +47,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
             {
               videoSrc === 'video-missing' ? <h3>This video is no longer available</h3> :
                 <>
-                <PlayMux />
-                {programEvent.muxPlaybackId}
-                <br />
+                {/* <PlayMux />
+                {programEvent.muxPlaybackId} */}
                 {programEvent.muxAssetId}
                   <ReactPlayer controls={true} url={videoSrc} />
                   {
