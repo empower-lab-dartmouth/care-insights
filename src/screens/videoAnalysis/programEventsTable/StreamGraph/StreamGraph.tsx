@@ -29,7 +29,7 @@ export const StreamGraph = ({ width, resolutionWindow, height, data }: StreamGra
   const boundsHeight = height - MARGIN.top - MARGIN.bottom;
 
   const groups = [symptomColumnName, attentionColumnName, reactionColumnName, emotionColumnName, memoryRecallColumnName];
-  const colors = ['#EF233C','#00A5CF', '#9FFFCB', '#FFC8DD', '#CDB4DB'];
+  const colors = ['#EF233C','#91D9D2', '#5BA69E', '#278C36', '#41BF49'];
   // Data Wrangling: stack the data
   const stackSeries = d3
     .stack()

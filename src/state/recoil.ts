@@ -11,7 +11,7 @@ import { string } from '@recoiljs/refine';
 
 export const trackingTimeUntilNextPush = atom<number>({
   key: 'tracking-elapsed-time',
-  default: 30000, // 30 sec
+  default: 4500, // 30 sec
 });
 
 export const defaultQueryLoading: QueryRecord = {
@@ -162,28 +162,37 @@ export type SessionActivityEvent = {
   startDate: number
   id: string
   username: string
-  videoAnalysis: UserActivityReport
-  summaryInsights: UserActivityReport
+  viewingCR: Record<string, number>
+  snapshot: UserActivityReport
+  questions: UserActivityReport
+  programEvents: UserActivityReport
 }
 
 export type LoggedEvent = UserLoginEvent | SessionActivityEvent;
 
-export const SESSION_LENGTH = 900000; // 15 minutes.
+export const SESSION_LENGTH = 600000; // 10 minutes.
 
-export const newActivtySession: (username: string,
+export const newActivtySession: (
+  username: string,
   startDate: number) => SessionActivityEvent = (
     username, startDate) => ({
       type: 'session',
       date: startDate + SESSION_LENGTH,
       startDate,
-      id: `sess-act-${username}-${startDate}`,
+      id: `${username}-${startDate}`,
       username,
-      videoAnalysis: {
+      viewingCR: {},
+      snapshot: {
         events: 0,
         idleTime: 0,
         activeTime: 0,
       },
-      summaryInsights: {
+      questions: {
+        events: 0,
+        idleTime: 0,
+        activeTime: 0,
+      },
+      programEvents: {
         events: 0,
         idleTime: 0,
         activeTime: 0,
@@ -197,7 +206,7 @@ export const userIsActiveState = atom<boolean>({
 
 export const currentSessionActivityState = atom<SessionActivityEvent>({
   key: 'current-session-activity',
-  default: newActivtySession('NO-USER', (new Date()).getTime()),
+  default: newActivtySession('NO-USER',(new Date()).getTime()),
 });
 
 type QueryString = string

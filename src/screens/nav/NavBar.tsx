@@ -18,7 +18,7 @@ export default function Nav() {
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const { currentUser } = useContext(AuthContext);
   const { search } = useLocation();
-
+  
   return (
     <AppBar component='nav'>
       <Modal
@@ -29,7 +29,6 @@ export default function Nav() {
       >
         <LogoutModal closeModal={() => setLogoutModalOpen(false)} />
       </Modal>
-      <SessionTracker />
       {/* <Toolbar> */}
       <Stack
         direction='row'

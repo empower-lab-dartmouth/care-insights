@@ -7,6 +7,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../state/context/auth-context';
 import { IconLogout, IconMenu2, IconX } from '@tabler/icons-react';
 import { useCookies } from 'react-cookie';
+import SessionTracker from '../Tracker';
 
 
 const MenuButton = ({
@@ -40,6 +41,7 @@ const MenuButtons = () => {
   return (
     <div className='flex flex-col justify-between h-full'>
       <div className='flex flex-col gap-2'>
+      <SessionTracker />
         <MenuButton path='/info' icon={<Info size={18} />}>
           Snapshot
         </MenuButton>

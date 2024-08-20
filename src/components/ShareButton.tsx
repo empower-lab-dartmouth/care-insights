@@ -5,7 +5,7 @@ import { IconShare2 } from '@tabler/icons-react';
 import QRCode from "react-qr-code";
 import { exportComponentAsJPEG, exportComponentAsPDF, exportComponentAsPNG } from 'react-component-export-image';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { careRecipientsInfoState, pageContextState } from '../state/recoil';
+import { careRecipientsInfoState, extededAttributesState, pageContextState } from '../state/recoil';
 
 
 interface ShareButtonProps {
@@ -14,13 +14,6 @@ interface ShareButtonProps {
   title: string;
   showButton?: boolean;
 }
-
-const ComponentToPrint = React.forwardRef((props, ref: any) => (
-  <div ref={ref}>
-    <QRCode value={window.location.href}/>
-    </div>
-));
-
 
 const ShareButton = ({
   variant = 'outline',
@@ -34,8 +27,25 @@ const ShareButton = ({
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
   const filename =
     careRecipients[pageContext.selectedCR] !== undefined
-      ? careRecipients[pageContext.selectedCR].name + '_QR_Code' 
+      ? careRecipients[pageContext.selectedCR].name + '_QR_Code'
       : 'QR_Code';
+  const extendedAttributes = useRecoilValue(extededAttributesState);
+  const CRName1 =
+    careRecipients[pageContext.selectedCR] !== undefined
+      ? careRecipients[pageContext.selectedCR].name
+      : 'NONE';
+  const CRName = extendedAttributes[pageContext.selectedCR] !== undefined ?
+    extendedAttributes[pageContext.selectedCR].firstName + ' ' + extendedAttributes[pageContext.selectedCR].lastName : CRName1;
+
+  const ComponentToPrint = React.forwardRef((props, ref: any) => (
+    <div ref={ref}>
+      <QRCode value={window.location.href} />
+      <Center>
+        {CRName !== 'NONE' ? 
+        <h1>Care insights for:<br/><Center><b>{CRName}</b></Center></h1> : <></>}
+      </Center>
+    </div>
+  ));
 
   if (showButton == false) return null;
 
@@ -50,8 +60,8 @@ const ShareButton = ({
       </Button>
 
       <Modal opened={opened} onClose={close} title={title}>
-          <Center>
-        <div className='flex flex-col gap-3'>
+        <Center>
+          <div className='flex flex-col gap-3'>
             {/* <Select
             label='Caregiver'
             placeholder='Select a caregiver'
@@ -62,11 +72,11 @@ const ShareButton = ({
             placeholder='This will be sent as part of emal to caregiver.'
             rows={8}
           /> */}
-            <ComponentToPrint ref={componentRef}/>
-          <Button className='mt-2' onClick={() => exportComponentAsPNG(componentRef, {fileName: filename})}>Download QR Code</Button>
-          {/* <Button className='mt-2'>Print QR Code</Button> */}
-        </div>
-          </Center>
+            <ComponentToPrint ref={componentRef} />
+            <Button className='mt-2' onClick={() => exportComponentAsPNG(componentRef, { fileName: filename })}>Download QR Code</Button>
+            {/* <Button className='mt-2'>Print QR Code</Button> */}
+          </div>
+        </Center>
       </Modal>
     </>
   );
