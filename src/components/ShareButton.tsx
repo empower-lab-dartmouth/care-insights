@@ -6,6 +6,7 @@ import QRCode from "react-qr-code";
 import { exportComponentAsJPEG, exportComponentAsPDF, exportComponentAsPNG } from 'react-component-export-image';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { careRecipientsInfoState, extededAttributesState, pageContextState } from '../state/recoil';
+import { AuthContext } from '../state/context/auth-context';
 
 
 interface ShareButtonProps {
@@ -22,6 +23,8 @@ const ShareButton = ({
   showButton = true,
 }: ShareButtonProps) => {
   const [opened, { open, close }] = useDisclosure(false);
+  const { currentUser } = React.useContext(AuthContext);
+  const refEmail = currentUser?.email != null ? currentUser.email : 'true';
   const componentRef: any = React.useRef();
   const careRecipients = useRecoilValue(careRecipientsInfoState);
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
@@ -37,12 +40,17 @@ const ShareButton = ({
   const CRName = extendedAttributes[pageContext.selectedCR] !== undefined ?
     extendedAttributes[pageContext.selectedCR].firstName + ' ' + extendedAttributes[pageContext.selectedCR].lastName : CRName1;
 
+  const getURL = () => {
+    const u = new URL(window.location.href);
+    u.searchParams.set('qrcode', refEmail);
+    return u.toString();
+  }
   const ComponentToPrint = React.forwardRef((props, ref: any) => (
     <div ref={ref}>
-      <QRCode value={window.location.href} />
+      <QRCode value={getURL()} />
       <Center>
-        {CRName !== 'NONE' ? 
-        <h1>Care insights for:<br/><Center><b>{CRName}</b></Center></h1> : <></>}
+        {CRName !== 'NONE' ?
+          <h1>Care insights for:<br /><Center><b>{CRName}</b></Center></h1> : <></>}
       </Center>
     </div>
   ));
@@ -51,18 +59,20 @@ const ShareButton = ({
 
   return (
     <>
-      <Button
-        leftSection={showIcon ? <IconShare2 size={18} /> : null}
-        onClick={open}
-        variant={variant}
-      >
-        Share
-      </Button>
+      {CRName === 'NONE' ? <></> :
+        <>
+          <Button
+            leftSection={showIcon ? <IconShare2 size={18} /> : null}
+            onClick={open}
+            variant={variant}
+          >
+            Download QR Code for {CRName}
+          </Button>
 
-      <Modal opened={opened} onClose={close} title={title}>
-        <Center>
-          <div className='flex flex-col gap-3'>
-            {/* <Select
+          <Modal opened={opened} onClose={close} title={title}>
+            <Center>
+              <div className='flex flex-col gap-3'>
+                {/* <Select
             label='Caregiver'
             placeholder='Select a caregiver'
             data={['React', 'Angular', 'Vue', 'Svelte']}
@@ -72,12 +82,14 @@ const ShareButton = ({
             placeholder='This will be sent as part of emal to caregiver.'
             rows={8}
           /> */}
-            <ComponentToPrint ref={componentRef} />
-            <Button className='mt-2' onClick={() => exportComponentAsPNG(componentRef, { fileName: filename })}>Download QR Code</Button>
-            {/* <Button className='mt-2'>Print QR Code</Button> */}
-          </div>
-        </Center>
-      </Modal>
+                <ComponentToPrint ref={componentRef} />
+                <Button className='mt-2' onClick={() => exportComponentAsPNG(componentRef, { fileName: filename })}>Download QR Code</Button>
+                {/* <Button className='mt-2'>Print QR Code</Button> */}
+              </div>
+            </Center>
+          </Modal>
+        </>
+      }
     </>
   );
 };

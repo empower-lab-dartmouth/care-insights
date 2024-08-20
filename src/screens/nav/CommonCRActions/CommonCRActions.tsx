@@ -78,7 +78,7 @@ const CommonCRActions: React.FC<CommonCRActionsProps> = ({ page }) => {
         <div className='md:flex items-end justify-between gap-4 pt-5 lg:p-0'>
           <AutocompleteCRSearch />
           <ShareButton
-            title='QR code for this page'
+            title=''
             showButton={pathname === '/info'}
           />
 
