@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ReactPlayer from 'react-player';
+import MuxPlayer from '@mux/mux-player-react';
 import {
   MeaningfulMoment,
   MusicProgramEvent,
@@ -10,6 +11,7 @@ import Stack from '@mui/material/Stack';
 import HeatMap from '../HeatMap/HeatMap';
 import Transcript from '../Transcript/Transcript';
 import { StreamGraphPageViewsDemo } from '../programEventsTable/StreamGraph/StreamGraphPageViewsDemo';
+import PlayMux from './MuxPlayer';
 
 
 type VideoPlayerProps = {
@@ -45,6 +47,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
             {
               videoSrc === 'video-missing' ? <h3>This video is no longer available</h3> :
                 <>
+                <PlayMux />
+                {programEvent.muxPlaybackId}
+                <br />
+                {programEvent.muxAssetId}
                   <ReactPlayer controls={true} url={videoSrc} />
                   {
                     programEvent.transcript.length > 0 ?
