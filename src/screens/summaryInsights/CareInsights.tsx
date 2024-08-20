@@ -32,7 +32,7 @@ import { generateQuickFactsQueries, sampleAvoidQuery, sampleDoQuery, sampleRedir
 import { RefreshCcw, RefreshCw } from 'lucide-react';
 import { ExtendedAttributes, InfoBox } from '../../state/types';
 
-const QuickInfo = ({ value, label }: { value: string; label: string }) => {
+export const QuickInfo = ({ value, label }: { value: string; label: string }) => {
   return (
     <div className='border rounded-md border-dashed p-3 w-[140px] mr-4 mb-4'>
       <Text className='font-semibold text-1xl text-primary'>{value}</Text>
@@ -156,8 +156,12 @@ const refreshIfStillLoading = () => {
               <CircularProgress />
               If this takes more than several seconds, please refresh the page.
             </>
-          ) : pageContext.selectedCR === NO_CR_SELECTED ? (
-            <p>No care recipient selected</p>
+          ) : pageContext.selectedCR === NO_CR_SELECTED  || displayName == 'NONE' ? (
+            <QuickInfo
+                        value={'No care recipient selected.'}
+                        label={'Please select a care recipient from the table on the top right'}
+                      />
+                      // <h1><b>No care recipient selected.</b><br/>Please select a care recipient from the table on the top right</h1>
           ) : (
             <Card
               className='mt-[30px] border border-gray-100'
@@ -183,8 +187,8 @@ const refreshIfStillLoading = () => {
                         />
                       )) : (
                         <QuickInfo
-                        value={'Missing key information'}
-                        label={'Please ask your administrator to fix this. This will affect the ability of our AI to make predictions.'}
+                        value={'No care recipient selected.'}
+                        label={'Please select a care recipient from the table on the top right'}
                       />
                     )}
                   </div>

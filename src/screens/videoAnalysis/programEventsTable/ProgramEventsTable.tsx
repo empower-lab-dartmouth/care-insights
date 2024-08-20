@@ -28,6 +28,7 @@ import Label from './Label';
 import dayjs from 'dayjs';
 import { tableStyles } from './tableStyles';
 import ShareButton from '../../../components/ShareButton';
+import { QuickInfo } from '../../summaryInsights/CareInsights';
 
 type CommonRowFields = {
   label: string;
@@ -182,36 +183,36 @@ const programEventsToRows: (
   updateProgramEvent: (id: string) => (programEvent: ProgramEvent) => void,
   cRInfo: Record<string, CareRecipientInfo>
 ) => Row[] = (v, updateMeaningfulMoments, updateProgramEvent, CRInfo) =>
-  v.map(l => {
-    if (l.type === 'music-event') {
-      return {
-        ...l,
-        description: l.description,
-        date: new Date(l.date).toString(),
-        CRName: l.careRecipientName, //CRInfo[l.CRUUID].name,
-        programEvent: l,
-        setMeaningfulMoments: updateMeaningfulMoments(l.uuid),
-        setProgramEvent: updateProgramEvent(l.uuid),
-        engagement: l.engagement,
-        redirection: l.redirection,
-        CGName: l.caregiverName, // TODO revert back
-        defaultExpanded: false,
-      };
-    } else {
-      return {
-        ...l,
-        description: l.description,
-        date: new Date(l.date).toString(),
-        CRName: CRInfo[l.CRUUID] != undefined ? CRInfo[l.CRUUID].name : '',
-        programEvent: l,
-        engagement: l.engagement,
-        CGName: l.CGUUID,
-        redirection: l.redirection,
-        setProgramEvent: updateProgramEvent(l.uuid),
-        defaultExpanded: false,
-      };
-    }
-  });
+    v.map(l => {
+      if (l.type === 'music-event') {
+        return {
+          ...l,
+          description: l.description,
+          date: new Date(l.date).toString(),
+          CRName: l.careRecipientName, //CRInfo[l.CRUUID].name,
+          programEvent: l,
+          setMeaningfulMoments: updateMeaningfulMoments(l.uuid),
+          setProgramEvent: updateProgramEvent(l.uuid),
+          engagement: l.engagement,
+          redirection: l.redirection,
+          CGName: l.caregiverName, // TODO revert back
+          defaultExpanded: false,
+        };
+      } else {
+        return {
+          ...l,
+          description: l.description,
+          date: new Date(l.date).toString(),
+          CRName: CRInfo[l.CRUUID] != undefined ? CRInfo[l.CRUUID].name : '',
+          programEvent: l,
+          engagement: l.engagement,
+          CGName: l.CGUUID,
+          redirection: l.redirection,
+          setProgramEvent: updateProgramEvent(l.uuid),
+          defaultExpanded: false,
+        };
+      }
+    });
 
 const ProgramEventsTable: React.FC = () => {
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
@@ -245,6 +246,8 @@ const ProgramEventsTable: React.FC = () => {
     });
     setRemoteProgramEvent(programEvent);
   };
+  const showNothing = pageContext.selectedCR == undefined || pageContext.selectedCR == null || pageContext.selectedCR === NO_CR_SELECTED || pageContext.selectedCR === '';
+
   const data: Row[] = programEventsToRows(
     Object.values(pageContext.selectedCRProgramEvents).filter(
       v => v.deleted === undefined
@@ -260,18 +263,22 @@ const ProgramEventsTable: React.FC = () => {
 
   return (
     <div className='mt-12'>
-      {/* {JSON.stringify(pageContext.selectedCRProgramEvents)} */}
-      <DataTable
-        columns={columns}
-        data={data}
-        pagination
-        expandableRows
-        highlightOnHover
-        expandOnRowClicked
-        expandableRowExpanded={(row: Row) => row.defaultExpanded}
-        expandableRowsComponent={ExpandedComponent}
-        customStyles={tableStyles}
-      />
+      {showNothing ? <QuickInfo
+                        value={'No care recipient selected.'}
+                        label={'Please select a care recipient from the table on the top right'}
+                      /> :
+        <DataTable
+          columns={columns}
+          data={data}
+          pagination
+          expandableRows
+          highlightOnHover
+          expandOnRowClicked
+          expandableRowExpanded={(row: Row) => row.defaultExpanded}
+          expandableRowsComponent={ExpandedComponent}
+          customStyles={tableStyles}
+        />
+      }
     </div>
   );
 };

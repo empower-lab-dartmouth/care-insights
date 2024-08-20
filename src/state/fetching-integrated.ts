@@ -27,6 +27,7 @@ import { myDb } from './my-firebase';
 import { partnerAuth, partnerDb } from './partner-firebase';
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { DEFAULT_PROFILE_IMAGE } from './sampleData';
+import { signInWithEmailAndPasswordCache } from './globals';
 
 // export const caregiverEmail = 'mmemcara@well'; //'bmorgan-at-oakwoodmanor@memcara.com';
 // export const caregiverPassword = 'dartmouth';
@@ -103,8 +104,8 @@ export const loadCareRecipientsInfoFromCaresuite = async (
   });
   // console.log('try to sign in');
   // Given the signed in user's credentials, let's enumerate all the Cr's that he/she can access
-  console.log('try to sign in');
-  const userCred = await signInWithEmailAndPassword(partnerAuth, convertEmailToMemcaraEmail(caregiverEmail), caregiverPassword);
+  console.log('try to sign in from fetching integrated');
+  const userCred = await signInWithEmailAndPasswordCache(partnerAuth, convertEmailToMemcaraEmail(caregiverEmail), caregiverPassword, 'fetching');
   console.log('get authorized recipients', userCred);
   const snap = await getDoc(doc(partnerDb, 'account-users', userCred.user.uid));
   const accountId = snap.data()?.accountId;

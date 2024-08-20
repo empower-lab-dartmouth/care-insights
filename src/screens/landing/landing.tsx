@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { signInUser } from '../../state/firebase/firebase';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -93,12 +93,20 @@ function Home() {
     const { name, value } = event.target;
     setFormFields({ ...formFields, [name]: value });
   };
-  if (cookies.careInsightsPassword !== undefined &&
-    cookies.careInsightsPassword !== undefined &&
-    cookies.careInsightsPassword !== '' &&
-    cookies.careInsightsUsername !== '') {
-    handleSubmit();
-  }
+
+  useEffect(() => {
+    async function fetch() {
+      if (cookies.careInsightsPassword !== undefined &&
+        cookies.careInsightsPassword !== undefined &&
+        cookies.careInsightsPassword !== '' &&
+        cookies.careInsightsUsername !== '') {
+        await handleSubmit();
+      }
+    }
+
+    fetch();
+  }, [cookies]);
+
   return (
     <div className='min-h-screen flex flex-col items-center justify-center bg-[#238be6]'>
       <img src={'logo-white.svg'} alt='logo' className='w-[300px] pb-8' />

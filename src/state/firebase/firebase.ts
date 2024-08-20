@@ -12,6 +12,7 @@ import { UserLoginEvent } from '../recoil';
 import { partnerAuth } from '../partner-firebase';
 import { convertEmailToMemcaraEmail } from '../fetching-integrated';
 import { CookieData } from '../types';
+import { resetAuthCache, signInWithEmailAndPasswordCache } from '../globals';
 
 // const auth = getAuth(app);
 
@@ -40,7 +41,8 @@ export const signInUser = async (email: string, password: string,
     value: any) => void) => {
   if (!email && !password) return;
   logUserSignIn(email);
-  const auth = await signInWithEmailAndPassword(partnerAuth, convertEmailToMemcaraEmail(email), password);
+  console.log('Calling sign in from cache from firebase.ts');
+  const auth = await signInWithEmailAndPasswordCache(partnerAuth, convertEmailToMemcaraEmail(email), password, 'firebase');
   if(auth) {
     setCookie('careInsightsUsername', email);
     setCookie('careInsightsPassword', password);
@@ -55,7 +57,10 @@ export const userStateListener = (callback: NextOrObserver<User>) => {
   return onAuthStateChanged(partnerAuth, callback);
 };
 
-export const SignOutUser = async () => await signOut(partnerAuth);
+export const SignOutUser = async () => {
+  resetAuthCache();
+  await signOut(partnerAuth);
+}
 
 export const handleSignUp = async (
   email: string,
