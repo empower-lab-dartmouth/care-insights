@@ -205,16 +205,17 @@ export const loadQueriesForCR = async (
   const querySnapshot = await getDocs(q);
   console.log(querySnapshot.docs);
   console.log('Firebase collection read <queries>');
-  const CR = careRecipientsInfo[pageState.selectedCR];
-  if (CR === undefined) {
-    console.log("Invalid care recipient name, cancelling fetch");
-    setPageContext({
-      ...pageState,
-      loadingCRInfo: false,
-    });
-    return;
-  }
-  const CRName = careRecipientsInfo[pageState.selectedCR].name;
+  // const CR = careRecipientsInfo[pageState.selectedCR] ? ;
+  // if (CR === undefined) {
+
+    // console.log("Invalid care recipient name, cancelling fetch");
+    // setPageContext({
+    //   ...pageState,
+    //   loadingCRInfo: false,
+    // });
+    // return;
+  // }
+  const CRName = careRecipientsInfo[pageState.selectedCR] ? careRecipientsInfo[pageState.selectedCR].name : 'NONE';
   if (querySnapshot.empty) {
     console.log("pull CR query data 2");
     setLocalQueries({});
