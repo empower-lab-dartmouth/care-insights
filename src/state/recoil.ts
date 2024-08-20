@@ -100,6 +100,12 @@ export const selectedCRState = atom<string>({
   effects: [syncEffect({ refine: string() })],
 });
 
+// export const referralSessionState = atom<string>({
+//   key: 'ref',
+//   default: 'NONE',
+//   effects: [syncEffect({ refine: string() })],
+// });
+
 export const searchState = atom<string>({
   key: 'q',
   default: '',

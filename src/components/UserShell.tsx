@@ -21,7 +21,7 @@ const MenuButton = ({
 }) => {
   const { pathname, search } = useLocation();
   return (
-    <Link to={{pathname: path, search}}>
+    <Link to={{pathname: path, search}} onClick={(e) => console.log(pathname, search)}>
       <UnstyledButton
         className={`px-2 py-3 hover:bg-slate-100 rounded-md w-full flex items-center gap-2 text-sm`}
         style={{

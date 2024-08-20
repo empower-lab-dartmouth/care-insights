@@ -153,6 +153,7 @@ const SessionTracker = () => {
       const elapsedTime = Math.ceil(getElapsedTime() / 1000);
       if (currentUser?.email !== undefined &&
         currentUser?.email !== null) {
+        // setReferralSession(currentUser?.email);
         const updatedSessionPreTime: SessionActivityEvent = {
           ...sessionActivity,
           username: currentUser.email,
