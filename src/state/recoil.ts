@@ -6,7 +6,7 @@ import {
   ExtendedAttributes
 } from './types';
 import { QueryRecord } from './queryingTypes';
-import { syncEffect } from 'recoil-sync';
+import { syncEffect, urlSyncEffect } from 'recoil-sync';
 import { string } from '@recoiljs/refine';
 
 export const trackingTimeUntilNextPush = atom<number>({
@@ -97,7 +97,7 @@ export const pageContextStateFields = atom<PageState>({
 export const selectedCRState = atom<string>({
   key: 'cr',
   default: 'NONE',
-  effects: [syncEffect({ refine: string() })],
+  effects: [urlSyncEffect({ refine: string() })],
 });
 
 // export const referralSessionState = atom<string>({
@@ -109,7 +109,7 @@ export const selectedCRState = atom<string>({
 export const searchState = atom<string>({
   key: 'q',
   default: '',
-  effects: [syncEffect({ refine: string() })],
+  effects: [urlSyncEffect({ refine: string() })],
 });
 
 export const careFacilitiesState = atom<Record<string,
