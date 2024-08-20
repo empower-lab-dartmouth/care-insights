@@ -32,6 +32,7 @@ import { CookiesProvider } from 'react-cookie';
 import CircularProgress from '@mui/material/CircularProgress';
 import UserShell from './components/UserShell';
 import { useCookies } from 'react-cookie';
+import { Button } from '@mui/material';
 
 const defaultFormFields = {
   email: '',
@@ -47,46 +48,82 @@ const App = () => {
   const [extendedAttributes, setExtendedAttributes] = useRecoilState(extededAttributesState);
   const [caregiverInfo, setCaregiversInfo] =
     useRecoilState(caregiversInfoState);
-    const [formFields, setFormFields] = React.useState((cookies.careInsightsPassword !== undefined &&
-      cookies.careInsightsPassword !== undefined &&
-      cookies.careInsightsPassword !== '' &&
-      cookies.careInsightsUsername !== '') ?
-      {
-        email: cookies.careInsightsUsername,
-        password: cookies.careInsightsPassword
-      } :
-      defaultFormFields);
+  const [formFields, setFormFields] = React.useState((cookies.careInsightsPassword !== undefined &&
+    cookies.careInsightsPassword !== undefined &&
+    cookies.careInsightsPassword !== '' &&
+    cookies.careInsightsUsername !== '') ?
+    {
+      email: cookies.careInsightsUsername,
+      password: cookies.careInsightsPassword
+    } :
+    defaultFormFields);
   const [careRecipientInfo, setCareRecipientInfo] = useRecoilState(
     careRecipientsInfoState
   );
   const [searchURL, setSearchURL] = useRecoilState(searchState);
   const [loading, setLoading] = useRecoilState(onOpenLoadingState);
 
+  const loadAllData = async () => {
+    if (currentUser && currentUser !== null && formFields.password !== '' && formFields.email !== '' && pageState.insightsQuery.queryResponse === 'loading') {
+      setLoading(true);
+      await loadCareRecipientsInfo(
+        pageState,
+        setPageState,
+        setCareRecipientInfo,
+        formFields.email,
+        formFields.password,
+        setExtendedAttributes
+      );
+      setLoading(false);
+    }
+  }
+
+  const forceReload = async () => {
+    const newPageState = {
+      ...pageState,
+      selectedCR: 'NONE'
+    };
+    setPageState(newPageState);
+
+    setLoading(true);
+    await loadCareRecipientsInfo(
+      newPageState,
+      setPageState,
+      setCareRecipientInfo,
+      formFields.email,
+      formFields.password,
+      setExtendedAttributes
+    );
+    setLoading(false);
+  }
+
+  const LoadingElem = () => {
+    const [timer, setTimer] = React.useState(false);
+    setTimeout(() => {
+      setTimer(true);
+    }, 3000);
+    return (<>
+      <h1>Processing data on care recipients...</h1>
+      <CircularProgress />
+      {!timer ? <></> :
+        <>
+          <h3>Troubleshooting help:</h3>
+          This should take less than ten seconds, but sometimes our AI system hits a snag here and needs to be restarted.
+          Thank you for your understanding, this is a new prototype.
+
+          If are reading this, we may need your help to restart the system. Please try the following in order:
+          1: Try <Button onClick={forceReload}>clicking here</Button> and wait for about five seconds.
+          2: Try reloading the page.
+          3: If you continue to have a problem, please sign out using the red button on the top right and sign back in.
+
+          We are really sorry for the inconvenience. We're working to get this fixed.
+        </>}
+    </>);
+  }
+
   useEffect(() => {
     async function fetch() {
-      if (currentUser && formFields.password !== '' && formFields.email !== '' && pageState.insightsQuery.queryResponse === 'loading') {
-        setLoading(true);
-        await loadCareRecipientsInfo(
-          pageState,
-          setPageState,
-          setCareRecipientInfo,
-          formFields.email,
-          formFields.password,
-          setExtendedAttributes
-        );
-        // const q = await fetchOnOpen(
-        //   pageState,
-        //   setPageState,
-        //   queries,
-        //   setQueries,
-        //   searchURL,
-        //   currentUser?.email as string,
-        //   careRecipientInfo,
-        //   setSearchURL,
-        //   setLoading
-        // );
-          setLoading(false);
-      }
+      await loadAllData();
     }
 
     fetch();
@@ -104,7 +141,7 @@ const App = () => {
           element={
             <RequireAuth>
               {loading ? <UserShell>
-                <CircularProgress />
+                <LoadingElem />
               </UserShell> : <SummaryInsights />}
             </RequireAuth>
           }
@@ -115,7 +152,7 @@ const App = () => {
           element={
             <RequireAuth>
               {loading ? <UserShell>
-                <CircularProgress />
+                <LoadingElem />
               </UserShell> : <CareInsightsPage />}
             </RequireAuth>
           }
@@ -126,7 +163,7 @@ const App = () => {
           element={
             <RequireAuth>
               {loading ? <UserShell>
-                <CircularProgress />
+                <LoadingElem />
               </UserShell> : <SummaryInsights />}
             </RequireAuth>
           }
@@ -136,7 +173,7 @@ const App = () => {
           element={
             <RequireAuth>
               {loading ? <UserShell>
-                <CircularProgress />
+                <LoadingElem />
               </UserShell> : <VideoAnalysis />}
             </RequireAuth>
           }
