@@ -121,7 +121,7 @@ const MenuButtons = () => {
           Details
         </MenuButton>
         <MenuButton path='/program-events' icon={<SquarePlay size={18} />}>
-          Program Events
+          Program events
         </MenuButton>
         <MenuButton path='/support' icon={<IconQuestionMark size={18} />}>
           Technology help
