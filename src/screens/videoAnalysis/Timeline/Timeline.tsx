@@ -54,6 +54,9 @@ type TimelineProps = {
   setEvents: (events: Record<string, MeaningfulMoment>) => void;
   setShowVideo: (v: boolean) => void;
   showVideo: boolean;
+  videoStarted: boolean;
+  progress: number;
+  playedSeconds: number
 };
 
 function eventHeader(moment: MeaningfulMoment) {
@@ -284,7 +287,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ updateTime, time }) => {
 };
 
 const EventsTimeline: React.FC<TimelineProps> = props => {
-  const { programEvent, setEvents, setProgramEvent, showVideo, setShowVideo } =
+  const { programEvent, setEvents, setProgramEvent, progress, playedSeconds, videoStarted, showVideo, setShowVideo } =
     props;
   const events = programEvent.meaningfulMoments;
   const [localEvents, setLocalEvents] = React.useState(events);
@@ -333,6 +336,19 @@ const EventsTimeline: React.FC<TimelineProps> = props => {
     console.log(omit); // Useless log to avoid unused var error
     setLocalEvents(res);
   };
+
+  const conditionalBackground = (momentTime: number, playedSeconds: number, videStarted: boolean) => {
+    if (!videoStarted) {
+      return {};
+    }
+    if (Math.abs(playedSeconds - momentTime) < 30) {
+      return {
+        backgroundColor: 'lightyellow'
+      };
+    } else {
+      return {};
+    }
+  }
 
   const toggleShowVideoButton = showVideo ? (
     <Button startIcon={<HideSourceIcon />} onClick={() => setShowVideo(false)}>
@@ -390,7 +406,7 @@ const EventsTimeline: React.FC<TimelineProps> = props => {
             {Object.values(localEvents)
               .sort((b, a) => a.startTime - b.startTime)
               .map(e => (
-                <TimelineItem key={e.startTime}>
+                <TimelineItem key={e.startTime} style={conditionalBackground(e.startTime/1000, playedSeconds, videoStarted)}>
                   <TimelineOppositeContent
                     sx={{
                       'm': 'auto 0',
@@ -476,7 +492,7 @@ const EventsTimeline: React.FC<TimelineProps> = props => {
           {Object.values(events)
             .sort((a, b) => a.startTime - b.startTime)
             .map(e => (
-              <TimelineItem key={e.startTime}>
+              <TimelineItem key={e.startTime} style={conditionalBackground(e.startTime /1000, playedSeconds, videoStarted)}>
                 <TimelineOppositeContent
                   sx={{
                     'm': 'auto 0',

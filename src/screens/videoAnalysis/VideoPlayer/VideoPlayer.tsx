@@ -29,6 +29,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const [showVideo, setShowVideo] = useState(true);
   const [videoStarted, setVideoStarted] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [playedSeconds, setPlayedSeconds] = useState(0);
   if (videoSrc === 'video-missing') {
     return 'This video has not yet been processed. It will be made available later.'
   }
@@ -40,35 +41,41 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
         alignItems='flex-start'
         spacing={2}
       >
-        {/* <>{videoStarted ? 'STARTED' : 'NOT STARTED'}</>
-        <>{progress}</> */}
         <EventsTimeline
           setEvents={setMeaningfulMoments}
           programEvent={programEvent}
           setProgramEvent={setProgramEvent}
           showVideo={showVideo}
           setShowVideo={setShowVideo}
+          videoStarted={videoStarted}
+          progress={progress}
+          playedSeconds={playedSeconds}
         />
         {showVideo ? (
           <div>
             {
               videoSrc === 'video-missing' ? <h3>This video is no longer available</h3> :
                 <>
-                {/* <PlayMux />
+                  {/* <PlayMux />
                 {programEvent.muxPlaybackId} */}
-                {/* {programEvent.muxAssetId} */}
+                  {/* {programEvent.muxAssetId} */}
                   <ReactPlayer onProgress={({
-  played,
-  playedSeconds,
-  loaded,
-  loadedSeconds,
-}) => {
-
-}} onStart={() => setVideoStarted(true)} controls={true} url={videoSrc} />
+                    played,
+                    playedSeconds,
+                    loaded,
+                    loadedSeconds,
+                  }) => {
+                    setProgress(played);
+                    setPlayedSeconds(playedSeconds);
+                  }} onStart={() => setVideoStarted(true)} controls={true} url={videoSrc} />
                   {
                     programEvent.transcript.length > 0 ?
-                  <Transcript transcriptSegments={programEvent.transcript} /> :
-                  <></>
+                      <Transcript transcriptSegments={programEvent.transcript} 
+                      videoStarted={videoStarted}
+          progress={progress}
+          playedSeconds={playedSeconds}
+          /> :
+                      <></>
                   }
                 </>
             }
