@@ -173,6 +173,7 @@ export type SessionActivityEvent = {
   viewingCR: Record<string, number>
   snapshot: UserActivityReport
   questions: UserActivityReport
+  support: UserActivityReport
   programEvents: UserActivityReport
   url: string
 }
@@ -193,6 +194,11 @@ export const newActivtySession: (
       username,
       viewingCR: {},
       snapshot: {
+        events: 0,
+        idleTime: 0,
+        activeTime: 0,
+      },
+      support: {
         events: 0,
         idleTime: 0,
         activeTime: 0,

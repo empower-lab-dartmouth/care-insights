@@ -34,6 +34,7 @@ import UserShell from './components/UserShell';
 import { useCookies } from 'react-cookie';
 import { Button } from '@mui/material';
 import { updateCache } from './state/globals';
+import SupportPage from './state/SupportPage';
 
 const defaultFormFields = {
   email: '',
@@ -194,6 +195,16 @@ const App = () => {
           }
         />
 
+<Route
+          path='/support'
+          element={
+            <RequireAuth>
+              {loading ? <UserShell>
+                <LoadingElem />
+              </UserShell> : <SupportPage />}
+            </RequireAuth>
+          }
+        />
         <Route
           path='/care-team'
           element={

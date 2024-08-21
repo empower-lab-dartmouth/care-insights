@@ -5,7 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { FileQuestion, SquarePlay, UsersRound, Info, MessageCircleQuestion, NotepadText } from 'lucide-react';
 import { useContext, useState } from 'react';
 import { AuthContext } from '../state/context/auth-context';
-import { IconLogout, IconMenu2, IconX } from '@tabler/icons-react';
+import { IconLogout, IconMenu2, IconQuestionMark, IconX } from '@tabler/icons-react';
 import { useCookies } from 'react-cookie';
 import SessionTracker from '../Tracker';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -116,6 +116,9 @@ const MenuButtons = () => {
         </MenuButton>
         <MenuButton path='/program-events' icon={<SquarePlay size={18} />}>
           Program Events
+        </MenuButton>
+        <MenuButton path='/support' icon={<IconQuestionMark size={18} />}>
+          Technology help
         </MenuButton>
         {/* <MenuButton path='/care-team' icon={<UsersRound size={18} />}>
           Care Team

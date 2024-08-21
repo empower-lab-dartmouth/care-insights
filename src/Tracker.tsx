@@ -17,6 +17,7 @@ type EventCountByPage = {
   snapshot: number,
   questions: number,
   programEvents: number,
+  support: number
 }
 
 const userWasActive = (session: SessionActivityEvent) =>
@@ -58,6 +59,7 @@ const SessionTracker = () => {
     snapshot: 0,
     questions: 0,
     programEvents: 0,
+    support: 0
   };
   const [eventCount, setEventCount] = React.useState<EventCountByPage>(
     startingEventCount);
@@ -86,6 +88,11 @@ const SessionTracker = () => {
         setEventCount({
           ...eventCount,
           questions: eventCount.questions + 1,
+        });
+      } else if (location.pathname.includes('/support')) {
+        setEventCount({
+          ...eventCount,
+          support: eventCount.support + 1,
         });
       }
     }
@@ -140,6 +147,16 @@ const SessionTracker = () => {
             activeTime: session.questions.activeTime + activeTime,
           },
         };
+      } else if (location.pathname.includes('/support')) {
+        return {
+          ...session,
+          viewingCR: updateCRTime(session.viewingCR, currentCRID, activeTime),
+          support: {
+            ...session.support,
+            idleTime: session.support.idleTime + idleTime,
+            activeTime: session.support.activeTime + activeTime,
+          },
+        };
       } else {
         return session;
       }
@@ -165,6 +182,10 @@ const SessionTracker = () => {
           questions: {
             ...sessionActivity.questions,
             events: eventCount.questions,
+          },
+          support: {
+            ...sessionActivity.support,
+            events: eventCount.support,
           },
           snapshot: {
             ...sessionActivity.snapshot,
@@ -197,7 +218,6 @@ const SessionTracker = () => {
         }
       }
     }, 500);
-
     return () => {
       clearInterval(interval);
     };
