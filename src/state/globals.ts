@@ -1,6 +1,15 @@
 import { Auth, User, UserCredential, signInWithEmailAndPassword } from "firebase/auth";
 
 export var AUTH_CACHE: Record<string, User> = {};
+export var LOADED_CACHE = false;
+
+export function setLoadedQueryFromURLTrue() {
+    LOADED_CACHE = true;
+}
+
+export function getLoadedQueryFromURL() {
+    return LOADED_CACHE;
+}
 
 export async function signInWithEmailAndPasswordCache(auth: Auth, email: string, password: string, source: string) {
     if (email === '@memcara.com') {
@@ -32,4 +41,5 @@ export function updateCache(user: User | undefined) {
 
 export function resetAuthCache() {
     AUTH_CACHE = {};
+    LOADED_CACHE = false;
 }

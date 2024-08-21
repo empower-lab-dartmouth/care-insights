@@ -9,6 +9,8 @@ import UserShell from '../../components/UserShell';
 import { Button, Paper } from '@mantine/core';
 import { AuthContext } from '../../state/context/auth-context';
 import { loadQueryFromURL } from '../../state/fetching';
+import { QuickInfo } from './CareInsights';
+import { getLoadedQueryFromURL, setLoadedQueryFromURLTrue } from '../../state/globals';
 
 const SummaryInsights = () => {
   const { currentUser } = useContext(AuthContext);
@@ -22,7 +24,8 @@ const SummaryInsights = () => {
 
   useEffect(() => {
     async function fetch() {
-      if (currentUser) {
+      if (currentUser && getLoadedQueryFromURL()) {
+        setLoadedQueryFromURLTrue();
         await loadQueryFromURL(
           pageContext,
           setPageState,
@@ -36,7 +39,7 @@ const SummaryInsights = () => {
     }
 
     fetch();
-  }, [queries]);
+  }, []);
   return (
     <UserShell>
       <CommonCRActions page={'details'} />
@@ -53,7 +56,10 @@ const SummaryInsights = () => {
               }}>click here to manually update.</Button> If that does not work, please refresh the page or log out and log back in again. Thank you for your patience!
            </>
         ) : pageContext.selectedCR === NO_CR_SELECTED ? (
-          <></>
+          <QuickInfo
+                        value={'No care recipient selected.'}
+                        label={'Please select a care recipient from the box above that says "Select a care recipient"'}
+                      />
         ) : (
           <QuestionAndAnswerPanel />
         )}

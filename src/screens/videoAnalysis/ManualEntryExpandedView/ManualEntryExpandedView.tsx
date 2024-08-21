@@ -53,6 +53,7 @@ const ManualEntryExpandedView: React.FC<
           </Stack>
           <WYSIWYGEditor
             loading={false}
+            longform={false}
             readOnly={false}
             update={forceUpdateRequired}
             updateCallback={f => {
@@ -92,6 +93,7 @@ const ManualEntryExpandedView: React.FC<
           <WYSIWYGEditor
             loading={false}
             readOnly={true}
+            longform={false}
             update={forceUpdateRequired}
             updateCallback={f => {
               setForceUpdateRequired(false);

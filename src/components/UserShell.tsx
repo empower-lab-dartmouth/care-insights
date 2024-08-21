@@ -3,28 +3,91 @@ import { useDisclosure } from '@mantine/hooks';
 import { Link, useLocation } from 'react-router-dom';
 
 import { FileQuestion, SquarePlay, UsersRound, Info, MessageCircleQuestion, NotepadText } from 'lucide-react';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { AuthContext } from '../state/context/auth-context';
 import { IconLogout, IconMenu2, IconX } from '@tabler/icons-react';
 import { useCookies } from 'react-cookie';
 import SessionTracker from '../Tracker';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { careRecipientsInfoState, extededAttributesState, pageContextState, queriesForCurrentCGState } from '../state/recoil';
+import { QueryRecord } from '../state/queryingTypes';
+import { askQuery } from '../state/querying';
+import { setRemoteQueryRecord } from '../state/setting';
+
 
 
 export const MenuButton = ({
   children,
   path,
   icon,
-  search: s
+  queryString,
+  search: s,
 }: {
   children: React.ReactNode;
   path: string;
   icon: React.ReactNode;
-  search?: string
+  queryString?: string;
+  search?: string;
 }) => {
+  const [pageContext, setPageContext] = useRecoilState(pageContextState);
+  const { currentUser } = useContext(AuthContext);
+  const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
+  const [editingQuery, setEditingQuery] = useState(
+    pageContext.insightsQuery.query
+  );
+  const extendedAttributes = useRecoilValue(extededAttributesState);
+  const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
+  const CRName = careRecipientsInfo[pageContext.selectedCR] ? careRecipientsInfo[pageContext.selectedCR].name : 'Care recipient';
+  const displayName = extendedAttributes[pageContext.selectedCR] ? extendedAttributes[pageContext.selectedCR].firstName + ' ' + extendedAttributes[pageContext.selectedCR].lastName : CRName;
+  const handleLocalQueryResponse = (q: QueryRecord) => {
+    setQueries({
+      ...queries,
+      [q.query]: q,
+    });
+    setPageContext({
+      ...pageContext,
+      insightsQuery: q,
+    });
+    setEditingQuery(q.query);
+  };
+  const makeQuery = async (q: string) => {
+    setPageContext({
+      ...pageContext,
+      loadingCRInfo: true,
+    });
+    const query = await askQuery(
+      q,
+      handleLocalQueryResponse,
+      pageContext.selectedCRProgramEvents,
+      currentUser?.email as string,
+      pageContext.selectedCR,
+      queries,
+      false,
+      displayName,
+      extendedAttributes[pageContext.selectedCR],
+      true
+    );
+    setRemoteQueryRecord(query);
+    console.log('the queries are', queries, "our query is: ", query);
+    setQueries({
+      ...queries,
+      [query.query]: query,
+    });
+    setPageContext({
+      ...pageContext,
+      loadingCRInfo: false,
+      insightsQuery: query,
+    });
+  };
+
   const { pathname, search: s2 } = useLocation();
   const search = s ? s : s2;
   return (
-    <Link to={{pathname: path, search}} onClick={(e) => console.log(pathname, search)}>
+    <Link to={{ pathname: path, search }} onClick={() => {
+      if (queryString !== undefined) {
+        makeQuery(queryString);
+      }
+    }}>
       <UnstyledButton
         className={`px-2 py-3 hover:bg-slate-100 rounded-md w-full flex items-center gap-2 text-sm`}
         style={{
@@ -44,7 +107,7 @@ const MenuButtons = () => {
   return (
     <div className='flex flex-col justify-between h-full'>
       <div className='flex flex-col gap-2'>
-      <SessionTracker />
+        <SessionTracker />
         <MenuButton path='/info' icon={<NotepadText size={18} />}>
           Snapshot
         </MenuButton>
@@ -62,7 +125,7 @@ const MenuButtons = () => {
   );
 };
 
-const formatUsername = (input: string| null | undefined) => {
+const formatUsername = (input: string | null | undefined) => {
   if (input == undefined || input == null) {
     return ''
   }

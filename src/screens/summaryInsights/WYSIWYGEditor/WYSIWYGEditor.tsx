@@ -33,14 +33,15 @@ const jsxComponentDescriptors: JsxComponentDescriptor[] = [
         name: 'GoTo',
         kind: 'flow',
         source: './external',
-        props: [{ name: 'query', type: 'string' }, {name: 'label', type: 'string'}],
+        props: [{name: 'label', type: 'string'}, {name: 'queryString', type: 'string'}],
         hasChildren: true,
         Editor: (n) => {
-            const query = n.mdastNode.attributes.filter((v) => (v as any).name === 'query')[0].value as string;
+            // const query = n.mdastNode.attributes.filter((v) => (v as any).name === 'query')[0].value as string;
+            const queryString = n.mdastNode.attributes.filter((v) => (v as any).name === 'queryString')[0].value as string;
             const label = n.mdastNode.attributes.filter((v) => (v as any).name === 'label')[0].value as string;
-            const newUri = new URL(replaceKeyInURI(location.href, 'q', query));
-            const search = newUri.searchParams.toString();
-        return (<li><Group>{label}<MenuButton path='/questions' search={search} icon={<MessageCircleQuestion color='blue' size={18} />}><i style={{color: 'blue'}}>Details</i></MenuButton></Group></li>);
+            // const newUri = new URL(replaceKeyInURI(location.href, 'q', query));
+            // const search = newUri.searchParams.toString();
+        return (<li><Group>{label}<MenuButton queryString={queryString} path='/questions' icon={<MessageCircleQuestion color='blue' size={18} />}><i style={{color: 'blue'}}>Details</i></MenuButton></Group></li>);
         }
       }
     ]
@@ -62,6 +63,7 @@ type WYSIWYGEditorProps = {
   defaultMessage: string;
   update: boolean;
   updateCallback: (forceUpdate: React.DispatchWithoutAction) => void;
+  longform: boolean;
 };
 
 const cleanLink = (t: string) => t.replaceAll('-', '').replaceAll('*', '').replaceAll(' ', '%20').trim();
@@ -70,11 +72,11 @@ const wrapAsLink = (text: string, pathname: string, currentCR: string) => {
   const newLineSplitText = text.split(/\n/);
   // const baseURLLocal = 'https://main--care-insights.netlify.app/'; //http://localhost:3000/';
   // const path = 'questions'
-  const promptPreface = 'Give me more detailed feedback about: '.replaceAll(' ', '%20');
+  const promptPreface = 'Give me more detailed feedback about: ';
   
   const prompt = (t: string) => promptPreface + t;
   // const wrappedBullets = newLineSplitText.map((t) => `[${t}](${baseURLLocal}${path}?cr="${currentCR}"&q="${prompt(t)}")`);
-  const wrappedBullets = newLineSplitText.map((t) => `<ul><GoTo query="${prompt(t)}" label="${t}" /></ul>`);
+  const wrappedBullets = newLineSplitText.map((t) => `<ul><GoTo queryString="${promptPreface + t}" label="${t}" /></ul>`);
   return wrappedBullets.join('\n\n\n');
 }
 
@@ -87,6 +89,7 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   defaultMessage,
   loading,
   markdown,
+  longform
 }) => {
   // NOTE: All this force updating is required to get the MDX
   // editor to load the proper content.
@@ -106,10 +109,16 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
     return <Typography variant='body2'>{defaultMessage}</Typography>;
   }
   if (readOnly) {
-    return (
-      <MDXEditor markdown={wrapAsLink(markdown, pathname, pageState.selectedCR)} plugins={[
-        jsxPlugin({ jsxComponentDescriptors })]} />
-    );
+    if (longform) {
+      return (
+        markdown
+      );
+    } else {
+      return (
+        <MDXEditor markdown={wrapAsLink(markdown, pathname, pageState.selectedCR)} plugins={[
+          jsxPlugin({ jsxComponentDescriptors })]} />
+      );
+    }
   }
   return (
     <div className='z-10'>

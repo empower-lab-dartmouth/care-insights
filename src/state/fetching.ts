@@ -134,6 +134,7 @@ override=false) => {
     // });
     // respondToApprovalFeedback(q);
   }
+  const displayName = extendedAttributes !== undefined ? extendedAttributes.firstName + ' ' + extendedAttributes.lastName : CRName;
   console.log('Generating quick facts queries');
   Promise.all([askQuery(pageState.avoidQuery,
     handleLocalQueryResponse,
@@ -141,28 +142,28 @@ override=false) => {
     pageState.username,
     pageState.selectedCR,
     queries,
-    override, CRName, extendedAttributes),
+    override, displayName, extendedAttributes),
   askQuery(pageState.doQuery,
     handleLocalQueryResponse,
     pageState.selectedCRProgramEvents,
     pageState.username,
     pageState.selectedCR,
     queries,
-    override, CRName, extendedAttributes),
+    override, displayName, extendedAttributes),
   askQuery(pageState.redirectionQuery,
     handleLocalQueryResponse,
     pageState.selectedCRProgramEvents,
     pageState.username,
     pageState.selectedCR,
     queries,
-    override, CRName, extendedAttributes),
+    override, displayName, extendedAttributes),
   askQuery(pageState.symptomsQuery,
     handleLocalQueryResponse,
     pageState.selectedCRProgramEvents,
     pageState.username,
     pageState.selectedCR,
     queries,
-    override, CRName, extendedAttributes)]).then(async (res) => {
+    override, displayName, extendedAttributes)]).then(async (res) => {
       console.log("UPDATE LOCAL QUERIES");
       setLocalQueries({
         ...queries,

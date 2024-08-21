@@ -252,6 +252,7 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
               update={false}
               onChange={(t: string) => { }}
               updateCallback={() => { }}
+              longform={false}
             />
             // <Text
             //   style={{
@@ -272,6 +273,7 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
               update={false}
               onChange={setEditedResponse}
               updateCallback={() => { }}
+              longform={false}
             />
           )}
         </div>

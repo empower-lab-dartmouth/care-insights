@@ -69,44 +69,59 @@ const getDescriptionOfEvent: (programEvent: ProgramEvent) => string = (p) => {
 
 
 // TODO: Bansharee (helper function)
-export async function getRelevantRecords(
+export function getRelevantRecords(
   inputQuery: string,
   allCREvents: CRProgramEvents
 ) {
-  const relevantEvents: string[] = [];
-
-  for (const e of Object.values(allCREvents)) {
-    const eventDescription = getDescriptionOfEvent(e);
-    if (eventDescription == '') {
-      continue;
+  // const relevantEvents: string[] = [];
+  return Object.values(allCREvents).filter((e) => {
+    if (e.type === 'manual-entry-event') {
+      return true;
+    } 
+    if (Object.values(e.meaningfulMoments).length > 0) {
+      return true;
     }
-    // get gpt to figure out relevance
-    const prompt = `You are the assistant to a therapist.
-            The therapist takes notes during sessions with the patient.
-            These notes are meant to aid interactions with the patient during future sessions. We assume that each 
-            note or description is trustworthy and meaningful; that is, the information within each note is significant.
-            Here is a description of a therapy session event for this patient, written by the therapist: ${e.description}.
-            Can the aforementioned descrition be used, even slightly, to answer the question "${inputQuery}"?
-            
-            Respond Y for yes or N for no, following with your reasoning.`;
-
-    // console.log(prompt)
-    // console.log(e.description);
-    const res = await openai.chat.completions.create({
-      messages: [{ role: 'user', content: prompt }],
-      model: 'gpt-3.5-turbo',
-    });
-
-    // console.log(res.choices[0]);
-    // console.log(res.choices[0].message.content);
-    if (res.choices[0].message.content == 'Y') {
-      relevantEvents.push(eventDescription);
-    }
+}).map((e) => {
+  if (e.type === 'manual-entry-event') {
+    return e.description;
   }
+  return Object.values(e.meaningfulMoments)
+  .sort((a, b) => a.startTime - b.startTime)
+  .map((v) => v.description).join('\n\n');
+}).join('; Next record: ');
 
-  // console.log('here are the relevant events:');
-  // console.log(relevantEvents);
-  return relevantEvents;
+  // for (const e of Object.values(allCREvents)) {
+  //   const eventDescription = getDescriptionOfEvent(e);
+  //   if (eventDescription == '') {
+  //     continue;
+  //   }
+  //   // get gpt to figure out relevance
+  //   const prompt = `You are the assistant to a therapist.
+  //           The therapist takes notes during sessions with the patient.
+  //           These notes are meant to aid interactions with the patient during future sessions. We assume that each 
+  //           note or description is trustworthy and meaningful; that is, the information within each note is significant.
+  //           Here is a description of a therapy session event for this patient, written by the therapist: ${e.description}.
+  //           Can the aforementioned descrition be used, even slightly, to answer the question "${inputQuery}"?
+            
+  //           Respond Y for yes or N for no, following with your reasoning.`;
+
+  //   // console.log(prompt)
+  //   // console.log(e.description);
+  //   const res = await openai.chat.completions.create({
+  //     messages: [{ role: 'user', content: prompt }],
+  //     model: 'gpt-3.5-turbo',
+  //   });
+
+  //   // console.log(res.choices[0]);
+  //   // console.log(res.choices[0].message.content);
+  //   if (res.choices[0].message.content == 'Y') {
+  //     relevantEvents.push(eventDescription);
+  //   }
+  // }
+
+  // // console.log('here are the relevant events:');
+  // // console.log(relevantEvents);
+  // return relevantEvents;
 }
 
 const complileExtendedAttributesIntoPrompt = (e: ExtendedAttributes) => {
@@ -123,8 +138,8 @@ const complileExtendedAttributesIntoPrompt = (e: ExtendedAttributes) => {
   const history = checkIfReported(e.historyOfIncidents) ? 'Care recipients history of incidents: ' + e.historyOfIncidents + '. ': '';
   const music = checkIfReported(e.music) ? 'Music preferences: ' + e.music + '. ': '';
   const joined = [thingsToTalkAbout, activitiesToDo, thingsToAvoid, symptoms, redirect, hobbies, history, music]
-  .filter((v) => v !== '').join(' ');
-  return 'Details about the care recipient: ' + start.map((v) => v.label + ': ' + v.value + '.').join(' ') + joined;
+  .filter((v) => v !== '').join('\n\n');
+  return 'Details about the care recipient: ' + start.map((v) => v.label + ': ' + v.value + '.').join('\n') + joined;
 }
 
 export async function askQuery(
@@ -135,8 +150,9 @@ export async function askQuery(
   CRUUID: string,
   allCRQueries: Record<string, QueryRecord>,
   overwritePrior: boolean,
-  caregiverName: string,
+  careRecipientName: string,
   extendedAttributes: ExtendedAttributes | undefined,
+  longForm?: boolean
 ) {
   console.log('input query: ', inputQuery);
   const existingQueryMatchesExactly = allCRQueries[inputQuery];
@@ -151,9 +167,9 @@ export async function askQuery(
     }
     console.log('overwriting existing for ' + existingQueryMatchesExactly.query);
   }
-  const relevantQueries = (await getRelevantQueries(inputQuery, allCRQueries));
+  const relevantQueries: QueryRecord[] = []//(await getRelevantQueries(inputQuery, allCRQueries));
   const relevantQueryResponses: String[] = [];
-  const relevantRecords = (await getRelevantRecords(inputQuery, allCREvents)).join(', Next record: ');
+  const relevantRecords = getRelevantRecords(inputQuery, allCREvents);
 
   // we need query responses, not queries themselves
   for (const q of Object.values(relevantQueries)) {
@@ -163,16 +179,18 @@ export async function askQuery(
   const ext = extendedAttributes ? complileExtendedAttributesIntoPrompt(extendedAttributes) : '';
   // console.log('here are the responses to relevant queries:');
   // console.log(relevantQueryResponses);
-
-  const prompt = `you are an expert memory loss therapist
-        with deep knowldge of ${caregiverName}. A less knowlegable
-        peer caregiver asks you the question:
-        "${inputQuery}"
-        Answer the question. Your response should use information from past responses, namely: ${relevantQueryResponses.join(', ')}. You should heavily draw on the following care note you have, created by caregivers. ${ext} Care notes: ${relevantRecords}. 
+const formatting = longForm !== undefined && longForm ? `Format your response as several short sentences. Don't use generalities, focus on what a caregiver would find actionable. If possible, reference specific info from the care notes, such as songs or family memories. Be specific to this individual. You can also bring in concepts from music based memory loss therapy. Avoid prefacing, just get to the point.` :
+`Format your response as a short list of bullet points, where each bullet is a short sentence or phrase (no more than five words). Again, heavily leverage the care records, reference specific info from the care notes, such as songs or family memories.`;
 
 
-        Format your response as a short list of bullet points, where each bullet is a short sentence or phrase (no more than five words). Again, heavily leverage the care records, reference specific info from the care notes, such as songs or family memories.`;
+  const prompt = `you are an expert memory loss therapist with deep knowldge of ${careRecipientName}. A less knowlegable peer caregiver asks you the question:"${inputQuery}" Answer the question. Your response should use information from the following care notes you have, created by yourself or other caregivers. The following list describes important key info, reference this information most of all: ${ext}. 
 
+
+        The following are records of music based memory loss therapy, including information about what has worked so far: ${relevantRecords}
+
+        ${formatting}
+        `;
+console.log('using longform', longForm);
   const queryResponse = await openai.chat.completions.create({
     messages: [{ role: 'user', content: prompt }],
     model: 'gpt-3.5-turbo',

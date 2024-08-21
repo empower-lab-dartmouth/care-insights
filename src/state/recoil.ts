@@ -22,7 +22,7 @@ export const defaultQueryLoading: QueryRecord = {
   CRUUID: '',
 };
 
-export const DEFAULT_QUERY_RESPONSE_MESSAGE = 'Type in a question below and click the search icon';
+export const DEFAULT_QUERY_RESPONSE_MESSAGE = 'If you are satisfied with the question, click on the search icon below to ask our AI for feedback. You can edit the question below in the text box.';
 
 export const defaultQueryEmpty: QueryRecord = {
   query: '',
