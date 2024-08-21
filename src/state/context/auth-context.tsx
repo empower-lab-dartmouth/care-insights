@@ -28,6 +28,10 @@ export const AuthProvider = ({ children }: Props) => {
         console.log('!!!!!!navigate');
         const path = location.pathname !== '/' ? location.pathname : '/info';
         navigate(`${path}${search}`);
+      } else if (currentUser === null) {
+        console.log('user object is empty, redirect to home');
+        const path ='/';
+        navigate(`${path}${search}`);
       }
     });
     return unsubscribe;

@@ -13,6 +13,8 @@ import { careRecipientsInfoState, extededAttributesState, pageContextState, quer
 import { QueryRecord } from '../state/queryingTypes';
 import { askQuery } from '../state/querying';
 import { setRemoteQueryRecord } from '../state/setting';
+import { resetAuthCache } from '../state/globals';
+import { reportTrackingEvent } from '../state/tracking';
 
 
 
@@ -85,6 +87,10 @@ export const MenuButton = ({
   return (
     <Link to={{ pathname: path, search }} onClick={() => {
       if (queryString !== undefined) {
+        reportTrackingEvent({
+          type: `clicked-details`,
+          query: queryString
+        }, currentUser?.email as string, pageContext);
         makeQuery(queryString);
       }
     }}>
@@ -176,6 +182,7 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
               <UnstyledButton color='red' onClick={() => {
                 setCookie('careInsightsUsername', '');
                 setCookie('careInsightsPassword', '');
+                resetAuthCache();
                 signOut();
               }}>
                 <IconLogout size={24} color='	#db2b29' />

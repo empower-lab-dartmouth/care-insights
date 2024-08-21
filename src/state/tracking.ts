@@ -28,12 +28,17 @@ type DebuggingEvent = {
     message: string
 }
 
+type ClickedDetails = {
+    type: 'clicked-details',
+    query: string
+}
+
 type ManualEventCreated = {
     type: 'manual-event-created',
     event: ProgramEvent
 }
 
-export type TrackingEvent = BasicEvent | EventWithContext | DebuggingEvent | ManualEventCreated;
+export type TrackingEvent = ClickedDetails| BasicEvent | EventWithContext | DebuggingEvent | ManualEventCreated;
 
 export const reportTrackingEvent = async (e: TrackingEvent, username: string, pageState: PageState) => {
     console.log('tracking event');
