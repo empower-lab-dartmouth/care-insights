@@ -26,7 +26,10 @@ type VideoPlayerProps = {
 const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const { videoSrc, setProgramEvent, programEvent, setMeaningfulMoments } =
     props;
-  const [showVideo, setShowVideo] = useState(programEvent.transcript.length === 0);
+  const [showVideo, setShowVideo] = useState(true);
+  if (videoSrc === 'video-missing') {
+    return 'This video has not yet been processed. It will be made available later.'
+  }
   return (
     <>
       <Stack
@@ -63,10 +66,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
           <></>
         )}
       </Stack>
-      {
+      {/* {
         programEvent.heatmap != undefined && programEvent.heatmap.length > 4 ?
           <StreamGraphPageViewsDemo heatmap={programEvent.heatmap} /> : <></>
-      }
+      } */}
     </>
   );
 };

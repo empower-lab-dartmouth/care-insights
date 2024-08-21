@@ -37,7 +37,7 @@ export const loadCRData = async (
   setPageContext: SetterOrUpdater<PageState>,
   setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>,
   careRecipientsInfo: Record<string, CareRecipientInfo>,
-  extendedAttributes: ExtendedAttributes | undefined
+  extendedAttributes: ExtendedAttributes | undefined,
 ) => {
   console.log('loading care recipient data');
   if (pageState.selectedCR !== 'NONE') {
@@ -78,36 +78,37 @@ export const loadCRData = async (
     await loadQueriesForCR(updatedPageState, careRecipientsInfo, setPageContext, setLocalQueries, extendedAttributes);
   } else {
     console.log('pull all cr data');
+
     // Pull all CRs' data
+    // setPageContext({
+    //   ...pageState,
+    //   loadingCRInfo: true,
+    // });
+    // const facilityId = 'NONE'; // TODO Update this later //Object.values(careRecipientsInfo).length > 0 ? Object.values(careRecipientsInfo)[0].facilityID : 'NONE';
+    // const q = query(
+    //   collection(db, `CRProgramEvents`),
+    //   where('facilityId', '==', facilityId),
+    //   limit(QUERY_LIMIT),
+    //   orderBy('date', 'desc')
+    // );
+    // const querySnapshot = await getDocs(q);
+    // console.log(querySnapshot.docs);
+    // console.log('Firebase collection read <program events>');
+    // const docs: ProgramEvent[] = querySnapshot.docs.map((doc: any) => {
+    //   const d = doc.data() as any as ProgramEvent;
+    //   return d as ProgramEvent;
+    // });
+    // const temp: CRProgramEvents = {};
+    // const programEvents: CRProgramEvents = docs.reduce(
+    //   (acc, curr) => ({
+    //     ...acc,
+    //     [curr.uuid]: curr,
+    //   }),
+    //   temp
+    // );
     setPageContext({
       ...pageState,
-      loadingCRInfo: true,
-    });
-    const facilityId = 'NONE'; // TODO Update this later //Object.values(careRecipientsInfo).length > 0 ? Object.values(careRecipientsInfo)[0].facilityID : 'NONE';
-    const q = query(
-      collection(db, `CRProgramEvents`),
-      where('facilityId', '==', facilityId),
-      limit(QUERY_LIMIT),
-      orderBy('date', 'desc')
-    );
-    const querySnapshot = await getDocs(q);
-    console.log(querySnapshot.docs);
-    console.log('Firebase collection read <program events>');
-    const docs: ProgramEvent[] = querySnapshot.docs.map((doc: any) => {
-      const d = doc.data() as any as ProgramEvent;
-      return d as ProgramEvent;
-    });
-    const temp: CRProgramEvents = {};
-    const programEvents: CRProgramEvents = docs.reduce(
-      (acc, curr) => ({
-        ...acc,
-        [curr.uuid]: curr,
-      }),
-      temp
-    );
-    setPageContext({
-      ...pageState,
-      selectedCRProgramEvents: programEvents,
+      selectedCRProgramEvents: {},
       loadingCRInfo: false,
       insightsQuery: defaultQueryEmpty,
       suggestedQueries: [],
@@ -281,12 +282,13 @@ export const loadPageDataFromFB = async (
   careRecipientsInfo: Record<string, CareRecipientInfo>,
   pageContext: PageState, extendedAttributes: ExtendedAttributes
 ) => {
-  console.log('loading session data from fb');
+  console.log('loading session data from fb', username);
   const ref = doc(db, 'PageContext', username);
   const docSnap = await await getDoc(ref);
   if (docSnap.exists()) {
     console.log('past session exists');
     const data = docSnap.data() as PageState;
+    console.log('pulled snapshot from remote ', data);
     const selectedCR = pageContext.selectedCR === 'NONE' ? data.selectedCR : pageContext.selectedCR;
     const newPageState: PageState = {
       ...data,
@@ -453,8 +455,9 @@ export const loadCareRecipientsInfo = async (
   email: string,
   password: string,
   setExtendedAttributes: SetterOrUpdater<Record<string, ExtendedAttributes>>,
+  source: string,
 ) => {
-  console.log('making calls to caresuite!');
+  console.log('making calls to caresuite! from ', source);
   await loadCareRecipientsInfoFromCaresuite(pageState, setPageContext, setCareRecipientInfo, email, password, setExtendedAttributes);
   // console.log('loading info on all care recipients');
   // setPageContext({

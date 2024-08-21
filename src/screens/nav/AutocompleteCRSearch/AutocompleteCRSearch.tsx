@@ -26,11 +26,11 @@ const AutocompleteUserSearch = () => {
   const selectedCGValue = allCGInfo[pageContext.selectedCR];
   const [extendedAttributes, setExtendedAttributes] = useRecoilState(extededAttributesState);
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
-  const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
+  // const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
   
   const options = Object.values(allCGInfo)
     .filter(v => v.uuid !== NO_CR_SELECTED)
-    .filter(v => extendedAttributes[v.uuid] && extendedAttributes[v.uuid].roomNumber &&
+    .filter(v => extendedAttributes[v.uuid]  &&
       extendedAttributes[v.uuid].roomNumber != 'Not reported')
     .map(v => ({
       label: caregiverName(v.uuid, v.name, extendedAttributes),
@@ -80,7 +80,7 @@ const AutocompleteUserSearch = () => {
             newPageState,
             setPageContext,
             setQueries,
-            careRecipientsInfo,
+            allCGInfo,
             extendedAttributes[pageContext.selectedCR]
           );
         }}

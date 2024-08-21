@@ -33,6 +33,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import UserShell from './components/UserShell';
 import { useCookies } from 'react-cookie';
 import { Button } from '@mui/material';
+import { updateCache } from './state/globals';
 
 const defaultFormFields = {
   email: '',
@@ -64,17 +65,30 @@ const App = () => {
   const [loading, setLoading] = useRecoilState(onOpenLoadingState);
 
   const loadAllData = async () => {
-    if (currentUser && currentUser !== null && formFields.password !== '' && formFields.email !== '' && pageState.insightsQuery.queryResponse === 'loading') {
+    if (currentUser !== null || (formFields.password !== '' && formFields.email !== '')) {
+      console.log('current user', currentUser, formFields);
+      let email = formFields.email;
+      if (currentUser !== null) {
+        console.log('update cache', currentUser);
+        updateCache(currentUser);
+        email = currentUser.email;
+      }
+      if (cookies.careInsightsPassword == '' && cookies.careInsightsUsername == '') {
+        setFormFields(defaultFormFields);
+      }
       setLoading(true);
       await loadCareRecipientsInfo(
         pageState,
         setPageState,
         setCareRecipientInfo,
-        formFields.email,
+        email,
         formFields.password,
-        setExtendedAttributes
+        setExtendedAttributes,
+        'app1'
       );
       setLoading(false);
+    } else {
+      console.log('Did not load all data', currentUser, formFields);
     }
   }
 
@@ -92,7 +106,8 @@ const App = () => {
       setCareRecipientInfo,
       formFields.email,
       formFields.password,
-      setExtendedAttributes
+      setExtendedAttributes,
+      'app2'
     );
     setLoading(false);
   }

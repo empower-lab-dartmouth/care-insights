@@ -10,16 +10,19 @@ import { useCookies } from 'react-cookie';
 import SessionTracker from '../Tracker';
 
 
-const MenuButton = ({
+export const MenuButton = ({
   children,
   path,
   icon,
+  search: s
 }: {
   children: React.ReactNode;
   path: string;
   icon: React.ReactNode;
+  search?: string
 }) => {
-  const { pathname, search } = useLocation();
+  const { pathname, search: s2 } = useLocation();
+  const search = s ? s : s2;
   return (
     <Link to={{pathname: path, search}} onClick={(e) => console.log(pathname, search)}>
       <UnstyledButton
@@ -100,14 +103,14 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
               </div>
             </div>
             <div className='flex items-center gap-2'>
-              <Text>{formatUsername(currentUser!.email)}</Text>
+              <Text>{formatUsername(currentUser?.email)}</Text>
               <Avatar radius='xl' size='md' color='blue'>
                 {currentUser?.email ? currentUser.email[0].toUpperCase() : ''}
               </Avatar>
               <UnstyledButton color='red' onClick={() => {
-                signOut();
                 setCookie('careInsightsUsername', '');
                 setCookie('careInsightsPassword', '');
+                signOut();
               }}>
                 <IconLogout size={24} color='	#db2b29' />
               </UnstyledButton>

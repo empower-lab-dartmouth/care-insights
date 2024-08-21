@@ -6,6 +6,7 @@ import CommonCRActions from '../nav/CommonCRActions/CommonCRActions';
 import {
   NO_CR_SELECTED,
   careRecipientsInfoState,
+  extededAttributesState,
   pageContextState,
   queriesForCurrentCGState,
   selectedCRState,
@@ -51,7 +52,7 @@ import { PageState } from '../../state/types';
 import { Divide } from 'lucide-react';
 
 import '@mdxeditor/editor/style.css';
-import { sampleAvoidQuery, sampleDoQuery, sampleRedirectQuery, sampleSymptomsQuery } from '../../state/fetching';
+import { generateQuickFactsQueries, sampleAvoidQuery, sampleDoQuery, sampleRedirectQuery, sampleSymptomsQuery } from '../../state/fetching';
 
 export const LOADING_STRING = 'Loading...';
 
@@ -251,6 +252,7 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = props => {
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
   const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
   const CRName = careRecipientsInfo[pageContext.selectedCR] ? careRecipientsInfo[pageContext.selectedCR].name : 'Care recipient';
+  const extendedAttributes = useRecoilValue(extededAttributesState);
   const queryRecordQuery =
     type === 'do'
       ? sampleDoQuery(CRName)
@@ -270,7 +272,13 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = props => {
               type === 'do' ?
                 <>
                   <CircularProgress />
-                  If this takes more than several seconds, please refresh the page.
+              If this takes more than several seconds, please <Button style={{width: 250}} onClick={() => {
+                generateQuickFactsQueries(pageContext, queries, setQueries, setPageContext, CRName, extendedAttributes[pageContext.selectedCR], true);
+              //   setPageContext({
+              //     ...pageContext,
+              //     loadingCRInfo: false,
+              // });
+              }}>click here to manually update.</Button> If that does not work, please refresh the page or log out and log back in again. Thank you for your patience!
                 </>
                 : <></>
             }

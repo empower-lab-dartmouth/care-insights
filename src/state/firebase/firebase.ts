@@ -39,7 +39,11 @@ const logUserSignIn = async (username: string) => {
 export const signInUser = async (email: string, password: string, 
   setCookie: (name: "careInsightsUsername" | "careInsightsPassword", 
     value: any) => void) => {
-  if (!email && !password) return;
+  if (!email || !password || email=='' || password == '') {
+    setCookie('careInsightsUsername', '');
+    setCookie('careInsightsPassword', '');
+    return;
+  }
   logUserSignIn(email);
   console.log('Calling sign in from cache from firebase.ts');
   const auth = await signInWithEmailAndPasswordCache(partnerAuth, convertEmailToMemcaraEmail(email), password, 'firebase');

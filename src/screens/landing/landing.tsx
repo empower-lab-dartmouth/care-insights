@@ -55,7 +55,7 @@ function Home() {
   const handleSubmit = async () => {
     try {
       // Send the email and password to firebase
-      console.log(email, password);
+      console.log('handle submit ', email, password);
       const userCredential = await signInUser(email, password, setCookie);
       if (userCredential) {
         setLoading(true);
@@ -65,7 +65,8 @@ function Home() {
           setCareRecipientInfo,
           email,
           password,
-          setExtendedAttributes
+          setExtendedAttributes,
+          'landing1'
           );
         resetFormFields();
         console.log('user credentials');

@@ -101,20 +101,20 @@ const columns: TableColumn<Row>[] = [
     sortFunction: (rowA, rowB) =>
       new Date(rowB.date).getTime() - new Date(rowA.date).getTime(),
   },
-  {
-    name: 'Engagement level',
-    selector: (row: Row) => (
-      <Label>{engagementLevelLabel(row.engagement)}</Label>
-    ),
-    sortable: true,
-  },
-  {
-    name: 'Redirections',
-    selector: (row: Row) => (
-      <Label> {redirectionLevelLabel(row.redirection)}</Label>
-    ),
-    sortable: true,
-  },
+  // {
+  //   name: 'Engagement level',
+  //   selector: (row: Row) => (
+  //     <Label>{engagementLevelLabel(row.engagement)}</Label>
+  //   ),
+  //   sortable: true,
+  // },
+  // {
+  //   name: 'Redirections',
+  //   selector: (row: Row) => (
+  //     <Label> {redirectionLevelLabel(row.redirection)}</Label>
+  //   ),
+  //   sortable: true,
+  // },
   {
     name: 'Event type',
     selector: (row: Row) => row.label,
@@ -131,10 +131,9 @@ const columns: TableColumn<Row>[] = [
     sortable: true,
   },
   {
-    name: 'Actions',
-    selector: (row: Row) => (
-      <ShareButton variant='subtle' title='Share Event' />
-    ),
+    name: 'Has video',
+    sortable: true,
+    selector: (row: Row) => (row.programEvent.type === 'music-event' && row.programEvent.videoUrl !== 'video-missing') ? 'Yes' : 'No',
   },
 ];
 

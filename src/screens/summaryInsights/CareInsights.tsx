@@ -47,55 +47,55 @@ export const formatExtendedAttributesAsInfoBox: (extendedAttributes: ExtendedAtt
       return [];
     }
     const result: (InfoBox | null)[] = Object.entries(extendedAttributes)
-    .map(([key, value]) => {
-      if (value == undefined || value == '') {
-        return null;
-      }
-      switch (key) {
-        case 'roomNumber':
-          return {
-            label: 'Room',
-            value: value as string,
-          };
-        case 'gender':
-          return {
-            label: 'Gender',
-            value: value == 'M' ? 'Male' : 'Female'
-          };
-        case 'yearOfBirth':
-          return {
-            label: 'Born',
-            value: value as string,
-          };
-        case 'preferredLanguage':
-          return {
-            label: 'Preferred Language',
-            value: value as string,
-          };
-        case 'mocaScore':
-          return {
-            label: 'MoCA Score',
-            value: value as string,
-          };
-        case 'hearing':
-          return {
-            label: 'Hearing',
-            value: value as string,
-          };
-        case 'eyesight':
-          return {
-            label: 'Eyesight',
-            value: value as string,
-          };
-        case 'communicationLevel':
-          return {
-            label: 'Communication',
-            value: value as string,
-          };
-        default:
-          return null
-      }
-    });
+      .map(([key, value]) => {
+        if (value == undefined || value == '') {
+          return null;
+        }
+        switch (key) {
+          case 'roomNumber':
+            return {
+              label: 'Room',
+              value: value as string,
+            };
+          case 'gender':
+            return {
+              label: 'Gender',
+              value: value == 'M' ? 'Male' : 'Female'
+            };
+          case 'yearOfBirth':
+            return {
+              label: 'Born',
+              value: value as string,
+            };
+          case 'preferredLanguage':
+            return {
+              label: 'Preferred Language',
+              value: value as string,
+            };
+          case 'mocaScore':
+            return {
+              label: 'MoCA Score',
+              value: value as string,
+            };
+          case 'hearing':
+            return {
+              label: 'Hearing',
+              value: value as string,
+            };
+          case 'eyesight':
+            return {
+              label: 'Eyesight',
+              value: value as string,
+            };
+          case 'communicationLevel':
+            return {
+              label: 'Communication',
+              value: value as string,
+            };
+          default:
+            return null
+        }
+      });
     return result.filter((v) => v !== null) as any as InfoBox[];
   };
 
@@ -108,7 +108,7 @@ const CareInsightsPage = () => {
     careRecipients[pageContext.selectedCR] !== undefined
       ? careRecipients[pageContext.selectedCR].name
       : 'NONE';
-  const displayName = extendedAttributes[pageContext.selectedCR] ? extendedAttributes[pageContext.selectedCR].firstName + ' ' + extendedAttributes[pageContext.selectedCR].lastName :CRName;
+  const displayName = extendedAttributes[pageContext.selectedCR] ? extendedAttributes[pageContext.selectedCR].firstName + ' ' + extendedAttributes[pageContext.selectedCR].lastName : CRName;
   const quickBoxId = (prompt: string) =>
     `QuickBox  p:${prompt} cr:${pageContext.selectedCR}`;
   const loadingQuery: (prompt: string) => QueryRecord = query => ({
@@ -124,44 +124,63 @@ const CareInsightsPage = () => {
   const makeData = (prompt: string) => ({
     queryRecord: loadingQuery(prompt),
   });
-const refreshIfStillLoading = () => {
-  console.log('Check if loading', pageContext.loadingCRInfo);
-  if (pageContext.loadingCRInfo) {
+  const refreshIfStillLoading = () => {
+    console.log('Check if loading', pageContext.loadingCRInfo);
+    if (pageContext.loadingCRInfo) {
       location.reload();
+    }
   }
-}
-// (function(){
+  const DefaultVal = (input: string) => {
+
+    if (input == 'NONE') {
+      return <QuickInfo
+        value={'No care recipient selected.'}
+        label={'Please select a care recipient from the table on the top right'}
+      />
+    }
+    return <QuickInfo
+      value={'Info needed'}
+      label={'The facility administrator has not reported personal details about this resident yet, such as gender, age, and language preferences. This will affect the care insights that our AI can provide.'}
+    />
+  }
+
+  // (function(){
   // setTimeout(refreshIfStillLoading, 20000);
-// })();
+  // })();
   return (
     <div className='min-h-screen flex flex-col'>
       <UserShell>
         <div>
           <CommonCRActions page={'snapshot'} />
-          { CRName !== 'NONE' ?
-          <Button onClick={() => {
-            const updatedPageContext = {
-              ...pageContext,
-              doQuery: sampleDoQuery(CRName),
-              avoidQuery: sampleAvoidQuery(CRName),
-              redirectionQuery: sampleRedirectQuery(CRName),
-              symptomsQuery: sampleSymptomsQuery(CRName),
-              loadingCRInfo: true,
-            };
-            setPageContext(updatedPageContext);
-            generateQuickFactsQueries(updatedPageContext, queries, setQueries, setPageContext, CRName, extendedAttributes[pageContext.selectedCR], true);
-          }}><RefreshCw size={17} className='mr-1' />Refresh insights</Button> : <></>}
+          {CRName !== 'NONE' ?
+            <Button onClick={() => {
+              const updatedPageContext = {
+                ...pageContext,
+                doQuery: sampleDoQuery(CRName),
+                avoidQuery: sampleAvoidQuery(CRName),
+                redirectionQuery: sampleRedirectQuery(CRName),
+                symptomsQuery: sampleSymptomsQuery(CRName),
+                loadingCRInfo: true,
+              };
+              setPageContext(updatedPageContext);
+              generateQuickFactsQueries(updatedPageContext, queries, setQueries, setPageContext, CRName, extendedAttributes[pageContext.selectedCR], true);
+            }}><RefreshCw size={17} className='mr-1' />Refresh insights</Button> : <></>}
           {pageContext.loadingCRInfo ? (
             <>
               <CircularProgress />
-              If this takes more than several seconds, please refresh the page.
+              If this takes more than several seconds, please <Button style={{width: 250}} onClick={() => {
+                setPageContext({
+                  ...pageContext,
+                  loadingCRInfo: false,
+              });
+              }}>click here to manually update.</Button> If that does not work, please refresh the page or log out and log back in again. Thank you for your patience!
             </>
-          ) : pageContext.selectedCR === NO_CR_SELECTED  || displayName == 'NONE' ? (
+          ) : pageContext.selectedCR === NO_CR_SELECTED || displayName == 'NONE' ? (
             <QuickInfo
-                        value={'No care recipient selected.'}
-                        label={'Please select a care recipient from the table on the top right'}
-                      />
-                      // <h1><b>No care recipient selected.</b><br/>Please select a care recipient from the table on the top right</h1>
+              value={'No care recipient selected.'}
+              label={'Please select a care recipient from the table on the top right'}
+            />
+            // <h1><b>No care recipient selected.</b><br/>Please select a care recipient from the table on the top right</h1>
           ) : (
             <Card
               className='mt-[30px] border border-gray-100'
@@ -178,19 +197,14 @@ const refreshIfStillLoading = () => {
                 <div className=''>
                   <Title order={4}>{displayName}</Title>
                   <div className='flex-row md:flex pt-4'>
-                    {infoBoxes.length > 0 ? 
-                    infoBoxes.map(i => (
+                    {infoBoxes.length > 0 ?
+                      infoBoxes.map(i => (
                         <QuickInfo
                           value={i.value}
                           label={i.label}
                           key={i.label + i.value}
                         />
-                      )) : (
-                        <QuickInfo
-                        value={'No care recipient selected.'}
-                        label={'Please select a care recipient from the table on the top right'}
-                      />
-                    )}
+                      )) : DefaultVal(displayName)}
                   </div>
                 </div>
               </div>

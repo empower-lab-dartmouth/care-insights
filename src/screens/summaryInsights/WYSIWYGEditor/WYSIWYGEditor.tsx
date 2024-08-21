@@ -22,6 +22,7 @@ import Markdown from 'react-markdown'
 import { useLocation } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { pageContextState } from '../../../state/recoil';
+import { Example } from './WYSIWYGEditorJSX';
 
 // import { uploadFile } from '../../../state/setting';
 
@@ -85,6 +86,7 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
       <Markdown>{wrapAsLink(markdown, pathname, pageState.selectedCR)}</Markdown>
     );
   }
+  return <Example />;
   return (
     <div className='z-10'>
       <MDXEditor

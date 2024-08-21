@@ -101,6 +101,7 @@ const CareRecipientTable: React.FC = () => {
             ...careRecipients,
             [newCR.uuid]: newCR,
         });
+        console.log('set care recipient info create table');
         setCareRecipientInfo(
             newCR);
     };

@@ -104,20 +104,28 @@ export const loadCareRecipientsInfoFromCaresuite = async (
   });
   // console.log('try to sign in');
   // Given the signed in user's credentials, let's enumerate all the Cr's that he/she can access
-  console.log('try to sign in from fetching integrated');
-  const userCred = await signInWithEmailAndPasswordCache(partnerAuth, convertEmailToMemcaraEmail(caregiverEmail), caregiverPassword, 'fetching');
-  console.log('get authorized recipients', userCred);
-  const snap = await getDoc(doc(partnerDb, 'account-users', userCred.user.uid));
+  console.log('try to sign in from fetching integrated', caregiverEmail, caregiverPassword);
+  const user = await signInWithEmailAndPasswordCache(partnerAuth, convertEmailToMemcaraEmail(caregiverEmail), caregiverPassword, 'fetching-integrated');
+  console.log('get authorized recipients', user);
+  if (user === null) {
+    console.log('failed to get info')
+    setPageContext({
+      ...pageState,
+      loadingCRInfo: false,
+    });
+    return;
+  }
+  const snap = await getDoc(doc(partnerDb, 'account-users', user.uid));
   const accountId = snap.data()?.accountId;
 
   const [snapAccount, snapCaregiver, snapRecipientsInAccount, snapRecipientsAssignedToCaregiver] = await Promise.all([
     getDoc(doc(partnerDb, 'accounts', accountId)),
-    getDoc(doc(partnerDb, 'facility-caregivers', userCred.user.uid)),
+    getDoc(doc(partnerDb, 'facility-caregivers', user.uid)),
     getDocs(query(collection(partnerDb, 'recipients'), where('accountId', '==', accountId), where('removed', '==', false))),
-    getDocs(query(collection(partnerDb, 'recipient-caregivers'), where('caregiverId', '==', userCred.user.uid))),
+    getDocs(query(collection(partnerDb, 'recipient-caregivers'), where('caregiverId', '==', user.uid))),
     // getDocs(query(collection(partnerDb, 'facility-recipients'), where('accountId', '==', 'rUIbBTZwy1RAxFuYS1B0'))),
   ]);
-
+  console.log('got info for account id ', accountId, 'info: ', snapAccount, snapCaregiver, snapRecipientsInAccount, snapRecipientsAssignedToCaregiver);
   // console.log('CAREGIVERS ASSIGNED TO ACCOUNT', snapRecipientsInAccount.docs.filter((d) => d.data()['displayName'] == 'b.bunny'));
   // console.log('B_BUNNY EXTENDED ATTRIBUTES', snapFacilityRecipients.docs.map((d) => d.data()));
   const globalRecipientAccess = snapAccount.exists() ? (snapAccount.data().globalRecipientAccess ?? false) : false;
@@ -150,6 +158,7 @@ export const loadCareRecipientsInfoFromCaresuite = async (
     }),
     temp
   );
+  console.log('set care recipients fetching integrated', careRecipients);
   setCareRecipientInfo(careRecipients);
   setPageContext({
     ...pageState,

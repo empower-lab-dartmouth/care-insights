@@ -6,7 +6,7 @@ import { NO_CR_SELECTED, careRecipientsInfoState, extededAttributesState, onOpen
 import { useRecoilState, useRecoilValue } from 'recoil';
 import CircularProgress from '@mui/material/CircularProgress';
 import UserShell from '../../components/UserShell';
-import { Paper } from '@mantine/core';
+import { Button, Paper } from '@mantine/core';
 import { AuthContext } from '../../state/context/auth-context';
 import { loadQueryFromURL } from '../../state/fetching';
 
@@ -44,8 +44,13 @@ const SummaryInsights = () => {
       <>
         {pageContext.loadingCRInfo ? (
            <>
-           <CircularProgress />
-           If this takes more than several seconds, please refresh the page.
+            <CircularProgress />
+              If this takes more than several seconds, please <Button style={{width: 250}} onClick={() => {
+                setPageState({
+                  ...pageContext,
+                  loadingCRInfo: false,
+              });
+              }}>click here to manually update.</Button> If that does not work, please refresh the page or log out and log back in again. Thank you for your patience!
            </>
         ) : pageContext.selectedCR === NO_CR_SELECTED ? (
           <></>
