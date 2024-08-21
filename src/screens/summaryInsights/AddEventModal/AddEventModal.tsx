@@ -16,7 +16,7 @@ const AddEvent = ({ close }: { close: () => void }) => {
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
   const { currentUser } = React.useContext(AuthContext);
   const CRInfo = useRecoilValue(careRecipientsInfoState);
-  const CRname = CRInfo[pageContext.selectedCR].name;
+  const CRname = CRInfo[pageContext.selectedCR] === undefined ? "the care recipient" : CRInfo[pageContext.selectedCR].name;
   const [eventDescription, setEventDescription] = React.useState('');
 
   const id = uuidv4();
@@ -52,8 +52,9 @@ const AddEvent = ({ close }: { close: () => void }) => {
       <div>
         <Text className='text-sm'>
           {' '}
-          Record an event for{' '}
+          Record an event for {' ' } 
           <span className='font-semibold text-sm'>{CRname}</span>.{' '}
+          More information will help our A.I. provide better feedback!
         </Text>
 
         <Textarea

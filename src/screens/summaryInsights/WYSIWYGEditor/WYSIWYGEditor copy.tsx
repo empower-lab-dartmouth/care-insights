@@ -17,7 +17,7 @@ import {
   toolbarPlugin,
 } from '@mdxeditor/editor';
 import CircularProgress from '@mui/material/CircularProgress';
-import { TextField, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import Markdown from 'react-markdown'
 import { useLocation } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
@@ -25,50 +25,27 @@ import { pageContextState } from '../../../state/recoil';
 import { Button, ButtonGroup, Group, Stack } from "@mantine/core"
 import { GenericJsxEditor, JsxComponentDescriptor, NestedLexicalEditor, insertJsx$, jsxPlugin, usePublisher } from "@mdxeditor/editor"
 import { MenuButton } from "../../../components/UserShell"
-import { MessageCircleQuestion } from "lucide-react"
+import { MessageCircleQuestion} from "lucide-react"
 import { replaceKeyInURI } from "../../videoAnalysis/programEventsTable/StreamGraph/utils"
 
-
-const inputStyles = {
-  'width': '100%',
-  'input:focus, input:valid, textarea:valid': {
-    outline: 'none',
-    border: 'none',
-  },
-};
-
 const jsxComponentDescriptors: JsxComponentDescriptor[] = [
-  {
-    name: 'GoTo',
-    kind: 'flow',
-    source: './external',
-    props: [{ name: 'label', type: 'string' }, { name: 'queryString', type: 'string' }],
-    hasChildren: true,
-    Editor: (n) => {
-      // const query = n.mdastNode.attributes.filter((v) => (v as any).name === 'query')[0].value as string;
-      const queryString = n.mdastNode.attributes.filter((v) => (v as any).name === 'queryString')[0].value as string;
-      const label = n.mdastNode.attributes.filter((v) => (v as any).name === 'label')[0].value as string;
-      // const newUri = new URL(replaceKeyInURI(location.href, 'q', query));
-      // const search = newUri.searchParams.toString();
-      return (<li><Group>{label}<MenuButton queryString={queryString} path='/questions' icon={<MessageCircleQuestion color='blue' size={18} />}><i style={{ color: 'blue' }}>Details</i></MenuButton></Group></li>);
-    }
-  }
-];
+      {
+        name: 'GoTo',
+        kind: 'flow',
+        source: './external',
+        props: [{name: 'label', type: 'string'}, {name: 'queryString', type: 'string'}],
+        hasChildren: true,
+        Editor: (n) => {
+            // const query = n.mdastNode.attributes.filter((v) => (v as any).name === 'query')[0].value as string;
+            const queryString = n.mdastNode.attributes.filter((v) => (v as any).name === 'queryString')[0].value as string;
+            const label = n.mdastNode.attributes.filter((v) => (v as any).name === 'label')[0].value as string;
+            // const newUri = new URL(replaceKeyInURI(location.href, 'q', query));
+            // const search = newUri.searchParams.toString();
+        return (<li><Group>{label}<MenuButton queryString={queryString} path='/questions' icon={<MessageCircleQuestion color='blue' size={18} />}><i style={{color: 'blue'}}>Details</i></MenuButton></Group></li>);
+        }
+      }
+    ]
 
-type GoToProps = {
-  label: string,
-  queryString: string
-}
-
-
-const GoTo: React.FC<GoToProps> = ({ label, queryString }) => {
-  return (<li><Group>{label}
-    <MenuButton queryString={queryString} path='/questions'
-      icon={<MessageCircleQuestion color='blue' size={18} />}>
-      <i style={{ color: 'blue' }}>Details</i>
-    </MenuButton>
-  </Group></li>);
-}
 
 // import { uploadFile } from '../../../state/setting';
 
@@ -96,11 +73,11 @@ const wrapAsLink = (text: string, pathname: string, currentCR: string) => {
   // const baseURLLocal = 'https://main--care-insights.netlify.app/'; //http://localhost:3000/';
   // const path = 'questions'
   const promptPreface = 'Give me more detailed feedback about: ';
-
+  
   const prompt = (t: string) => promptPreface + t;
   // const wrappedBullets = newLineSplitText.map((t) => `[${t}](${baseURLLocal}${path}?cr="${currentCR}"&q="${prompt(t)}")`);
-  const wrappedBullets = newLineSplitText.map((t) => <ul><GoTo queryString={promptPreface + t} label={t} /></ul>);
-  return wrappedBullets;
+  const wrappedBullets = newLineSplitText.map((t) => `<ul><GoTo queryString="${promptPreface + t}" label="${t}" /></ul>`);
+  return wrappedBullets.join('\n\n\n');
 }
 
 const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
@@ -120,7 +97,7 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   // If there are problems with this, try replacing mdx or using the
   // ref hook.
   const [, forceUpdate] = useReducer(x => x + 1, 0);
-  const { pathname } = useLocation();
+  const {pathname} = useLocation();
   const pageState = useRecoilValue(pageContextState);
   if (update) {
     updateCallback(forceUpdate);
@@ -138,21 +115,44 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
       );
     } else {
       return (
-        wrapAsLink(markdown, pathname, pageState.selectedCR));
+        <MDXEditor markdown={wrapAsLink(markdown, pathname, pageState.selectedCR)} plugins={[
+          jsxPlugin({ jsxComponentDescriptors })]} />
+      );
     }
   }
   return (
     <div className='z-10'>
-      <TextField
-        id='outlined-basic'
-        multiline
-        value={markdown}
-        onChange={(
-          event: React.ChangeEvent<HTMLInputElement>
-        ) => {
-          onChange(event.target.value);
-        }}
-        sx={inputStyles}
+      <MDXEditor
+        markdown={markdown}
+        contentEditableClassName='prose z-10'
+        onChange={onChange}
+        plugins={[
+          headingsPlugin(),
+          listsPlugin(),
+          linkDialogPlugin(),
+          imagePlugin({ imageUploadHandler }),
+          toolbarPlugin({
+            toolbarContents: () => (
+              <>
+                {readOnly ? (
+                  <></>
+                ) : (
+                  <>
+                    <UndoRedo />
+                    <Separator />
+                    <BlockTypeSelect />
+                    <BoldItalicUnderlineToggles />
+                    <ListsToggle />
+                    <Separator />
+                    <CreateLink />
+                    {/* <InsertThematicBreak /> */}
+                    <InsertImage />
+                  </>
+                )}
+              </>
+            ),
+          }),
+        ]}
       />
     </div>
   );

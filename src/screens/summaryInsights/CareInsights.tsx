@@ -164,7 +164,7 @@ const CareInsightsPage = () => {
               };
               setPageContext(updatedPageContext);
               generateQuickFactsQueries(updatedPageContext, queries, setQueries, setPageContext, CRName, extendedAttributes[pageContext.selectedCR], true);
-            }}><RefreshCw size={17} className='mr-1' />Refresh insights</Button> : <></>}
+            }}><RefreshCw size={17} className='mr-1' />Generate new feedback</Button> : <></>}
           {pageContext.loadingCRInfo ? (
             <>
               <CircularProgress />

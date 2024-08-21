@@ -81,7 +81,7 @@ export const responseChip = (loading: boolean, alreadyApproved: boolean) => {
   if (!alreadyApproved) {
     return <Pill c={'red'}>AI generated</Pill>;
   }
-  return <></>;
+  return <Pill c={'darkGrey'}>Caregiver reviewed</Pill>;
 };
 
 const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
