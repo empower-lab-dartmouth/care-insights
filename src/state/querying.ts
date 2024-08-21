@@ -5,6 +5,7 @@ import { CRProgramEvents, ExtendedAttributes, ProgramEvent } from './types';
 import { setRemoteQueryRecord } from './setting';
 import OpenAI from 'openai';
 import { formatExtendedAttributesAsInfoBox } from '../screens/summaryInsights/CareInsights';
+import { reportTrackingEvent, reportTrackingEventNoPageContext } from './tracking';
 
 // Access the variable
 const openAPIKey = import.meta.env.VITE_REACT_APP_OPENAI_API_KEY;
@@ -205,6 +206,12 @@ console.log('using longform', longForm);
     CRUUID,
   };
   handleLocalResponse(completedQuery);
+  if (longForm) {
+    reportTrackingEventNoPageContext({
+      type: `asking-query`,
+      query: completedQuery
+    }, CGUUID, CRUUID);
+  }
   return completedQuery;
 }
 

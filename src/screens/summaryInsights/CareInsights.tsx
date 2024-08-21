@@ -31,6 +31,7 @@ import { QueryRecord } from '../../state/queryingTypes';
 import { generateQuickFactsQueries, sampleAvoidQuery, sampleDoQuery, sampleRedirectQuery, sampleSymptomsQuery } from '../../state/fetching';
 import { RefreshCcw, RefreshCw } from 'lucide-react';
 import { ExtendedAttributes, InfoBox } from '../../state/types';
+import { reportTrackingEvent } from '../../state/tracking';
 
 export const QuickInfo = ({ value, label }: { value: string; label: string }) => {
   return (
@@ -169,6 +170,10 @@ const CareInsightsPage = () => {
             <>
               <CircularProgress />
               If this takes more than several seconds, please <Button style={{width: 250}} onClick={() => {
+                reportTrackingEvent({
+                  type: `debugging`,
+                  message: 'click here to manually update—CareInsights.tsx'
+                }, pageContext.username, pageContext);
                 setPageContext({
                   ...pageContext,
                   loadingCRInfo: false,

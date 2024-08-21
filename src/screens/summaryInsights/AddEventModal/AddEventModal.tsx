@@ -11,6 +11,7 @@ import { ProgramEvent } from '../../../state/types';
 import { setRemoteProgramEvent } from '../../../state/setting';
 
 import { Textarea, Text, Button } from '@mantine/core';
+import { reportTrackingEvent } from '../../../state/tracking';
 
 const AddEvent = ({ close }: { close: () => void }) => {
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
@@ -35,6 +36,10 @@ const AddEvent = ({ close }: { close: () => void }) => {
       description: eventDescription,
     };
     console.log(newProgramEvent);
+    reportTrackingEvent({
+      type: `manual-event-created`,
+      event: newProgramEvent
+    }, currentUser?.email as string, pageContext);
     setRemoteProgramEvent(newProgramEvent);
     setPageContext({
       ...pageContext,

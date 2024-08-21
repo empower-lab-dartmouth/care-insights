@@ -174,6 +174,7 @@ export type SessionActivityEvent = {
   snapshot: UserActivityReport
   questions: UserActivityReport
   programEvents: UserActivityReport
+  url: string
 }
 
 export type LoggedEvent = UserLoginEvent | SessionActivityEvent;
@@ -184,6 +185,7 @@ export const newActivtySession: (
   username: string,
   startDate: number) => SessionActivityEvent = (
     username, startDate) => ({
+      url: location.href + location.search,
       type: 'session',
       date: startDate + SESSION_LENGTH,
       startDate,

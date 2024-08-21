@@ -96,8 +96,8 @@ const ManualEntryExpandedView: React.FC<
             longform={false}
             update={forceUpdateRequired}
             updateCallback={f => {
-              setForceUpdateRequired(false);
-              f();
+              // setForceUpdateRequired(false);
+              // f();
             }}
             defaultMessage='Loading...'
             showDefaultMessage={false}

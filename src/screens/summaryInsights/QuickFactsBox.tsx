@@ -54,6 +54,7 @@ import { Divide, List, Smile, TriangleAlert } from 'lucide-react';
 
 import '@mdxeditor/editor/style.css';
 import { generateQuickFactsQueries, sampleAvoidQuery, sampleDoQuery, sampleRedirectQuery, sampleSymptomsQuery } from '../../state/fetching';
+import { reportTrackingEvent } from '../../state/tracking';
 
 export const LOADING_STRING = 'Loading...';
 
@@ -86,6 +87,7 @@ export const responseChip = (loading: boolean, alreadyApproved: boolean) => {
 
 const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
   const { type } = props;
+  const { currentUser } = useContext(AuthContext);
   // const { currentUser } = useContext(AuthContext);
   const [temp, setTemp] = useRecoilState(selectedCRState);
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
@@ -94,6 +96,7 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
   const [editingDirectly, setEditingDirectly] = useState(false);
   const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
   const CRName = careRecipientsInfo[pageContext.selectedCR] ? careRecipientsInfo[pageContext.selectedCR].name : 'Care recipient';
+  const caregiverId = currentUser !== null && currentUser.email !== null ? currentUser.email : pageContext.username;
   const queryRecordQuery =
     type === 'do'
       ? sampleDoQuery(CRName)
@@ -129,6 +132,10 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
     setLoadingResponse(false);
   };
   const approve = () => {
+    reportTrackingEvent({
+      type: editingDirectly ? 'saved-query' : `useful-query`,
+      query: queryRecord
+    }, caregiverId, pageContext);
     submitApprovalFeedback();
     setEditingDirectly(false);
   };
@@ -188,6 +195,10 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
                   <Button
                     variant='transparent'
                     onClick={() => {
+                      reportTrackingEvent({
+                        type: `cancel-query-edit`,
+                        query: queryRecord
+                      }, caregiverId, pageContext);
                       if (queries[queryRecord.query] !== undefined) {
                         setEditedResponse(
                           queries[queryRecord.query].queryResponse
@@ -206,6 +217,10 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
                   variant='transparent'
                   disabled={editingDirectly}
                   onClick={() => {
+                    reportTrackingEvent({
+                      type: `incorrect-query`,
+                      query: queryRecord
+                    }, caregiverId, pageContext);
                     setEditingDirectly(true);
                     // setEditedResponse(pageContext.insightsQuery.queryResponse);
                   }}
@@ -217,23 +232,31 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
                   variant='transparent'
                   disabled={editingDirectly}
                   onClick={() => {
+                    reportTrackingEvent({
+                      type: `incomplete-query`,
+                      query: queryRecord
+                    }, caregiverId, pageContext);
                     setEditingDirectly(true);
                     // setEditedResponse(pageContext.insightsQuery.queryResponse);
                   }}
                   leftSection={<IconEdit size={14} />}
                 >
-                  Missing feedback
+                  Incomplete feedback
                 </Button>
                 <Button
                   variant='transparent'
                   disabled={editingDirectly}
                   onClick={() => {
+                    reportTrackingEvent({
+                      type: `update-query`,
+                      query: queryRecord
+                    }, caregiverId, pageContext);
                     setEditingDirectly(true);
                     // setEditedResponse(pageContext.insightsQuery.queryResponse);
                   }}
                   leftSection={<IconEdit size={14} />}
                 >
-                  fix feedback
+                  Improve feedback
                 </Button>
               </Group>
             </Stack>
@@ -291,6 +314,8 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = props => {
   const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
   const CRName = careRecipientsInfo[pageContext.selectedCR] ? careRecipientsInfo[pageContext.selectedCR].name : 'Care recipient';
   const extendedAttributes = useRecoilValue(extededAttributesState);
+  const { currentUser } = useContext(AuthContext);
+  const caregiverId = currentUser !== null && currentUser.email !== null ? currentUser.email : pageContext.username;
   const queryRecordQuery =
     type === 'do'
       ? sampleDoQuery(CRName)
@@ -311,6 +336,10 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = props => {
                 <>
                   <CircularProgress />
                   If this takes more than several seconds, please <Button style={{ width: 250 }} onClick={() => {
+                    reportTrackingEvent({
+                      type: `debugging`,
+                      message: 'click here to manually update—QuickFacts.tsx'
+                    }, caregiverId, pageContext);
                     generateQuickFactsQueries(pageContext, queries, setQueries, setPageContext, CRName, extendedAttributes[pageContext.selectedCR], true);
                     //   setPageContext({
                     //     ...pageContext,

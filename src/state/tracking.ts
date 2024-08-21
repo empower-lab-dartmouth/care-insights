@@ -12,11 +12,10 @@ export type BasicEvent = {
 }
 
 export type EventWithContext = {
-    type: 'expand-program-event'
-    context: string
+    type: 'useful-query' | 'saved-query' | 'incorrect-query' | 'incomplete-query' | 'update-query' | 'cancel-query-edit' | 'asking-query'
+    query: QueryRecord
 }
 
-export type TrackingEvent = BasicEvent | EventWithContext;
 type ExpandedEvent = TrackingEvent & {
     username: string,
     careRecipientID: string,
@@ -24,7 +23,20 @@ type ExpandedEvent = TrackingEvent & {
     url: string
 }
 
+type DebuggingEvent = {
+    type: 'debugging',
+    message: string
+}
+
+type ManualEventCreated = {
+    type: 'manual-event-created',
+    event: ProgramEvent
+}
+
+export type TrackingEvent = BasicEvent | EventWithContext | DebuggingEvent | ManualEventCreated;
+
 export const reportTrackingEvent = async (e: TrackingEvent, username: string, pageState: PageState) => {
+    console.log('tracking event');
     const queryRef = collection(db, 'TrackingEvents');
     const expandedEvent: ExpandedEvent = {
         ...e,
@@ -35,10 +47,31 @@ export const reportTrackingEvent = async (e: TrackingEvent, username: string, pa
     };
     const trackingEventId = expandedEvent.username + '-' + expandedEvent.type + '-' + expandedEvent.date;
     try {
-        await setDoc(doc(queryRef, trackingEventId), expandedEvent);
+        console.log('Attempting to post tracking log: ', expandedEvent);
+        setDoc(doc(queryRef, trackingEventId), expandedEvent);
         console.log('Posted query!', expandedEvent);
     } catch (e) {
         console.log('error writing to fb');
+        console.log(e);
+    }
+};
+
+export const reportTrackingEventNoPageContext = async (e: TrackingEvent, username: string, selectedCR: string) => {
+    const queryRef = collection(db, 'TrackingEvents');
+    const expandedEvent: ExpandedEvent = {
+        ...e,
+        username: username,
+        careRecipientID: selectedCR,
+        date: (new Date()).getTime(),
+        url: location.href
+    };
+    const trackingEventId = expandedEvent.username + '-' + expandedEvent.type + '-' + expandedEvent.date;
+    try {
+        console.log('Attempting to post tracking log: ', expandedEvent);
+        setDoc(doc(queryRef, trackingEventId), expandedEvent);
+        console.log('Posted successfully!', expandedEvent);
+    } catch (e) {
+        console.log('error writing log to fb', expandedEvent);
         console.log(e);
     }
 };

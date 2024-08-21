@@ -43,7 +43,7 @@ const postActivitySessionToFB = async (session: SessionActivityEvent) => {
 
 const SessionTracker = () => {
   const { currentUser } = useContext(AuthContext);
-  const TIME_BETWEEN_PUSHES = 8000; // 35 seconds
+  const TIME_BETWEEN_PUSHES = 11000; // 35 seconds
   const [timeUntilNextPush,
     setTimeuntilNextPush] = useRecoilState(trackingTimeUntilNextPush);
 
@@ -196,7 +196,7 @@ const SessionTracker = () => {
           setSessionActivity(updatedSession);
         }
       }
-    }, 2500);
+    }, 500);
 
     return () => {
       clearInterval(interval);

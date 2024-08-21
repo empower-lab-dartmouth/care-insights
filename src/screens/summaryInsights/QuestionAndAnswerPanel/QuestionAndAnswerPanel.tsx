@@ -45,6 +45,7 @@ import {
 } from '@mantine/core';
 import { IconThumbUp, IconX } from '@tabler/icons-react';
 import { Check } from 'lucide-react';
+import { reportTrackingEvent } from '../../../state/tracking';
 
 const inputStyles = {
   'width': '100%',
@@ -171,8 +172,16 @@ const QuestionAndAnswerPanel: React.FC = () => {
       [approvedQuery.query]: approvedQuery,
     });
     setLoadingResponse(false);
+    reportTrackingEvent({
+      type: `saved-query`,
+      query: approvedQuery
+    }, currentUser?.email as string, pageContext);
   };
   const approve = () => {
+    reportTrackingEvent({
+      type: `useful-query`,
+      query: pageContext.insightsQuery
+    }, currentUser?.email as string, pageContext);
     submitApprovalFeedback();
     delayThenDo(() => setForceUpdateRequired(true), 100);
     setFeedbackInputOpen(false);
@@ -218,9 +227,9 @@ const QuestionAndAnswerPanel: React.FC = () => {
                   readOnly={!editingDirectly}
                   update={forceUpdateRequired}
                   updateCallback={f => {
-                    setEditedResponse(pageContext.insightsQuery.queryResponse);
-                    setForceUpdateRequired(false);
-                    f();
+                    // setEditedResponse(pageContext.insightsQuery.queryResponse);
+                    // setForceUpdateRequired(false);
+                    // f();
                   }}
                   defaultMessage={DEFAULT_QUERY_RESPONSE_MESSAGE}
                   showDefaultMessage={
@@ -300,6 +309,10 @@ const QuestionAndAnswerPanel: React.FC = () => {
                         variant='outline'
                         size='xs'
                         onClick={() => {
+                          reportTrackingEvent({
+                            type: `cancel-query-edit`,
+                            query: pageContext.insightsQuery
+                          }, currentUser?.email as string, pageContext);
                           setFeedbackInput('');
                           setEditedResponse(pageContext.insightsQuery.queryResponse);
                           setEditingQuery(pageContext.insightsQuery.query);
@@ -318,6 +331,10 @@ const QuestionAndAnswerPanel: React.FC = () => {
                       variant='outline'
                       size='xs'
                       onClick={() => {
+                        reportTrackingEvent({
+                          type: `incorrect-query`,
+                          query: pageContext.insightsQuery
+                        }, currentUser?.email as string, pageContext);
                         setEditingDirectly(true);
                         setFeedbackInputOpen(false);
                         setFeedbackInput('');
@@ -332,13 +349,17 @@ const QuestionAndAnswerPanel: React.FC = () => {
                       variant='outline'
                       size='xs'
                       onClick={() => {
+                        reportTrackingEvent({
+                          type: `incomplete-query`,
+                          query: pageContext.insightsQuery
+                        }, currentUser?.email as string, pageContext);
                         setEditingDirectly(true);
                         setFeedbackInputOpen(false);
                         setFeedbackInput('');
                         setEditedResponse(pageContext.insightsQuery.queryResponse);
                       }}
                     >
-                      Missing feedback
+                      Incomplete feedback
                     </Button>
                     <Button
                       leftSection={<EditIcon />}
@@ -346,13 +367,17 @@ const QuestionAndAnswerPanel: React.FC = () => {
                       variant='outline'
                       size='xs'
                       onClick={() => {
+                        reportTrackingEvent({
+                          type: `update-query`,
+                          query: pageContext.insightsQuery
+                        }, currentUser?.email as string, pageContext);
                         setEditingDirectly(true);
                         setFeedbackInputOpen(false);
                         setFeedbackInput('');
                         setEditedResponse(pageContext.insightsQuery.queryResponse);
                       }}
                     >
-                      Fix feedback
+                      Improve feedback
                     </Button>
                     {/* <Button
                 leftSection={<ChatBubbleIcon />}

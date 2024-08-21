@@ -11,6 +11,7 @@ import { AuthContext } from '../../state/context/auth-context';
 import { loadQueryFromURL } from '../../state/fetching';
 import { QuickInfo } from './CareInsights';
 import { getLoadedQueryFromURL, setLoadedQueryFromURLTrue } from '../../state/globals';
+import { reportTrackingEvent } from '../../state/tracking';
 
 const SummaryInsights = () => {
   const { currentUser } = useContext(AuthContext);
@@ -49,6 +50,10 @@ const SummaryInsights = () => {
            <>
             <CircularProgress />
               If this takes more than several seconds, please <Button style={{width: 250}} onClick={() => {
+                reportTrackingEvent({
+                  type: `debugging`,
+                  message: 'click here to manually update—SummaryInsights.tsx'
+                }, pageContext.username, pageContext);
                 setPageState({
                   ...pageContext,
                   loadingCRInfo: false,
