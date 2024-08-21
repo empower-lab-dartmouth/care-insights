@@ -2,7 +2,7 @@ import { AppShell, Avatar, UnstyledButton, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Link, useLocation } from 'react-router-dom';
 
-import { FileQuestion, SquarePlay, UsersRound, Info } from 'lucide-react';
+import { FileQuestion, SquarePlay, UsersRound, Info, MessageCircleQuestion, NotepadText } from 'lucide-react';
 import { useContext } from 'react';
 import { AuthContext } from '../state/context/auth-context';
 import { IconLogout, IconMenu2, IconX } from '@tabler/icons-react';
@@ -45,10 +45,10 @@ const MenuButtons = () => {
     <div className='flex flex-col justify-between h-full'>
       <div className='flex flex-col gap-2'>
       <SessionTracker />
-        <MenuButton path='/info' icon={<Info size={18} />}>
+        <MenuButton path='/info' icon={<NotepadText size={18} />}>
           Snapshot
         </MenuButton>
-        <MenuButton path='/questions' icon={<FileQuestion size={18} />}>
+        <MenuButton path='/questions' icon={<MessageCircleQuestion size={18} />}>
           Details
         </MenuButton>
         <MenuButton path='/program-events' icon={<SquarePlay size={18} />}>

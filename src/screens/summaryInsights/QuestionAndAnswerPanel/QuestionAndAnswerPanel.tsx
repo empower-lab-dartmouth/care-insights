@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import {
+  DEFAULT_QUERY_RESPONSE_MESSAGE,
   careRecipientsInfoState,
   extededAttributesState,
   pageContextState,
@@ -39,6 +40,8 @@ import {
   TextInput,
   Textarea,
   Card,
+  Group,
+  Pill,
 } from '@mantine/core';
 import { IconThumbUp, IconX } from '@tabler/icons-react';
 
@@ -50,25 +53,35 @@ const inputStyles = {
   },
 };
 
-const responseChip = (
-  loading: boolean,
-  queryModified: boolean,
-  pageState: PageState,
-  alreadyApproved: boolean
-) => {
-  if (loading || queryModified) {
+// const responseChip = (
+//   loading: boolean,
+//   queryModified: boolean,
+//   pageState: PageState,
+//   alreadyApproved: boolean
+// ) => {
+//   if (loading || queryModified) {
+//     return <></>;
+//   }
+//   if (pageState.insightsQuery.dateApproved !== undefined) {
+//     if (alreadyApproved) {
+//       return <Text className='text-green-600 italic'>(Useful)</Text>;
+//     } else {
+//       return (
+//         <Text className='text-primary italic'>(Approved by someone else)</Text>
+//       );
+//     }
+//   }
+//   return <Text className='text-orange-600 italic'>(AI generated)</Text>;
+// };
+
+export const responseChip = (loading: boolean, alreadyApproved: boolean) => {
+  if (loading) {
     return <></>;
   }
-  if (pageState.insightsQuery.dateApproved !== undefined) {
-    if (alreadyApproved) {
-      return <Text className='text-green-600 italic'>(Endorsed)</Text>;
-    } else {
-      return (
-        <Text className='text-primary italic'>(Approved by someone else)</Text>
-      );
-    }
+  if (!alreadyApproved) {
+    return <Pill c={'red'}>AI generated</Pill>;
   }
-  return <Text className='text-orange-600 italic'>(AI generated)</Text>;
+  return <></>;
 };
 
 const QuestionAndAnswerPanel: React.FC = () => {
@@ -170,23 +183,26 @@ const QuestionAndAnswerPanel: React.FC = () => {
   return (
     <div className='relative min-h-[82vh]'>
       <Card className='mt-[30px] border border-gray-200' shadow='xs' p='lg'>
+      <Group justify='flex-end'>
+          {responseChip(loadingResponse, alreadyApproved)}
+        </Group>
         {editingQuery && (
           <div className='flex flex-col gap-2'>
-            <Title order={5}>Question:</Title>
-            <Text>{editingQuery}</Text>
+            {/* <Title order={5}>Question:</Title>
+            <Text>{editingQuery}</Text> */}
           </div>
         )}
 
         {editedResponse && (
           <div className='mt-4'>
             <div className='flex gap-3'>
-              <Title order={5}>Response:</Title>
-              {responseChip(
+              <Title order={5}>More details regarding your question:</Title>
+              {/* {responseChip(
                 loadingResponse,
                 queryModified,
                 pageContext,
                 alreadyApproved
-              )}
+              )} */}
             </div>
             <WYSIWYGEditor
               loading={loadingResponse}
@@ -197,7 +213,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
                 setForceUpdateRequired(false);
                 f();
               }}
-              defaultMessage='Type in a question below and click the search icon'
+              defaultMessage={DEFAULT_QUERY_RESPONSE_MESSAGE}
               showDefaultMessage={
                 editingQuery !== pageContext.insightsQuery.query
               }
@@ -239,7 +255,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
                   className='text-green-600 hover:text-green-600 border-green-600'
                   size='xs'
                 >
-                  {editingDirectly ? 'Save' : 'This is helpful'}
+                  {editingDirectly ? 'Save' : 'Useful?'}
                 </Button>
               )}
               {feedbackInputOpen ? (
@@ -286,7 +302,35 @@ const QuestionAndAnswerPanel: React.FC = () => {
                   setEditedResponse(pageContext.insightsQuery.queryResponse);
                 }}
               >
-                Fix a problem
+                Incorrect feedback
+              </Button>
+              <Button
+                leftSection={<EditIcon />}
+                disabled={editingDirectly}
+                variant='outline'
+                size='xs'
+                onClick={() => {
+                  setEditingDirectly(true);
+                  setFeedbackInputOpen(false);
+                  setFeedbackInput('');
+                  setEditedResponse(pageContext.insightsQuery.queryResponse);
+                }}
+              >
+                Missing feedback
+              </Button>
+              <Button
+                leftSection={<EditIcon />}
+                disabled={editingDirectly}
+                variant='outline'
+                size='xs'
+                onClick={() => {
+                  setEditingDirectly(true);
+                  setFeedbackInputOpen(false);
+                  setFeedbackInput('');
+                  setEditedResponse(pageContext.insightsQuery.queryResponse);
+                }}
+              >
+                Fix feedback
               </Button>
               {/* <Button
                 leftSection={<ChatBubbleIcon />}

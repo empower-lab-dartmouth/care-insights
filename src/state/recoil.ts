@@ -22,9 +22,11 @@ export const defaultQueryLoading: QueryRecord = {
   CRUUID: '',
 };
 
+export const DEFAULT_QUERY_RESPONSE_MESSAGE = 'Type in a question below and click the search icon';
+
 export const defaultQueryEmpty: QueryRecord = {
   query: '',
-  queryResponse: 'Type in a question below and click the search icon',
+  queryResponse: DEFAULT_QUERY_RESPONSE_MESSAGE,
   queryUUID: '',
   CGUUID: '',
   CRUUID: '',

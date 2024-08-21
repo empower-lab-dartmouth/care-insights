@@ -18,7 +18,7 @@ import ShareButton from '../../../components/ShareButton';
 import { useLocation } from 'react-router-dom';
 
 type CommonCRActionsProps = {
-  page: 'Details' | 'program-events' | 'care-team' | 'snapshot';
+  page: 'details' | 'program-events' | 'care-team' | 'snapshot';
 };
 
 function convertToTitleCase(input: string) {

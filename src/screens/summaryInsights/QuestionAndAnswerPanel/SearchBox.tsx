@@ -16,6 +16,7 @@ const InputBox = ({
         <textarea
           className='flex-1 p-2 bg-transparent border-none outline-none resize-none text-gray-700 placeholder-gray-500'
           rows={1}
+          style={{color:'darkBlue'}}
           placeholder='Search Care Insights'
           value={value}
           onChange={onChange}

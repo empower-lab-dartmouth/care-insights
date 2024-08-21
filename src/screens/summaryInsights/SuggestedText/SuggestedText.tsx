@@ -23,6 +23,7 @@ const SuggestedText: React.FC<SuggestedTextProps> = props => {
     loadMoreSuggestions,
   } = props;
   const pageContext = useRecoilValue(pageContextState);
+  
   return (
     <>
       <Stack
@@ -31,7 +32,8 @@ const SuggestedText: React.FC<SuggestedTextProps> = props => {
         flexWrap='wrap'
         spacing={{ xs: 1 }}
       >
-        {textSuggestions
+        <p style={{color: 'gray'}}>Ask a question to our AI using the text box below</p>
+        {/* {textSuggestions
         .filter(option => option.CRUUID === pageContext.selectedCR)
         .map(option => (
           <Chip
@@ -55,7 +57,8 @@ const SuggestedText: React.FC<SuggestedTextProps> = props => {
         </Button>
       ) : (
         <></>
-      )}
+      )} */}
+    </Stack>
     </>
   );
 };

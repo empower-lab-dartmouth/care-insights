@@ -47,9 +47,10 @@ import {
   IconEdit,
   IconInfoCircle,
   IconThumbUp,
+  IconArrowBounce,
 } from '@tabler/icons-react';
 import { PageState } from '../../state/types';
-import { Divide } from 'lucide-react';
+import { Divide, List, Smile, TriangleAlert } from 'lucide-react';
 
 import '@mdxeditor/editor/style.css';
 import { generateQuickFactsQueries, sampleAvoidQuery, sampleDoQuery, sampleRedirectQuery, sampleSymptomsQuery } from '../../state/fetching';
@@ -73,7 +74,7 @@ const title = ({ type }: QuickFactsBoxProps) => {
   }
 };
 
-const responseChip = (loading: boolean, alreadyApproved: boolean) => {
+export const responseChip = (loading: boolean, alreadyApproved: boolean) => {
   if (loading) {
     return <></>;
   }
@@ -132,20 +133,33 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
     setEditingDirectly(false);
   };
 
+  const icon = (t: 'avoid' | 'do' | 'symptom' | 'redirection') => {
+    if (t === 'avoid') {
+      return <TriangleAlert color='red' size={26} />
+    }
+    if (t === 'do') {
+      return <Smile color='green' size={26} />
+    }
+    if (t === 'redirection') {
+      return <IconArrowBounce size={26} />
+    }
+    return <List size={26} />
+  }
   return (
     <Card className='mt-[30px] border border-gray-100 ' shadow='xs' p={0}>
       <Stack style={{ minHeight: 300 }}>
         <Group justify='flex-end' h={'auto'}>
           {responseChip(loadingResponse, alreadyApproved)}
         </Group>
+        <div className='flex items-center gap-2' style={{paddingLeft: 10}}>
+
+          {icon(type)}
+          <Title order={3} c={type == 'avoid' ? 'red' : 'dark'}>
+            {title(props)}
+          </Title>
+        </div>
         <div>
           <div className='px-4 pb-2 flex justify-between'>
-            <div className='flex items-center gap-2'>
-              <IconInfoCircle size={26} />
-              <Title order={3} c={type == 'avoid' ? 'red' : 'dark'}>
-                {title(props)}
-              </Title>
-            </div>
             <Stack align='flex-end' justify='flex-end'>
               <Group justify='flex-end' h={'auto'}>
                 {
@@ -156,7 +170,7 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
                       disabled={alreadyApproved && !editingDirectly}
                       leftSection={<IconCheck color='green' size={14} />}
                     >
-                      {alreadyApproved && !editingDirectly ? 'Endorsed' : 'Endorse'}
+                      {alreadyApproved && !editingDirectly ? 'Useful' : 'Useful?'}
                     </Button>
                     :
                     <Button
@@ -166,7 +180,7 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
                       className='text-green-600 hover:text-green-600 border-green-600'
                       size='xs'
                     >
-                      {editingDirectly ? 'Save' : 'This is helpful'}
+                      {editingDirectly ? 'Save' : 'Useful?'}
                     </Button>
                 }
 
@@ -197,7 +211,29 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
                   }}
                   leftSection={<IconEdit size={14} />}
                 >
-                  Fix a problem
+                  Incorrect feedback
+                </Button>
+                <Button
+                  variant='transparent'
+                  disabled={editingDirectly}
+                  onClick={() => {
+                    setEditingDirectly(true);
+                    // setEditedResponse(pageContext.insightsQuery.queryResponse);
+                  }}
+                  leftSection={<IconEdit size={14} />}
+                >
+                  Missing feedback
+                </Button>
+                <Button
+                  variant='transparent'
+                  disabled={editingDirectly}
+                  onClick={() => {
+                    setEditingDirectly(true);
+                    // setEditedResponse(pageContext.insightsQuery.queryResponse);
+                  }}
+                  leftSection={<IconEdit size={14} />}
+                >
+                  fix feedback
                 </Button>
               </Group>
             </Stack>
@@ -272,13 +308,13 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = props => {
               type === 'do' ?
                 <>
                   <CircularProgress />
-              If this takes more than several seconds, please <Button style={{width: 250}} onClick={() => {
-                generateQuickFactsQueries(pageContext, queries, setQueries, setPageContext, CRName, extendedAttributes[pageContext.selectedCR], true);
-              //   setPageContext({
-              //     ...pageContext,
-              //     loadingCRInfo: false,
-              // });
-              }}>click here to manually update.</Button> If that does not work, please refresh the page or log out and log back in again. Thank you for your patience!
+                  If this takes more than several seconds, please <Button style={{ width: 250 }} onClick={() => {
+                    generateQuickFactsQueries(pageContext, queries, setQueries, setPageContext, CRName, extendedAttributes[pageContext.selectedCR], true);
+                    //   setPageContext({
+                    //     ...pageContext,
+                    //     loadingCRInfo: false,
+                    // });
+                  }}>click here to manually update.</Button> If that does not work, please refresh the page or log out and log back in again. Thank you for your patience!
                 </>
                 : <></>
             }

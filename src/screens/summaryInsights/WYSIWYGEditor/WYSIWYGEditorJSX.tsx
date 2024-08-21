@@ -5,61 +5,8 @@ import { FileQuestion } from "lucide-react"
 import { replaceKeyInURI } from "../../videoAnalysis/programEventsTable/StreamGraph/utils"
 
 
-// {
-//     name: 'GoTo',
-//     kind: 'text',
-//     source: './external',
-//     props: [
-//         { name: 'query', type: 'string'},
-//         { name: 'text', type: 'string'}
-//     ],
-//     hasChildren: true,
-//     Editor: () => {
-//         return (
-//             <Button >
-//                 { text }
-//             </Button>
-//         )
-//     }
-// },
 
 const jsxComponentDescriptors: JsxComponentDescriptor[] = [
-    // {
-    //     name: 'MyLeaf',
-    //     kind: 'text', // 'text' for inline, 'flow' for block
-    //     // the source field is used to construct the import statement at the top of the markdown document.
-    //     // it won't be actually sourced.
-    //     source: './external',
-    //     // Used to construct the property popover of the generic editor
-    //     props: [
-    //       { name: 'foo', type: 'string' },
-    //       { name: 'bar', type: 'string' },
-    //       { name: 'onClick', type: 'expression' }
-    //     ],
-    //     // whether the component has children or not
-    //     hasChildren: true,
-    //     Editor: GenericJsxEditor
-    //   },
-    //   {
-    //     name: 'Marker',
-    //     kind: 'text',
-    //     source: './external',
-    //     props: [{ name: 'type', type: 'string' }],
-    //     hasChildren: false,
-    //     Editor: () => {
-    //       return (
-    //         <div style={{ border: '1px solid red', padding: 8, margin: 8, display: 'inline-block' }}>
-                
-    //           <NestedLexicalEditor<any>
-    //             getContent={(node) => node.children}
-    //             getUpdatedMdastNode={(mdastNode, children: any) => {
-    //               return { ...mdastNode, children }
-    //             }}
-    //           />
-    //         </div>
-    //       )
-    //     }
-    //   },
       {
         name: 'GoTo',
         kind: 'flow',
@@ -75,24 +22,6 @@ const jsxComponentDescriptors: JsxComponentDescriptor[] = [
       }
     ]
 
-
-// a toolbar button that will insert a JSX element into the editor.
-const InsertMyLeaf = () => {
-    const insertJsx = usePublisher(insertJsx$)
-    return (
-        <Button
-            onClick={() =>
-                insertJsx({
-                    name: 'MyLeaf',
-                    kind: 'text',
-                    props: { foo: 'bar', bar: 'baz', onClick: { type: 'expression', value: '() => console.log("Clicked")' } }
-                })
-            }
-        >
-            Leaf
-        </Button>
-    )
-}
 
 const jsxMarkdown = `import { BlockNode } from './external';
 

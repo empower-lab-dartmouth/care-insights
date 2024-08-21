@@ -22,7 +22,29 @@ import Markdown from 'react-markdown'
 import { useLocation } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { pageContextState } from '../../../state/recoil';
-import { Example } from './WYSIWYGEditorJSX';
+import { Button, ButtonGroup, Group, Stack } from "@mantine/core"
+import { GenericJsxEditor, JsxComponentDescriptor, NestedLexicalEditor, insertJsx$, jsxPlugin, usePublisher } from "@mdxeditor/editor"
+import { MenuButton } from "../../../components/UserShell"
+import { MessageCircleQuestion} from "lucide-react"
+import { replaceKeyInURI } from "../../videoAnalysis/programEventsTable/StreamGraph/utils"
+
+const jsxComponentDescriptors: JsxComponentDescriptor[] = [
+      {
+        name: 'GoTo',
+        kind: 'flow',
+        source: './external',
+        props: [{ name: 'query', type: 'string' }, {name: 'label', type: 'string'}],
+        hasChildren: true,
+        Editor: (n) => {
+            const query = n.mdastNode.attributes.filter((v) => (v as any).name === 'query')[0].value as string;
+            const label = n.mdastNode.attributes.filter((v) => (v as any).name === 'label')[0].value as string;
+            const newUri = new URL(replaceKeyInURI(location.href, 'q', query));
+            const search = newUri.searchParams.toString();
+        return (<li><Group>{label}<MenuButton path='/questions' search={search} icon={<MessageCircleQuestion color='blue' size={18} />}><i style={{color: 'blue'}}>Details</i></MenuButton></Group></li>);
+        }
+      }
+    ]
+
 
 // import { uploadFile } from '../../../state/setting';
 
@@ -46,11 +68,13 @@ const cleanLink = (t: string) => t.replaceAll('-', '').replaceAll('*', '').repla
 
 const wrapAsLink = (text: string, pathname: string, currentCR: string) => {
   const newLineSplitText = text.split(/\n/);
-  const baseURLLocal = 'https://main--care-insights.netlify.app/'; //http://localhost:3000/';
-  const path = 'questions'
-  const promptPreface = 'Tell me more about: '.replaceAll(' ', '%20');
-  const prompt = (t: string) => promptPreface + cleanLink(t);
-  const wrappedBullets = newLineSplitText.map((t) => `[${t}](${baseURLLocal}${path}?cr="${currentCR}"&q="${prompt(t)}")`);
+  // const baseURLLocal = 'https://main--care-insights.netlify.app/'; //http://localhost:3000/';
+  // const path = 'questions'
+  const promptPreface = 'Give me more detailed feedback about: '.replaceAll(' ', '%20');
+  
+  const prompt = (t: string) => promptPreface + t;
+  // const wrappedBullets = newLineSplitText.map((t) => `[${t}](${baseURLLocal}${path}?cr="${currentCR}"&q="${prompt(t)}")`);
+  const wrappedBullets = newLineSplitText.map((t) => `<ul><GoTo query="${prompt(t)}" label="${t}" /></ul>`);
   return wrappedBullets.join('\n\n\n');
 }
 
@@ -83,10 +107,10 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   }
   if (readOnly) {
     return (
-      <Markdown>{wrapAsLink(markdown, pathname, pageState.selectedCR)}</Markdown>
+      <MDXEditor markdown={wrapAsLink(markdown, pathname, pageState.selectedCR)} plugins={[
+        jsxPlugin({ jsxComponentDescriptors })]} />
     );
   }
-  return <Example />;
   return (
     <div className='z-10'>
       <MDXEditor
