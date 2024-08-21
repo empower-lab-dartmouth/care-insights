@@ -28,7 +28,7 @@ const conditionalBackground = (momentTime: number, playedSeconds: number, videSt
 
 
 const Transcript: React.FC<TranscriptParams> = ({ transcriptSegments, videoStarted, progress, playedSeconds }) => {
-    const [showTranscript, setShowTranscript] = useState(false);
+    const [showTranscript, setShowTranscript] = useState(true);
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setShowTranscript(event.target.checked);
     };
