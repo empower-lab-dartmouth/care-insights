@@ -49,7 +49,7 @@ const MenuButtons = () => {
           Snapshot
         </MenuButton>
         <MenuButton path='/questions' icon={<FileQuestion size={18} />}>
-          Tell me more
+          Details
         </MenuButton>
         <MenuButton path='/program-events' icon={<SquarePlay size={18} />}>
           Program Events
