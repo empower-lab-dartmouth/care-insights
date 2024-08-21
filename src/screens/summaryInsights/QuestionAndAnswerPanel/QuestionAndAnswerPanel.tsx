@@ -206,6 +206,14 @@ const QuestionAndAnswerPanel: React.FC = () => {
   if (CRName == 'Care recipient' || CRName === 'NONE') {
     return (<Text>Use the dropdown above to choose a care recipient</Text>)
   }
+  if (pageContext.insightsQuery.CRUUID !== pageContext.selectedCR) {
+    return (<><Title>Get started by asking a question</Title>
+    <Button onClick={() => {
+      makeQuery('What are some good ways to support ' + displayName + '?');
+    }}>Get started</Button>
+    </>)
+  }
+
   return (
     <div className='relative min-h-[82vh]'>
       <Card className='mt-[30px] border border-gray-200' shadow='xs' p='lg'>

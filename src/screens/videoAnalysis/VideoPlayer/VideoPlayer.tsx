@@ -27,6 +27,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const { videoSrc, setProgramEvent, programEvent, setMeaningfulMoments } =
     props;
   const [showVideo, setShowVideo] = useState(true);
+  const [videoStarted, setVideoStarted] = useState(false);
+  const [progress, setProgress] = useState(0);
   if (videoSrc === 'video-missing') {
     return 'This video has not yet been processed. It will be made available later.'
   }
@@ -38,6 +40,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
         alignItems='flex-start'
         spacing={2}
       >
+        <>{videoStarted ? 'STARTED' : 'NOT STARTED'}</>
+        <>{progress}</>
         <EventsTimeline
           setEvents={setMeaningfulMoments}
           programEvent={programEvent}
@@ -53,7 +57,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
                 {/* <PlayMux />
                 {programEvent.muxPlaybackId} */}
                 {/* {programEvent.muxAssetId} */}
-                  <ReactPlayer controls={true} url={videoSrc} />
+                  <ReactPlayer onProgress={({
+  played,
+  playedSeconds,
+  loaded,
+  loadedSeconds,
+}) => {
+  
+}} onStart={() => setVideoStarted(true)} controls={true} url={videoSrc} />
                   {
                     programEvent.transcript.length > 0 ?
                   <Transcript transcriptSegments={programEvent.transcript} /> :
