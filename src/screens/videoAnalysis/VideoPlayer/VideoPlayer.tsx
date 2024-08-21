@@ -40,8 +40,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
         alignItems='flex-start'
         spacing={2}
       >
-        <>{videoStarted ? 'STARTED' : 'NOT STARTED'}</>
-        <>{progress}</>
+        {/* <>{videoStarted ? 'STARTED' : 'NOT STARTED'}</>
+        <>{progress}</> */}
         <EventsTimeline
           setEvents={setMeaningfulMoments}
           programEvent={programEvent}
@@ -63,7 +63,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   loaded,
   loadedSeconds,
 }) => {
-  
+
 }} onStart={() => setVideoStarted(true)} controls={true} url={videoSrc} />
                   {
                     programEvent.transcript.length > 0 ?

@@ -22,6 +22,11 @@ export const defaultQueryLoading: QueryRecord = {
   CRUUID: '',
 };
 
+export const onlyCRWithRoomNumber = atom({
+  key: 'only-cr-rooms',
+  default: false
+});
+
 export const DEFAULT_QUERY_RESPONSE_MESSAGE = 'If you are satisfied with the question, click on the search icon below to ask our AI for feedback. You can edit the question below in the text box.';
 
 export const defaultQueryEmpty: QueryRecord = {
