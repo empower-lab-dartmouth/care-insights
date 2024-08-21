@@ -18,12 +18,13 @@ import ShareButton from '../../../components/ShareButton';
 import { useLocation } from 'react-router-dom';
 
 type CommonCRActionsProps = {
-  page: 'tell-me-more' | 'program-events' | 'care-team' | 'snapshot';
+  page: 'Details' | 'program-events' | 'care-team' | 'snapshot';
 };
 
 function convertToTitleCase(input: string) {
   // Split the string by hyphens
   let words = input.split('-');
+
 
   // Capitalize the first letter of each word and join them with a space
   let titleCased = words

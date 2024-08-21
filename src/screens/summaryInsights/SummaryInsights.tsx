@@ -39,7 +39,7 @@ const SummaryInsights = () => {
   }, [queries]);
   return (
     <UserShell>
-      <CommonCRActions page={'tell-me-more'} />
+      <CommonCRActions page={'details'} />
 
       <>
         {pageContext.loadingCRInfo ? (
