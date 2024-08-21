@@ -135,7 +135,7 @@ const CareInsightsPage = () => {
     if (input == 'NONE') {
       return <QuickInfo
         value={'No care recipient selected.'}
-        label={'Please select a care recipient from the table on the top right'}
+        label={'Please select a care recipient from the box above that says "Select a care recipient"'}
       />
     }
     return <QuickInfo
@@ -178,7 +178,7 @@ const CareInsightsPage = () => {
           ) : pageContext.selectedCR === NO_CR_SELECTED || displayName == 'NONE' ? (
             <QuickInfo
               value={'No care recipient selected.'}
-              label={'Please select a care recipient from the table on the top right'}
+              label={'Please select a care recipient from the box above that says "Select a care recipient"'}
             />
             // <h1><b>No care recipient selected.</b><br/>Please select a care recipient from the table on the top right</h1>
           ) : (

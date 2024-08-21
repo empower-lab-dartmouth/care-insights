@@ -264,7 +264,7 @@ const ProgramEventsTable: React.FC = () => {
     <div className='mt-12'>
       {showNothing ? <QuickInfo
                         value={'No care recipient selected.'}
-                        label={'Please select a care recipient from the table on the top right'}
+                        label={'Please select a care recipient from the box above that says "Select a care recipient"'}
                       /> :
         <DataTable
           columns={columns}
