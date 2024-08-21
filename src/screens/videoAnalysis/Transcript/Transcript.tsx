@@ -15,9 +15,9 @@ export type TranscriptParams = {
 }
 
 const conditionalBackground = (momentTime: number, playedSeconds: number, videStarted: boolean) => {
-    if (!videStarted) {
-        return {};
-    }
+    // if (!videStarted) {
+    //     return {};
+    // }
     if (Math.abs(playedSeconds - momentTime) < 5) {
         return {
             backgroundColor: 'lightyellow'

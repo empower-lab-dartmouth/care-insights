@@ -339,9 +339,9 @@ const EventsTimeline: React.FC<TimelineProps> = props => {
   };
 
   const conditionalBackground = (momentTime: number, playedSeconds: number, videStarted: boolean) => {
-    if (!videoStarted) {
-      return {};
-    }
+    // if (!videoStarted) {
+    //   return {};
+    // }
     if (Math.abs(playedSeconds - momentTime) < 30) {
       return {
         backgroundColor: 'lightyellow'
