@@ -99,7 +99,7 @@ const wrapAsLink = (text: string, pathname: string, currentCR: string) => {
 
   const prompt = (t: string) => promptPreface + t;
   // const wrappedBullets = newLineSplitText.map((t) => `[${t}](${baseURLLocal}${path}?cr="${currentCR}"&q="${prompt(t)}")`);
-  const wrappedBullets = newLineSplitText.map((t) => <ul><GoTo queryString={promptPreface + t} label={t} /></ul>);
+  const wrappedBullets = newLineSplitText.map((t, i) => <ul key={t + i}><GoTo queryString={promptPreface + t} label={t} /></ul>);
   return wrappedBullets;
 }
 

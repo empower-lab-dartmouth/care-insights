@@ -180,7 +180,7 @@ export async function askQuery(
   const ext = extendedAttributes ? complileExtendedAttributesIntoPrompt(extendedAttributes) : '';
   // console.log('here are the responses to relevant queries:');
   // console.log(relevantQueryResponses);
-const formatting = longForm !== undefined && longForm ? `Format your response as several short sentences. Don't use generalities, focus on what a caregiver would find actionable. If possible, reference specific info from the care notes, such as songs or family memories. Be specific to this individual. You can also bring in concepts from music based memory loss therapy. Avoid prefacing, just get to the point.` :
+const formatting = longForm !== undefined && longForm ? `Format your response as several short sentences. Don't use generalities, focus on what a caregiver would find actionable. If possible, reference specific info from the care notes, such as songs or family memories. Be specific to this individual. You can also bring in concepts from music based memory loss therapy. Do not use opening statements like "Based on the care notes", just get to the point.` :
 `Format your response as a short list of bullet points, where each bullet is a short sentence or phrase (no more than five words). Again, heavily leverage the care records, reference specific info from the care notes, such as songs or family memories.`;
 
 

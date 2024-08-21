@@ -46,6 +46,7 @@ import {
 import { IconThumbUp, IconX } from '@tabler/icons-react';
 import { Check } from 'lucide-react';
 import { reportTrackingEvent } from '../../../state/tracking';
+import { setRemoteQueryRecord } from '../../../state/setting';
 
 const inputStyles = {
   'width': '100%',
@@ -123,7 +124,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
     setLoadingResponse(true);
     setEditingDirectly(false);
     setFeedbackInputOpen(false);
-    await askQuery(
+    const newQuery = await askQuery(
       q,
       handleLocalQueryResponse,
       pageContext.selectedCRProgramEvents,
@@ -135,7 +136,20 @@ const QuestionAndAnswerPanel: React.FC = () => {
       extendedAttributes[pageContext.selectedCR],
       true
     );
-    setForceUpdateRequired(true);
+    setRemoteQueryRecord(newQuery);
+    console.log('the queries are', queries, "our query is: ", newQuery);
+    setQueries({
+      ...queries,
+      [newQuery.query]: newQuery,
+    });
+    setPageContext({
+      ...pageContext,
+      loadingCRInfo: false,
+      insightsQuery: newQuery,
+    });
+    console.log('made it here', newQuery, pageContext);
+    setEditedResponse(newQuery.queryResponse);
+    // setForceUpdateRequired(true);
     setLoadingResponse(false);
   };
 
@@ -198,6 +212,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
         <Group justify='flex-end'>
           {responseChip(loadingResponse, alreadyApproved)}
         </Group>
+        {editingQuery === '' ? <Title order={5}>Use the gray search search box below to type in a question</Title> : <></>} 
         {editingQuery && (
           <div className='flex flex-col gap-2'>
             <Title order={5}>{editingQuery || editedResponse === 'loading' || editedResponse === DEFAULT_QUERY_RESPONSE_MESSAGE ? 'Editing question:' : 'You asked:'}</Title>
@@ -208,15 +223,10 @@ const QuestionAndAnswerPanel: React.FC = () => {
         {editedResponse && (
           <div className='mt-4'>
             <div className='flex gap-3'>
+            {editingQuery === '' ? <></> : <>
               {
-                editedResponse === 'loading' || editedResponse === DEFAULT_QUERY_RESPONSE_MESSAGE ? <Title order={5}>Ask a question!</Title> :
-                  <Title order={5}>More details regarding your question:</Title>}
-              {/* {responseChip(
-                loadingResponse,
-                queryModified,
-                pageContext,
-                alreadyApproved
-              )} */}
+                queryModified || editedResponse === 'loading' || editedResponse === DEFAULT_QUERY_RESPONSE_MESSAGE ? <Title order={5}>Ask a question!</Title> :
+                  <Title order={5}>More details regarding your question:</Title>}</>}
             </div>
             {
               editedResponse === 'loading' || editedResponse === DEFAULT_QUERY_RESPONSE_MESSAGE ?
@@ -399,39 +409,39 @@ const QuestionAndAnswerPanel: React.FC = () => {
               )}
               </>)}
       </Card>
-      <div className='block lg:absolute w-full bottom-0 lg:flex flex-col gap-6'>
-        <div className='mt-8'>
-          <SuggestedText
-            textSuggestions={pageContext.suggestedQueries}
-            currentText={editingQuery}
-            onSelected={async option => {
-              console.log('use query string: ' + option.query);
-              setEditingQuery(option.query);
-              makeQuery(option.query);
+        <div className='block lg:absolute w-full bottom-1 lg:flex flex-col gap-6'>
+          <div className='mt-8'>
+            <SuggestedText
+              textSuggestions={pageContext.suggestedQueries}
+              currentText={editingQuery}
+              onSelected={async option => {
+                console.log('use query string: ' + option.query);
+                setEditingQuery(option.query);
+                makeQuery(option.query);
+              }}
+              loadMoreSuggestions={() =>
+                setPageContext({
+                  ...pageContext,
+                  suggestedQueries: Object.values(queries),
+                })
+              }
+              hasMoreSuggestions={
+                pageContext.suggestedQueries.length !==
+                Object.values(queries).length
+              }
+            />
+          </div>
+          <SearchBox
+            value={editingQuery}
+            onSearch={() => makeQuery(editingQuery)}
+            onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
+              if (event.target.value.endsWith('\n')) {
+                makeQuery(editingQuery);
+              } else {
+                setEditingQuery(event.target.value);
+              }
             }}
-            loadMoreSuggestions={() =>
-              setPageContext({
-                ...pageContext,
-                suggestedQueries: Object.values(queries),
-              })
-            }
-            hasMoreSuggestions={
-              pageContext.suggestedQueries.length !==
-              Object.values(queries).length
-            }
           />
-        </div>
-        <SearchBox
-          value={editingQuery}
-          onSearch={() => makeQuery(editingQuery)}
-          onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
-            if (event.target.value.endsWith('\n')) {
-              makeQuery(editingQuery);
-            } else {
-              setEditingQuery(event.target.value);
-            }
-          }}
-        />
       </div>
     </div >
   );
