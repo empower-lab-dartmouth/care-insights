@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 import MuxPlayer from '@mux/mux-player-react';
 import {
@@ -26,12 +26,17 @@ type VideoPlayerProps = {
 const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const { videoSrc, setProgramEvent, programEvent, setMeaningfulMoments } =
     props;
+    const ref = React.useRef<ReactPlayer>(null);
   const [showVideo, setShowVideo] = useState(true);
   const [videoStarted, setVideoStarted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [playedSeconds, setPlayedSeconds] = useState(0);
   if (videoSrc === 'video-missing') {
     return 'This video has not yet been processed. It will be made available later.'
+  }
+
+  const seekTo = (x: number) => {
+    ref.current?.seekTo(x);
   }
   return (
     <>
@@ -42,6 +47,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
         spacing={2}
       >
         <EventsTimeline
+          seekTo={seekTo}
           setEvents={setMeaningfulMoments}
           programEvent={programEvent}
           setProgramEvent={setProgramEvent}
@@ -59,7 +65,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
                   {/* <PlayMux />
                 {programEvent.muxPlaybackId} */}
                   {/* {programEvent.muxAssetId} */}
-                  <ReactPlayer onProgress={({
+                  <ReactPlayer 
+                  ref={ref}
+                  onProgress={({
                     played,
                     playedSeconds,
                     loaded,
@@ -70,7 +78,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
                   }} onStart={() => setVideoStarted(true)} controls={true} url={videoSrc} />
                   {
                     programEvent.transcript.length > 0 ?
-                      <Transcript transcriptSegments={programEvent.transcript} 
+                      <Transcript setVideoTime={seekTo} transcriptSegments={programEvent.transcript} 
                       videoStarted={videoStarted}
           progress={progress}
           playedSeconds={playedSeconds}

@@ -11,6 +11,7 @@ export type TranscriptParams = {
     videoStarted: boolean;
     progress: number;
     playedSeconds: number;
+    setVideoTime: (seconds: number) => void
 }
 
 const conditionalBackground = (momentTime: number, playedSeconds: number, videStarted: boolean) => {
@@ -27,7 +28,7 @@ const conditionalBackground = (momentTime: number, playedSeconds: number, videSt
 }
 
 
-const Transcript: React.FC<TranscriptParams> = ({ transcriptSegments, videoStarted, progress, playedSeconds }) => {
+const Transcript: React.FC<TranscriptParams> = ({ transcriptSegments, setVideoTime, videoStarted, progress, playedSeconds }) => {
     const [showTranscript, setShowTranscript] = useState(true);
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setShowTranscript(event.target.checked);
@@ -45,9 +46,11 @@ const Transcript: React.FC<TranscriptParams> = ({ transcriptSegments, videoStart
                         <div style={{ maxHeight: 300, overflowY: 'scroll' }}>
                             <Text>
                                 {transcriptSegments.map((t) => (
-                                    <span key={t.text + t.offsetSeconds}
+                                    <span onClick={() => setVideoTime(t.offsetSeconds)} key={t.text + t.offsetSeconds}
                                         style={{ ...conditionalBackground(t.offsetSeconds, playedSeconds, videoStarted), display: 'flex' }}>
-                                        {t.text !== '0' ? t.text + ' ' : ''}
+                                        <span style={{ maxWidth: 100 }}>
+                                            {t.text !== '0' ? t.text + ' ' : ''}
+                                        </span>
                                     </span>
                                 ))
                                 }

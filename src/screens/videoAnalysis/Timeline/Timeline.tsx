@@ -56,7 +56,8 @@ type TimelineProps = {
   showVideo: boolean;
   videoStarted: boolean;
   progress: number;
-  playedSeconds: number
+  playedSeconds: number;
+  seekTo: (x: number) => void
 };
 
 function eventHeader(moment: MeaningfulMoment) {
@@ -287,7 +288,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ updateTime, time }) => {
 };
 
 const EventsTimeline: React.FC<TimelineProps> = props => {
-  const { programEvent, setEvents, setProgramEvent, progress, playedSeconds, videoStarted, showVideo, setShowVideo } =
+  const { programEvent, seekTo, setEvents, setProgramEvent, progress, playedSeconds, videoStarted, showVideo, setShowVideo } =
     props;
   const events = programEvent.meaningfulMoments;
   const [localEvents, setLocalEvents] = React.useState(events);
@@ -492,7 +493,7 @@ const EventsTimeline: React.FC<TimelineProps> = props => {
           {Object.values(events)
             .sort((a, b) => a.startTime - b.startTime)
             .map(e => (
-              <TimelineItem key={e.startTime} style={conditionalBackground(e.startTime /1000, playedSeconds, videoStarted)}>
+              <TimelineItem onClick={() => seekTo(Math.max(0, (e.startTime / 1000) - 20))} key={e.startTime} style={conditionalBackground(e.startTime /1000, playedSeconds, videoStarted)}>
                 <TimelineOppositeContent
                   sx={{
                     'm': 'auto 0',
