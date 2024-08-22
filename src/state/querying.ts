@@ -196,7 +196,7 @@ console.log('using longform', longForm);
     messages: [{ role: 'user', content: prompt }],
     model: 'gpt-3.5-turbo',
   });
-  console.log('PROMPT', prompt);
+  // console.log('PROMPT', prompt);
   const ChatGPTResponse = '' + queryResponse.choices[0].message.content;
   const completedQuery: QueryRecord = {
     query: inputQuery,

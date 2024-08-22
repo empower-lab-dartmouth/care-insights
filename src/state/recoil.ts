@@ -11,7 +11,7 @@ import { string } from '@recoiljs/refine';
 
 export const trackingTimeUntilNextPush = atom<number>({
   key: 'tracking-elapsed-time',
-  default: 11000, // 30 sec
+  default: 5000, // 30 sec
 });
 
 export const defaultQueryLoading: QueryRecord = {
