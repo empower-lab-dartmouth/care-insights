@@ -22,7 +22,7 @@ const SupportPage = () => {
                 <Title order={5}>Welcome to Care Insights</Title>
                 <Text >Please see the following video for help getting started. If you have any questions, would like to enroll other folks in the study, need additional help, or run into any isseus using the app please contact <a href="mailto:christina@memcara.com">christina@memcara.com</a> and our team will get back to you ASAP. Thank you!</Text>
                 {/* <Text >If you have any questions, would like to enroll other folks in the study, need additional help, or run into any isseus using the app please contact <a href="mailto:christina@memcara.com">christina@memcara.com</a> and our team will get back to you ASAP. Thank you!</Text> */}
-                <iframe src="https://drive.google.com/file/d/1MWrVTYFEt9_pegr9nF7ZVNPDqP4rz_ED/preview" width="auto" height="480" allow="autoplay"></iframe>
+                <iframe src="https://drive.google.com/file/d/1T_-NAUxdY0fryqVVXwJO0r-9_T-2PlUY/preview" width="640" height="480" allow="autoplay"></iframe>
                 {/* <ReactPlayer url={'https://drive.google.com/file/d/1MWrVTYFEt9_pegr9nF7ZVNPDqP4rz_ED/view?usp=sharing'} /> */}
                 {/* <LiteYouTubeEmbed
                     id="OhlhEOgAjQc" //PlxN5leqdwo" https://youtu.be/
