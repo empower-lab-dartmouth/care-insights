@@ -26,7 +26,7 @@ export const setRemoteQueryRecord = async (query: QueryRecord) => {
   const queryRef = collection(db, 'QueryRecord');
   try {
     await setDoc(doc(queryRef, query.query), query);
-    console.log('Posted query!', query);
+    console.log('Posted query!');
   } catch (e) {
     console.log('error writing to fb');
     console.log(e);
@@ -39,7 +39,7 @@ export async function uploadFile(file: any, path: string) {
   // 'file' comes from the Blob or File API
   uploadBytes(storageRef, file).then((snapshot) => {
     console.log('Uploaded a blob or file!');
-    console.log(snapshot);
+    // console.log(snapshot);
   });
 }
 
