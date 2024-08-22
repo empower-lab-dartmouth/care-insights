@@ -46,7 +46,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const videoApprovalRequriedForSite = displayName !== null && VIDEO_APPROVAL_REQUIRED.filter((v) => displayName?.includes(v)).length > 0;
   const userHasPermissions = pageContext.position !== undefined && pageContext.position !== 'Family';
   const showAdminControls = (dev || IS_ADMIN) && videoApprovalRequriedForSite;
-  const videoHasBeenApproved = programEvent.videoApproved === undefined || programEvent.videoApproved;
+  const videoHasBeenApproved = (programEvent.videoApproved != undefined && programEvent.videoApproved == true);
   const videoNotApproved = videoApprovalRequriedForSite && !userHasPermissions && !videoHasBeenApproved;
   // Check if we're dealing with a facility with location services required.
   console.log('user has permissions', !userHasPermissions, videoApprovalRequriedForSite, programEvent.videoApproved !== undefined, programEvent.videoApproved, videoNotApproved);
