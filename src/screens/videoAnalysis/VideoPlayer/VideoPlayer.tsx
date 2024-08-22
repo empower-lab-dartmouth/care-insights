@@ -45,7 +45,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const displayName = currentUser?.displayName;
   const videoApprovalRequriedForSite = displayName !== null && VIDEO_APPROVAL_REQUIRED.filter((v) => displayName?.includes(v)).length > 0;
   const userHasPermissions = pageContext.position !== undefined && pageContext.position !== 'Family';
-  const showAdminControls = (dev || IS_ADMIN) && videoApprovalRequriedForSite;
+  const showAdminControls = (IS_ADMIN) && videoApprovalRequriedForSite;
   const videoHasBeenApproved = (programEvent.videoApproved != undefined && programEvent.videoApproved == true);
   const videoNotApproved = videoApprovalRequriedForSite && !userHasPermissions && !videoHasBeenApproved;
   // Check if we're dealing with a facility with location services required.
@@ -92,9 +92,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
               videoSrc === 'video-missing' ? <h3>This video is no longer available</h3> :
                 <>
                   {videoNotApproved ? <div style={{ width: 600, overflow: 'auto' }}><QuickInfo
-                    value={'Not reviewed'}
+                    value={'Unreleased'}
                     label={''}
-                  /><p>The facility admin <br />must release all videos</p></div> :
+                  /><p>The facility admin <br />must manually <br/> review and <br/>release all videos.</p></div> :
                     <>
                       <ReactPlayer
                         ref={ref}
