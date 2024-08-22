@@ -15,6 +15,7 @@ import { askQuery } from '../state/querying';
 import { setRemoteQueryRecord } from '../state/setting';
 import { resetAuthCache } from '../state/globals';
 import { reportTrackingEvent } from '../state/tracking';
+import Demo from '../state/LocationTracking';
 
 
 
@@ -126,6 +127,7 @@ const MenuButtons = () => {
         <MenuButton path='/support' icon={<Info size={18} />}>
           Onboarding
         </MenuButton>
+        <Demo/>
         {/* <MenuButton path='/care-team' icon={<UsersRound size={18} />}>
           Care Team
         </MenuButton> */}
