@@ -11,18 +11,20 @@ type Location = {
     radius: number // meters
 }
 
+export const VIDEO_APPROVAL_REQUIRED = ['@oakwoodmanor', '@lccc'];
+
 export const PERMISSIBLE_LOCATIONS: Location[] = [
     {
         name: '@oakwoodmanor',
         latitude: 41.7877859,
         longitude: -73.9724189,
-        radius: 12000,
+        radius: 8000,
     },
     {
         name: '@lccc',
         latitude: 41.6991111111111,
         longitude: -73.9243055555556,
-        radius: 12000,
+        radius: 8000,
     }];
 
 // , {
@@ -40,6 +42,7 @@ export type PageState = {
     insightsQuery: QueryRecord,
     avoidQuery: string,
     doQuery: string,
+    position?: string,
     symptomsQuery: string,
     redirectionQuery: string,
     addEventModalOpen: boolean,
@@ -161,6 +164,7 @@ export type MusicProgramEvent = {
     type: 'music-event',
     facilityId: string,
     videoUrl: string,
+    videoApproved?: boolean,
     muxPlaybackId: string,
     muxAssetId: string,
     postTestMood: string,

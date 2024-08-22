@@ -1,8 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 import MuxPlayer from '@mux/mux-player-react';
 import {
   MeaningfulMoment,
+  VIDEO_APPROVAL_REQUIRED,
   MusicProgramEvent,
   ProgramEvent,
 } from '../../../state/types';
@@ -12,7 +13,13 @@ import HeatMap from '../HeatMap/HeatMap';
 import Transcript from '../Transcript/Transcript';
 import { StreamGraphPageViewsDemo } from '../programEventsTable/StreamGraph/StreamGraphPageViewsDemo';
 import PlayMux from './MuxPlayer';
-
+import { AuthContext } from '../../../state/context/auth-context';
+import { pageContextState } from '../../../state/recoil';
+import { useRecoilValue } from 'recoil';
+import { QuickInfo } from '../../summaryInsights/CareInsights';
+import { Center, Group, Switch } from '@mantine/core';
+import { IS_ADMIN } from '../../../state/globals';
+import { useLocation } from 'react-router-dom';
 
 type VideoPlayerProps = {
   videoSrc: string;
@@ -26,11 +33,24 @@ type VideoPlayerProps = {
 const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const { videoSrc, setProgramEvent, programEvent, setMeaningfulMoments } =
     props;
-    const ref = React.useRef<ReactPlayer>(null);
+  const ref = React.useRef<ReactPlayer>(null);
+  const { currentUser } = useContext(AuthContext);
+  const { search } = useLocation();
+  const dev = search.includes('dev=true');
+  const pageContext = useRecoilValue(pageContextState);
   const [showVideo, setShowVideo] = useState(true);
   const [videoStarted, setVideoStarted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [playedSeconds, setPlayedSeconds] = useState(0);
+  const displayName = currentUser?.displayName;
+  const videoApprovalRequriedForSite = displayName !== null && VIDEO_APPROVAL_REQUIRED.filter((v) => displayName?.includes(v)).length > 0;
+  const userHasPermissions = pageContext.position !== undefined && pageContext.position !== 'Family';
+  const showAdminControls = (dev || IS_ADMIN) && videoApprovalRequriedForSite;
+  const videoHasBeenApproved = programEvent.videoApproved === undefined || programEvent.videoApproved;
+  const videoNotApproved = videoApprovalRequriedForSite && !userHasPermissions && !videoHasBeenApproved;
+  // Check if we're dealing with a facility with location services required.
+  console.log('user has permissions', !userHasPermissions, videoApprovalRequriedForSite, programEvent.videoApproved !== undefined, programEvent.videoApproved, videoNotApproved);
+  const videoApproved = VIDEO_APPROVAL_REQUIRED;
   if (videoSrc === 'video-missing') {
     return 'This video has not yet been processed. It will be made available later.'
   }
@@ -59,32 +79,44 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
         />
         {showVideo ? (
           <div>
+            {showAdminControls ? <Switch
+              checked={videoHasBeenApproved}
+              label={'Enable family member access'}
+              onChange={(event) => setProgramEvent({
+                ...programEvent,
+                videoApproved: event.currentTarget.checked
+              })}
+            /> : <></>}
+            <br />
             {
               videoSrc === 'video-missing' ? <h3>This video is no longer available</h3> :
                 <>
-                  {/* <PlayMux />
-                {programEvent.muxPlaybackId} */}
-                  {/* {programEvent.muxAssetId} */}
-                  <ReactPlayer 
-                  ref={ref}
-                  onProgress={({
-                    played,
-                    playedSeconds,
-                    loaded,
-                    loadedSeconds,
-                  }) => {
-                    setProgress(played);
-                    setPlayedSeconds(playedSeconds);
-                  }} onStart={() => setVideoStarted(true)} controls={true} url={videoSrc} />
-                  {
-                    programEvent.transcript.length > 0 ?
-                      <Transcript setVideoTime={seekTo} transcriptSegments={programEvent.transcript} 
-                      videoStarted={videoStarted}
-          progress={progress}
-          playedSeconds={playedSeconds}
-          /> :
-                      <></>
-                  }
+                  {videoNotApproved ? <div style={{ width: 600, overflow: 'auto' }}><QuickInfo
+                    value={'Not reviewed'}
+                    label={''}
+                  /><p>The facility admin <br />must release all videos</p></div> :
+                    <>
+                      <ReactPlayer
+                        ref={ref}
+                        onProgress={({
+                          played,
+                          playedSeconds,
+                          loaded,
+                          loadedSeconds,
+                        }) => {
+                          setProgress(played);
+                          setPlayedSeconds(playedSeconds);
+                        }} onStart={() => setVideoStarted(true)} controls={true} url={videoSrc} />
+                      {
+                        programEvent.transcript.length > 0 ?
+                          <Transcript setVideoTime={seekTo} transcriptSegments={programEvent.transcript}
+                            videoStarted={videoStarted}
+                            progress={progress}
+                            playedSeconds={playedSeconds}
+                          /> :
+                          <></>
+                      }
+                    </>}
                 </>
             }
           </div>

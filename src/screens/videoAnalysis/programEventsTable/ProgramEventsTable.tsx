@@ -15,20 +15,23 @@ import DataTable, { TableColumn } from 'react-data-table-component';
 import {
   NO_CR_SELECTED,
   careRecipientsInfoState,
+  extededAttributesState,
   pageContextState,
+  queriesForCurrentCGState,
 } from '../../../state/recoil';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { ExpandableRowsComponent } from 'react-data-table-component/dist/DataTable/types';
 import VideoPlayer from '../VideoPlayer/VideoPlayer';
 import ManualEntryExpandedView from '../ManualEntryExpandedView/ManualEntryExpandedView';
-import { setRemoteProgramEvent } from '../../../state/setting';
-import { Drawer, Title } from '@mantine/core';
+import { setPartialPageContext, setRemoteProgramEvent } from '../../../state/setting';
+import { Button, Drawer, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import Label from './Label';
 import dayjs from 'dayjs';
 import { tableStyles } from './tableStyles';
 import ShareButton from '../../../components/ShareButton';
 import { QuickInfo } from '../../summaryInsights/CareInsights';
+import { loadCRData } from '../../../state/fetching';
 
 type CommonRowFields = {
   label: string;
@@ -215,7 +218,10 @@ const programEventsToRows: (
 
 const ProgramEventsTable: React.FC = () => {
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
+  const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
   const [opened, { open, close }] = useDisclosure(false);
+  const [extendedAttributes, setExtendedAttributes] = useRecoilState(extededAttributesState);
+
 
   const CRInfo = useRecoilValue(careRecipientsInfoState);
 
@@ -266,7 +272,7 @@ const ProgramEventsTable: React.FC = () => {
                         value={'No care recipient selected.'}
                         label={'Please select a care recipient from the box above that says "Select a care recipient"'}
                       /> :
-        <DataTable
+        <><DataTable
           columns={columns}
           data={data}
           pagination
@@ -277,6 +283,22 @@ const ProgramEventsTable: React.FC = () => {
           expandableRowsComponent={ExpandedComponent}
           customStyles={tableStyles}
         />
+        {data.length === 0 ? <h1>Try clicking below if this care recipient should have data</h1> : <></>}
+        <Button onClick={() => {
+          const newPageState = {
+              ...pageContext,
+              selectedCR: pageContext.selectedCR,
+              loadingCRInfo: true,
+            };
+            setPartialPageContext(newPageState);
+            loadCRData(
+              newPageState,
+              setPageContext,
+              setQueries,
+              CRInfo,
+              extendedAttributes[pageContext.selectedCR]
+            );}}>Refresh</Button>
+        </>
       }
     </div>
   );

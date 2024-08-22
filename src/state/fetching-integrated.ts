@@ -130,11 +130,13 @@ export const loadCareRecipientsInfoFromCaresuite = async (
   // console.log('B_BUNNY EXTENDED ATTRIBUTES', snapFacilityRecipients.docs.map((d) => d.data()));
   const globalRecipientAccess = snapAccount.exists() ? (snapAccount.data().globalRecipientAccess ?? false) : false;
   const caregiverPosition = snapCaregiver.exists() ? (snapCaregiver.data().position ?? 'unknown') : 'unknown';
+  const caregiverPositionString = typeof caregiverPosition === 'string' ? caregiverPosition : 'unknown';
   const recipientsInAccount = snapRecipientsInAccount.docs.map(doc => ({ recipientId: doc.id, displayName: doc.data().displayName as string }));
   const recipientsAssignedToCaregiver = snapRecipientsAssignedToCaregiver.docs.map(doc => ({ recipientId: doc.data().recipientId as string }));
-
+  
   const pinnedRecipients = recipientsAssignedToCaregiver.map(rc => ({ recipientId: rc.recipientId, displayName: recipientsInAccount.find(r => r.recipientId === rc.recipientId)?.displayName ?? 'unknown' }));
   const searchRecipients = (['Family', 'Volunteer'].includes(caregiverPosition) ? [] : (!globalRecipientAccess ? [] : (recipientsInAccount.map(r => ({ recipientId: r.recipientId, displayName: r.displayName })))));
+  
   // await signOut(partnerAuth);
   const result: CareRecipientInfo[] = snapRecipientsInAccount.docs.map((doc) => ({
     imageURL: DEFAULT_PROFILE_IMAGE, // Not set yet
@@ -158,10 +160,11 @@ export const loadCareRecipientsInfoFromCaresuite = async (
     }),
     temp
   );
-  // console.log('set care recipients fetching integrated', careRecipients);
+  console.log('Position = ', caregiverPositionString);
   setCareRecipientInfo(careRecipients);
   setPageContext({
     ...pageState,
+    position: caregiverPositionString,
     loadingCRInfo: false,
   });
   // console.log('RESULT', result);
