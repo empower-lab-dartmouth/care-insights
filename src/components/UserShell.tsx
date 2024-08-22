@@ -124,7 +124,7 @@ const MenuButtons = () => {
           Program events
         </MenuButton>
         <MenuButton path='/support' icon={<Info size={18} />}>
-          Technology help
+          Onboarding
         </MenuButton>
         {/* <MenuButton path='/care-team' icon={<UsersRound size={18} />}>
           Care Team
