@@ -159,7 +159,7 @@ export const loadCareRecipientsInfoFromCaresuite = async (
         return resultRecipients;
       }
     } else {
-      return resultRecipients;
+      return resultRecipientCaregiver;
     }})();
 
   const careRecipientExtendedAttributes = await Promise.all(result.map((r) => getDoc(doc(partnerDb, "facility-recipients", r.uuid))));
