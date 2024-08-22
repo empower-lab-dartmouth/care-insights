@@ -214,9 +214,11 @@ export type InfoBox = {
 
 export type CareRecipientInfo = {
     imageURL: string
+    accountID?: string
     facilityID: string
     dateCreated: number
     name: string
+    caregiverId?: string
     uuid: string
     infoBox: InfoBox[]
     deletedDate?: number

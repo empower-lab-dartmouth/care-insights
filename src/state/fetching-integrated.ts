@@ -106,7 +106,6 @@ export const loadCareRecipientsInfoFromCaresuite = async (
   // Given the signed in user's credentials, let's enumerate all the Cr's that he/she can access
   // console.log('try to sign in from fetching integrated', caregiverEmail, caregiverPassword);
   const user = await signInWithEmailAndPasswordCache(partnerAuth, convertEmailToMemcaraEmail(caregiverEmail), caregiverPassword, 'fetching-integrated');
-  // console.log('get authorized recipients', user);
   if (user === null) {
     console.log('failed to get info')
     setPageContext({
@@ -123,29 +122,46 @@ export const loadCareRecipientsInfoFromCaresuite = async (
     getDoc(doc(partnerDb, 'facility-caregivers', user.uid)),
     getDocs(query(collection(partnerDb, 'recipients'), where('accountId', '==', accountId), where('removed', '==', false))),
     getDocs(query(collection(partnerDb, 'recipient-caregivers'), where('caregiverId', '==', user.uid))),
-    // getDocs(query(collection(partnerDb, 'facility-recipients'), where('accountId', '==', 'rUIbBTZwy1RAxFuYS1B0'))),
   ]);
-  // console.log('got info for account id ', accountId, 'info: ', snapAccount, snapCaregiver, snapRecipientsInAccount, snapRecipientsAssignedToCaregiver);
-  // console.log('CAREGIVERS ASSIGNED TO ACCOUNT', snapRecipientsInAccount.docs.filter((d) => d.data()['displayName'] == 'b.bunny'));
-  // console.log('B_BUNNY EXTENDED ATTRIBUTES', snapFacilityRecipients.docs.map((d) => d.data()));
   const globalRecipientAccess = snapAccount.exists() ? (snapAccount.data().globalRecipientAccess ?? false) : false;
   const caregiverPosition = snapCaregiver.exists() ? (snapCaregiver.data().position ?? 'unknown') : 'unknown';
   const caregiverPositionString = typeof caregiverPosition === 'string' ? caregiverPosition : 'unknown';
   const recipientsInAccount = snapRecipientsInAccount.docs.map(doc => ({ recipientId: doc.id, displayName: doc.data().displayName as string }));
   const recipientsAssignedToCaregiver = snapRecipientsAssignedToCaregiver.docs.map(doc => ({ recipientId: doc.data().recipientId as string }));
   
-  const pinnedRecipients = recipientsAssignedToCaregiver.map(rc => ({ recipientId: rc.recipientId, displayName: recipientsInAccount.find(r => r.recipientId === rc.recipientId)?.displayName ?? 'unknown' }));
-  const searchRecipients = (['Family', 'Volunteer'].includes(caregiverPosition) ? [] : (!globalRecipientAccess ? [] : (recipientsInAccount.map(r => ({ recipientId: r.recipientId, displayName: r.displayName })))));
   
-  // await signOut(partnerAuth);
-  const result: CareRecipientInfo[] = snapRecipientsInAccount.docs.map((doc) => ({
+  const resultRecipientCaregiver: CareRecipientInfo[] = snapRecipientsAssignedToCaregiver.docs.map((doc) => ({
     imageURL: DEFAULT_PROFILE_IMAGE, // Not set yet
     name: doc.data().displayName,
     infoBox: [],
+    accountId: doc.data().accountId,
+    caregiverId: doc.data().caregiverId,
+    facilityID: 'NA', // Not used anymore
+    dateCreated: 1, // Not used  anymore
+    uuid: doc.data().recipientId,
+  }));
+
+  const resultRecipients: CareRecipientInfo[] = snapRecipientsInAccount.docs.map((doc) => ({
+    imageURL: DEFAULT_PROFILE_IMAGE, // Not set yet
+    name: doc.data().displayName,
+    infoBox: [],
+    caregiverId: doc.data().caregiverId,
     facilityID: 'NA', // Not used anymore
     dateCreated: 1, // Not used  anymore
     uuid: doc.id,
   }));
+
+  const result = (() => {
+    if (globalRecipientAccess) {
+      if (caregiverPosition === 'Family' || caregiverPosition === 'Volunteer') {
+        return resultRecipientCaregiver;
+      } else {
+        return resultRecipients;
+      }
+    } else {
+      return resultRecipients;
+    }})();
+
   const careRecipientExtendedAttributes = await Promise.all(result.map((r) => getDoc(doc(partnerDb, "facility-recipients", r.uuid))));
   // console.log('EXTENDED ATTRIBUTES', careRecipientExtendedAttributes);
   setExtendedAttributes(formatAsExtendedAttributes(careRecipientExtendedAttributes));
