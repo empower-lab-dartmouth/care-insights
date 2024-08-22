@@ -139,12 +139,12 @@ const formatUsername = (input: string | null | undefined) => {
     return ''
   }
   if (input.indexOf('@') != -1) {
-    return input.split('@')[0] + '@';
+    return input.split('@')[0].replace('@memcara.com', '').replace('-at-', '@');
   } else {
     return input;
   }
 }
-
+ 
 const UserShell = ({ children }: { children: React.ReactNode }) => {
   const [opened, { toggle }] = useDisclosure();
   const { currentUser, signOut } = useContext(AuthContext);

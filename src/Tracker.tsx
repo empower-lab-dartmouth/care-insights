@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { AuthContext } from './state/context/auth-context';
 import {
+  SESSION_LENGTH,
   SessionActivityEvent,
   currentSessionActivityState, newActivtySession,
   pageContextState,
@@ -199,7 +200,7 @@ const SessionTracker = () => {
         if (updatedSession.date < (new Date()).getTime()) {
           console.log('Start a new session locally.');
           const newSession = newActivtySession(
-            currentUser.email, updatedSession.date + 1);
+            currentUser.email, updatedSession.date + SESSION_LENGTH);
           console.log('resetting session locally.');
           setSessionActivity(newSession);
           await postActivitySessionToFB(updatedSession);
@@ -217,7 +218,7 @@ const SessionTracker = () => {
           setSessionActivity(updatedSession);
         }
       }
-    }, 500);
+    }, 1000);
     return () => {
       clearInterval(interval);
     };
