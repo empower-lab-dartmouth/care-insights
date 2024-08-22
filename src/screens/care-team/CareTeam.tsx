@@ -13,7 +13,7 @@ import UserShell from '../../components/UserShell';
 
 export default function CareTeam() {
   const caregiverInfo = useRecoilValue(caregiversInfoState);
-  console.log(caregiverInfo);
+  // console.log(caregiverInfo);
 
   return (
     <UserShell>

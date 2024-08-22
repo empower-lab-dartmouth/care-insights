@@ -37,10 +37,10 @@ export default function SignUp(props: any) {
     const confirm = event.confirm;
     const name = event.name;
 
-    console.log(event);
+    // console.log(event);
 
     if (name === '') {
-      console.log('must enter a name');
+      // console.log('must enter a name');
       setMessage('Please enter your name');
       return;
     } else {
@@ -48,8 +48,8 @@ export default function SignUp(props: any) {
     }
 
     if (email === '') {
-      console.log('must enter an email');
-      setMessage('Please enter your email address');
+      console.log('must enter a username');
+      setMessage('Please enter your Memcara username');
       return;
     } else {
       setMessage('');

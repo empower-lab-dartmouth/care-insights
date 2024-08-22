@@ -70,7 +70,7 @@ export const MenuButton = ({
       true
     );
     setRemoteQueryRecord(query);
-    console.log('the queries are', queries, "our query is: ", query);
+    // console.log('the queries are', queries, "our query is: ", query);
     setQueries({
       ...queries,
       [query.query]: query,
@@ -123,7 +123,7 @@ const MenuButtons = () => {
         <MenuButton path='/program-events' icon={<SquarePlay size={18} />}>
           Program events
         </MenuButton>
-        <MenuButton path='/support' icon={<IconQuestionMark size={18} />}>
+        <MenuButton path='/support' icon={<Info size={18} />}>
           Technology help
         </MenuButton>
         {/* <MenuButton path='/care-team' icon={<UsersRound size={18} />}>

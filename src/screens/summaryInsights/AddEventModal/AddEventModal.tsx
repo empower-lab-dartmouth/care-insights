@@ -35,7 +35,7 @@ const AddEvent = ({ close }: { close: () => void }) => {
       CRUUID: pageContext.selectedCR,
       description: eventDescription,
     };
-    console.log(newProgramEvent);
+    // console.log(newProgramEvent);
     reportTrackingEvent({
       type: `manual-event-created`,
       event: newProgramEvent
@@ -49,7 +49,7 @@ const AddEvent = ({ close }: { close: () => void }) => {
       },
       addEventModalOpen: false,
     });
-    console.log(pageContext);
+    // console.log(pageContext);
     close();
   };
   return (

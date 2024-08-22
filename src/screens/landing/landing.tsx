@@ -55,7 +55,7 @@ function Home() {
   const handleSubmit = async () => {
     try {
       // Send the email and password to firebase
-      console.log('handle submit ', email, password);
+      // console.log('handle submit ', email, password);
       const userCredential = await signInUser(email, password, setCookie);
       if (userCredential) {
         setLoading(true);
@@ -69,8 +69,8 @@ function Home() {
           'landing1'
           );
         resetFormFields();
-        console.log('user credentials');
-        console.log(userCredential);
+        // console.log('user credentials');
+        // console.log(userCredential);
         setLoading(false);
         // console.log('navigate to INFO');
         // navigate(`/info${search}`);

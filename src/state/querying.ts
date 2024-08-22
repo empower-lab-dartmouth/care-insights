@@ -155,18 +155,18 @@ export async function askQuery(
   extendedAttributes: ExtendedAttributes | undefined,
   longForm?: boolean
 ) {
-  console.log('input query: ', inputQuery);
+  // console.log('input query: ', inputQuery);
   const existingQueryMatchesExactly = allCRQueries[inputQuery];
   if (existingQueryMatchesExactly !== undefined) {
-    console.log('queries match exactly');
-    console.log(existingQueryMatchesExactly);
-    console.log(allCRQueries);
+    // console.log('queries match exactly');
+    // console.log(existingQueryMatchesExactly);
+    // console.log(allCRQueries);
     if (!overwritePrior) {
-      console.log('pulling prior response for ' + existingQueryMatchesExactly.query);
+      // console.log('pulling prior response for ' + existingQueryMatchesExactly.query);
       handleLocalResponse(existingQueryMatchesExactly);
       return existingQueryMatchesExactly;
     }
-    console.log('overwriting existing for ' + existingQueryMatchesExactly.query);
+    // console.log('overwriting existing for ' + existingQueryMatchesExactly.query);
   }
   const relevantQueries: QueryRecord[] = []//(await getRelevantQueries(inputQuery, allCRQueries));
   const relevantQueryResponses: String[] = [];

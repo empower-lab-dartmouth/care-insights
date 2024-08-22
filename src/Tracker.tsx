@@ -36,10 +36,10 @@ const postActivitySessionToFB = async (session: SessionActivityEvent) => {
   try {
     await setDoc(
       doc(db, `sessionTracking`, session.id), session);
-    console.log('Session logged to FB');
-    console.log(session);
+    // console.log('Session logged to FB');
+    // console.log(session);
   } catch (e) {
-    console.error('Error adding document: ', e);
+    // console.error('Error adding document: ', e);
   }
 };
 
@@ -198,18 +198,18 @@ const SessionTracker = () => {
           pageContext.selectedCR);
         // Start a new session locally.
         if (updatedSession.date < (new Date()).getTime()) {
-          console.log('Start a new session locally.');
+          // console.log('Start a new session locally.');
           const newSession = newActivtySession(
             currentUser.email, updatedSession.date + SESSION_LENGTH);
-          console.log('resetting session locally.');
+          // console.log('resetting session locally.');
           setSessionActivity(newSession);
           await postActivitySessionToFB(updatedSession);
           setTimeuntilNextPush(TIME_BETWEEN_PUSHES);
         } else {
           if (timeUntilNextPush < 0) {
-            console.log(
-              'Post session, overriding a prior session in FB if it exists.');
-            // Post session, overriding a prior session in FB if it exists.
+            // console.log(
+            //   'Post session, overriding a prior session in FB if it exists.');
+            // // Post session, overriding a prior session in FB if it exists.
             setTimeuntilNextPush(TIME_BETWEEN_PUSHES);
             await postActivitySessionToFB(updatedSession);
           } else {

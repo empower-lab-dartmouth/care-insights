@@ -106,9 +106,9 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
           ? sampleRedirectQuery(CRName)
           : sampleSymptomsQuery(CRName);
   const queryRecord = queries[queryRecordQuery];
-  console.log(queries);
-  console.log(queryRecordQuery);
-  console.log('query record query');
+  // console.log(queries);
+  // console.log(queryRecordQuery);
+  // console.log('query record query');
   const setQueryRecord = (q: QueryRecord) => {
     setQueries({
       ...queries,

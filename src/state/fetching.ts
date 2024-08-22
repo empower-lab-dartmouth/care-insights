@@ -41,7 +41,7 @@ export const loadCRData = async (
 ) => {
   console.log('loading care recipient data');
   if (pageState.selectedCR !== 'NONE') {
-    console.log('Load care recipient data 1', pageState.selectedCR);
+    // console.log('Load care recipient data 1', pageState.selectedCR);
     // Pull sepcific CR's data
     setPageContext({
       ...pageState,
@@ -53,14 +53,14 @@ export const loadCRData = async (
       orderBy('date', 'desc')
     );
     const querySnapshot = await getDocs(q);
-    console.log(querySnapshot.docs);
+    // console.log(querySnapshot.docs);
     console.log('Firebase collection read <program events>');
     const docs: ProgramEvent[] = querySnapshot.docs.map((doc: any) => {
       const d = doc.data() as any as ProgramEvent;
       return d as ProgramEvent;
     });
     console.log('DOCS:');
-    console.log(docs);
+    // console.log(docs);
     const temp: CRProgramEvents = {};
     const programEvents: CRProgramEvents = docs.reduce(
       (acc, curr) => ({
@@ -199,13 +199,13 @@ export const loadQueriesForCR = async (
     ...pageState,
     loadingCRInfo: true,
   });
-  console.log('query for queries by: ', pageState.selectedCR);
+  // console.log('query for queries by: ', pageState.selectedCR);
   const q = query(
     collection(db, `QueryRecord`),
     where('CRUUID', '==', pageState.selectedCR)
   );
   const querySnapshot = await getDocs(q);
-  console.log(querySnapshot.docs);
+  // console.log(querySnapshot.docs);
   console.log('Firebase collection read <queries>');
   // const CR = careRecipientsInfo[pageState.selectedCR] ? ;
   // if (CR === undefined) {
@@ -283,13 +283,13 @@ export const loadPageDataFromFB = async (
   careRecipientsInfo: Record<string, CareRecipientInfo>,
   pageContext: PageState, extendedAttributes: ExtendedAttributes
 ) => {
-  console.log('loading session data from fb', username);
+  // console.log('loading session data from fb', username);
   const ref = doc(db, 'PageContext', username);
   const docSnap = await await getDoc(ref);
   if (docSnap.exists()) {
     console.log('past session exists');
     const data = docSnap.data() as PageState;
-    console.log('pulled snapshot from remote ', data);
+    // console.log('pulled snapshot from remote ', data);
     const selectedCR = pageContext.selectedCR === 'NONE' ? data.selectedCR : pageContext.selectedCR;
     const newPageState: PageState = {
       ...data,
@@ -298,7 +298,7 @@ export const loadPageDataFromFB = async (
     setPageContext(newPageState);
     await loadCRData(newPageState, setPageContext, setLocalQueries, careRecipientsInfo, extendedAttributes);
   } else {
-    console.log('past session does not exits');
+    // console.log('past session does not exits');
     setPageContext(samplePageState(username));
     await loadCRData(
       samplePageState(username),
@@ -318,11 +318,11 @@ export const loadQueryFromURL = async (
   CRName: string,
   extendedAttributes: ExtendedAttributes | undefined
 ) => {
-  console.log('load query from url', queries);
+  // console.log('load query from url', queries);
   if (searchQuery !== '' && 
     pageState.insightsQuery.query !== searchQuery && 
     Object.values(queries).length > 0) {
-      console.log("loading search from url query");
+      // console.log("loading search from url query");
     const handleLocalQueryResponse = (q: QueryRecord) => { };
     setPageContext({
       ...pageState,
@@ -336,7 +336,7 @@ export const loadQueryFromURL = async (
       queries,
       false, CRName, extendedAttributes);
     setRemoteQueryRecord(query);
-    console.log('the queries are', queries, "our query is: ", query);
+    // console.log('the queries are', queries, "our query is: ", query);
     setLocalQueries({
       ...queries,
       [searchQuery]: query,
@@ -409,7 +409,7 @@ export const loadCareGiverInfo = async (
   });
   const q = query(collection(db, `CaregiverInfo`));
   const querySnapshot = await getDocs(q);
-  console.log(querySnapshot.docs);
+  // console.log(querySnapshot.docs);
   console.log('Firebase collection read <caregivers info>');
   if (querySnapshot.empty) {
     console.log('Caregiver info is empty');
@@ -435,7 +435,7 @@ export const loadCareGiverInfo = async (
     );
     setCaregiversInfo(v);
     console.log('TESTing');
-    console.log(v[currentUser]);
+    // console.log(v[currentUser]);
     // await loadFacilitiesInfo(
     //   pageState,
     //   setPageContext,
@@ -458,7 +458,7 @@ export const loadCareRecipientsInfo = async (
   setExtendedAttributes: SetterOrUpdater<Record<string, ExtendedAttributes>>,
   source: string,
 ) => {
-  console.log('making calls to caresuite! from ', source);
+  // console.log('making calls to caresuite! from ', source);
   await loadCareRecipientsInfoFromCaresuite(pageState, setPageContext, setCareRecipientInfo, email, password, setExtendedAttributes);
   // console.log('loading info on all care recipients');
   // setPageContext({

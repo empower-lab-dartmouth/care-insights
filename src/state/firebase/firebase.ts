@@ -87,7 +87,7 @@ export const handleSignUp = async (
       } catch (e) {
         console.error('Error adding document: ', e);
       }
-      console.log(user);
+      // console.log(user);
     })
     .catch(async error => {
       const errorCode = await error.code;

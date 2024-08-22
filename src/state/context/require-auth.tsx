@@ -27,7 +27,7 @@ function RequireAuth({ children }: { children: JSX.Element }) {
         if (
           (currentUser.email !== null) || Object.values(careRecipientInfo).length === 0
         ) {
-          console.log('pulling info from remote from require auth', currentUser.email);
+          // console.log('pulling info from remote from require auth', currentUser.email);
           // loadPageDataFromFB(currentUser.email, setPageState, setQueries, careRecipientInfo, pageState);
           fetchOnOpen(
             pageState,
@@ -42,7 +42,7 @@ function RequireAuth({ children }: { children: JSX.Element }) {
             extendedAttributes[pageState.selectedCR]
           );
         } else{
-          console.log('No need to load data', currentUser.email, pageState.insightsQuery.queryResponse);
+          // console.log('No need to load data', currentUser.email, pageState.insightsQuery.queryResponse);
         }
       }
     }

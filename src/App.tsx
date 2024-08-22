@@ -67,10 +67,10 @@ const App = () => {
 
   const loadAllData = async () => {
     if (currentUser !== null || (formFields.password !== '' && formFields.email !== '')) {
-      console.log('current user', currentUser, formFields);
+      // console.log('current user', currentUser, formFields);
       let email = formFields.email;
       if (currentUser !== null) {
-        console.log('update cache', currentUser);
+        // console.log('update cache', currentUser);
         updateCache(currentUser);
         email = currentUser.email;
       }
@@ -89,7 +89,7 @@ const App = () => {
       );
       setLoading(false);
     } else {
-      console.log('Did not load all data', currentUser, formFields);
+      // console.log('Did not load all data', currentUser, formFields);
     }
   }
 

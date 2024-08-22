@@ -52,12 +52,12 @@ export const reportTrackingEvent = async (e: TrackingEvent, username: string, pa
     };
     const trackingEventId = expandedEvent.username + '-' + expandedEvent.type + '-' + expandedEvent.date;
     try {
-        console.log('Attempting to post tracking log: ', expandedEvent);
-        setDoc(doc(queryRef, trackingEventId), expandedEvent);
-        console.log('Posted query!', expandedEvent);
+        console.log('Attempting to post tracking log: ', expandedEvent.type);
+        await setDoc(doc(queryRef, trackingEventId), expandedEvent);
+        console.log('Posted query!', expandedEvent.type);
     } catch (e) {
         console.log('error writing to fb');
-        console.log(e);
+        // console.log(e);
     }
 };
 
@@ -72,11 +72,11 @@ export const reportTrackingEventNoPageContext = async (e: TrackingEvent, usernam
     };
     const trackingEventId = expandedEvent.username + '-' + expandedEvent.type + '-' + expandedEvent.date;
     try {
-        console.log('Attempting to post tracking log: ', expandedEvent);
-        setDoc(doc(queryRef, trackingEventId), expandedEvent);
-        console.log('Posted successfully!', expandedEvent);
+        console.log('Attempting to post tracking log: ', expandedEvent.type);
+        await setDoc(doc(queryRef, trackingEventId), expandedEvent);
+        // console.log('Posted successfully!', expandedEvent);
     } catch (e) {
-        console.log('error writing log to fb', expandedEvent);
+        console.log('error writing log to fb', expandedEvent.type);
         console.log(e);
     }
 };

@@ -137,7 +137,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
       true
     );
     setRemoteQueryRecord(newQuery);
-    console.log('the queries are', queries, "our query is: ", newQuery);
+    // console.log('the queries are', queries, "our query is: ", newQuery);
     setQueries({
       ...queries,
       [newQuery.query]: newQuery,
@@ -147,7 +147,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
       loadingCRInfo: false,
       insightsQuery: newQuery,
     });
-    console.log('made it here', newQuery, pageContext);
+    // console.log('made it here', newQuery, pageContext);
     setEditedResponse(newQuery.queryResponse);
     // setForceUpdateRequired(true);
     setLoadingResponse(false);
@@ -423,7 +423,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
               textSuggestions={pageContext.suggestedQueries}
               currentText={editingQuery}
               onSelected={async option => {
-                console.log('use query string: ' + option.query);
+                // console.log('use query string: ' + option.query);
                 setEditingQuery(option.query);
                 makeQuery(option.query);
               }}

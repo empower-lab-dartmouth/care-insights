@@ -334,7 +334,7 @@ const EventsTimeline: React.FC<TimelineProps> = props => {
     });
   const deleteMeaningfulMoment = (moment: MeaningfulMoment) => () => {
     const { [moment.uuid]: omit, ...res } = localEvents;
-    console.log(omit); // Useless log to avoid unused var error
+    // console.log(omit); // Useless log to avoid unused var error
     setLocalEvents(res);
   };
 

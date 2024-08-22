@@ -126,7 +126,7 @@ const CareInsightsPage = () => {
     queryRecord: loadingQuery(prompt),
   });
   const refreshIfStillLoading = () => {
-    console.log('Check if loading', pageContext.loadingCRInfo);
+    // console.log('Check if loading', pageContext.loadingCRInfo);
     if (pageContext.loadingCRInfo) {
       location.reload();
     }
