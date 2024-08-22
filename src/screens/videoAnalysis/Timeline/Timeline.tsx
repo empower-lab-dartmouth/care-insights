@@ -270,7 +270,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ updateTime, time }) => {
               value={localTime}
               onChange={handleChange}
               min={0}
-              max={10800000} // Three hours
+              max={600000} // Ten minutes
               valueLabelFormat={value => {
                 return prettyMilliseconds(value);
               }}
