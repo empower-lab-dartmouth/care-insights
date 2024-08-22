@@ -44,6 +44,7 @@
     "emoji-rating-component": "^1.0.7",
     "firebase": "^9.23.0",
     "firebase-admin": "^11.9.0",
+    "haversine-distance": "^1.2.3",
     "html-react-parser": "^4.0.0",
     "html-to-react": "^1.6.0",
     "is-url": "^1.2.4",

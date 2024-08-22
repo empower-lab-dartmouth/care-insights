@@ -5,6 +5,7 @@ import {
   SESSION_LENGTH,
   SessionActivityEvent,
   currentSessionActivityState, newActivtySession,
+  onSiteState,
   pageContextState,
   trackingTimeUntilNextPush, userIsActiveState
 } from './state/recoil';
@@ -48,6 +49,7 @@ const SessionTracker = () => {
   const TIME_BETWEEN_PUSHES = 11000; // 35 seconds
   const [timeUntilNextPush,
     setTimeuntilNextPush] = useRecoilState(trackingTimeUntilNextPush);
+  const onSite = useRecoilValue(onSiteState);
 
   // Check if the current user exists on the initial render.
 
@@ -174,6 +176,7 @@ const SessionTracker = () => {
         // setReferralSession(currentUser?.email);
         const updatedSessionPreTime: SessionActivityEvent = {
           ...sessionActivity,
+          onSite,
           username: currentUser.email,
           id: sessionId(currentUser.email, sessionActivity.date),
           programEvents: {

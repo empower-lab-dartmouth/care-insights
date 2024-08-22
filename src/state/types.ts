@@ -4,6 +4,35 @@ import { QueryRecord } from "./queryingTypes"
 export type UserUUID = string
 export type EventUUID = string
 
+type Location = {
+    name: string
+    latitude: number
+    longitude: number
+    radius: number // meters
+}
+
+export const PERMISSIBLE_LOCATIONS: Location[] = [
+    {
+        name: '@oakwoodmanor',
+        latitude: 41.7877859,
+        longitude: -73.9724189,
+        radius: 12000,
+    },
+    {
+        name: '@lccc',
+        latitude: 41.6991111111111,
+        longitude: -73.9243055555556,
+        radius: 12000,
+    }];
+
+// , {
+//     name: '@vwhp,'
+//     latitude: 41.7121388888889,
+//     longitude: -73.86825,
+//     radius: 12000,
+// }
+
+
 export type PageState = {
     username: string,
     selectedCR: UserUUID,
@@ -25,21 +54,21 @@ export type ExtendedAttributes = {
     lastName: string,
     yearOfBirth?: string,
     gender?: string,
-    preferredLanguage?:string
-    roomNumber?:string,
+    preferredLanguage?: string
+    roomNumber?: string,
     hobbies?: string[],
-    music?:string,
-    mocaScore?:string,
-    hearing?:string,
-    symptoms?:string[],
-    communicationLevel?:string,
-    isolationLevel?:string,
+    music?: string,
+    mocaScore?: string,
+    hearing?: string,
+    symptoms?: string[],
+    communicationLevel?: string,
+    isolationLevel?: string,
     eyesight?: string,
-    thingsToTalkAbout?:string,
-    activitiesToDo?:string,
-    avoid?:string,
-    waysToRedirect?:string,
-    historyOfIncidents?:string,
+    thingsToTalkAbout?: string,
+    activitiesToDo?: string,
+    avoid?: string,
+    waysToRedirect?: string,
+    historyOfIncidents?: string,
 }
 
 export type HeatMapDataPoint = number
@@ -182,7 +211,7 @@ export type InfoBox = {
 export type CareRecipientInfo = {
     imageURL: string
     facilityID: string
-    dateCreated:number
+    dateCreated: number
     name: string
     uuid: string
     infoBox: InfoBox[]
@@ -191,7 +220,7 @@ export type CareRecipientInfo = {
 
 export type FacilityInfo = {
     imageURL: string
-    dateCreated:number
+    dateCreated: number
     name: string
     uuid: string
     deletedDate?: number

@@ -127,7 +127,6 @@ const MenuButtons = () => {
         <MenuButton path='/support' icon={<Info size={18} />}>
           Onboarding
         </MenuButton>
-        <Demo/>
         {/* <MenuButton path='/care-team' icon={<UsersRound size={18} />}>
           Care Team
         </MenuButton> */}

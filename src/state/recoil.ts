@@ -93,6 +93,15 @@ export const onOpenLoadingState = atom<boolean>({
   default: true,
 });
 
+export const onSiteState = atom<{
+  onSite: boolean,
+  latitude: number,
+  longitude: number
+}>({
+  key: 'on-site',
+  default: undefined,
+});
+
 export const pageContextStateFields = atom<PageState>({
   key: 'page-state-fields',
   default: {
@@ -181,6 +190,11 @@ export type SessionActivityEvent = {
   support: UserActivityReport
   programEvents: UserActivityReport
   url: string
+  onSite?: {
+    onSite: boolean,
+    latitude: number,
+    longitude: number
+  }
 }
 
 export type LoggedEvent = UserLoginEvent | SessionActivityEvent;

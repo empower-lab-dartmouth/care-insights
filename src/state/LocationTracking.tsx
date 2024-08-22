@@ -10,13 +10,14 @@ const Demo = () => {
             userDecisionTimeout: 5000,
         });
 
-    return !isGeolocationAvailable ? (
+    return <>
+    GPS
+    {!isGeolocationAvailable ? (
         <div>Your browser does not support Geolocation</div>
     ) : !isGeolocationEnabled ? (
         <div>Geolocation is not enabled</div>
     ) : coords ? (
         <table>
-            TEST
             <tbody>
                 <tr>
                     <td>latitude</td>
@@ -42,7 +43,8 @@ const Demo = () => {
         </table>
     ) : (
         <div>Getting the location data&hellip; </div>
-    );
+    )}
+    </>
 };
 
 export default Demo;
