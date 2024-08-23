@@ -142,7 +142,7 @@ const CommonRowControls: React.FC<ManualEntryExpandedViewProps> = props => {
           />
           <DateTimePicker
             label='Date of event'
-            value={dayjs(programEvent.date)}
+            value={new Date(programEvent.date)}
             onChange={newValue => {
               if (newValue != null) {
                 setLocalProgramEvent({
