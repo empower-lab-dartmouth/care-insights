@@ -74,9 +74,35 @@ function RequireAuthLocations({ children }: { children: JSX.Element }) {
       <>{
 
         withinDistance(coords.latitude, coords.longitude) ?
-          <>{children}</> : <div>You must be physically at the facility to access care insights.&hellip; If you need more information or believe you have reached this page because of an error, please email Christina from Memcara at christina@memcara.com right away and our team will get back to you right away. Thank you! </div>}
+          <>{children}</> : <div>You must be physically at the facility to access care insights.&hellip; If you need more information or believe you have reached this page because of an error, please email Christina from Memcara at christina@memcara.com right away and our team will get back to you right away. Thank you! <br /><br /><br />
+          <Button onClick={() => {
+            setCookie('careInsightsUsername', '');
+            setCookie('careInsightsPassword', '');
+            resetAuthCache();
+            setCRs({});
+            setExtendedAttributes({});
+            resetAuthCache();
+            setPageContext({
+              ...pageContext,
+              selectedCR: 'NONE',
+            });
+            signOut();
+          }}>Click here to return to the login page</Button></div>}
       </>) : (
-      <div>Checking your location data. You must be physically at the facility to access care insights.&hellip; </div>
+      <div>Checking your location data. You must be physically at the facility to access care insights.&hellip; <br /><br /><br />
+      <Button onClick={() => {
+        setCookie('careInsightsUsername', '');
+        setCookie('careInsightsPassword', '');
+        resetAuthCache();
+        setCRs({});
+        setExtendedAttributes({});
+        resetAuthCache();
+        setPageContext({
+          ...pageContext,
+          selectedCR: 'NONE',
+        });
+        signOut();
+      }}>Click here to return to the login page</Button></div>
     )}
   </>
 }
