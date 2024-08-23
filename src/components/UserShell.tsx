@@ -194,7 +194,9 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
                   ...pageContext,
                   selectedCR: 'NONE',
                 });
-                signOut();
+                setTimeout(() => {
+                  signOut();
+                }, 200);
               }}>
                 <IconLogout size={24} color='	#db2b29' />
               </UnstyledButton>
