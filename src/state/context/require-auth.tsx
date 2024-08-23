@@ -126,7 +126,6 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   const [pageState, setPageState] = useRecoilState(pageContextState);
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
   const careRecipientInfo = useRecoilValue(careRecipientsInfoState);
-  const location = useLocation();
   const { search } = useLocation();
   const [searchURL, setSearchURL] = useRecoilState(searchState);
   const [_, setLoading] = useRecoilState(onOpenLoadingState);
