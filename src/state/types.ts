@@ -11,7 +11,7 @@ type Location = {
     radius: number // meters
 }
 
-export const VIDEO_APPROVAL_REQUIRED = ['@oakwoodmanor', '@lccc'];
+export const VIDEO_APPROVAL_REQUIRED = ['@oakwoodmanor', '@lccc', '@trnu'];
 
 export const PERMISSIBLE_LOCATIONS: Location[] = [
     // {
