@@ -13,8 +13,9 @@ import { useCookies } from 'react-cookie';
 import { resetAuthCache } from '../globals';
 
 
-const withinDistance = (latitude: number, longitude: number) => {
-  return PERMISSIBLE_LOCATIONS.map((l) => {
+const withinDistance = (latitude: number, longitude: number, username: string) => {
+  return PERMISSIBLE_LOCATIONS.filter((v) => username?.includes(v.name))
+  .map((l) => {
     return haversine({ latitude, longitude }, { latitude: l.latitude, longitude: l.longitude }) < l.radius
   }).reduce((a, b) => a || b);
 }
@@ -27,7 +28,8 @@ function RequireAuthLocations({ children }: { children: JSX.Element }) {
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
   const [cookies, setCookie] = useCookies(['careInsightsUsername', 'careInsightsPassword']);
   const [_, setOnSite] = useRecoilState(onSiteState);
-  if (search.includes('geo=true')) {
+  const displayName = currentUser?.displayName ?? 'username';
+  if (search.includes('geo=false')) {
     console.log('loading a location required site in dev mode.');
     return children;
   }
@@ -36,13 +38,13 @@ function RequireAuthLocations({ children }: { children: JSX.Element }) {
       positionOptions: {
         enableHighAccuracy: false,
       },
-      userDecisionTimeout: 5000,
+      userDecisionTimeout: 20000,
     });
 
   useEffect(() => {
     if (coords) {
       setOnSite({
-        onSite: withinDistance(coords.latitude, coords.longitude),
+        onSite: withinDistance(coords.latitude, coords.longitude, displayName),
         latitude: coords.latitude, longitude: coords.longitude
       });
     }
@@ -86,7 +88,7 @@ function RequireAuthLocations({ children }: { children: JSX.Element }) {
     ) : coords ? (
       <>{
 
-        withinDistance(coords.latitude, coords.longitude) ?
+        withinDistance(coords.latitude, coords.longitude, displayName) ?
           <>{children}</> : <div>You must be physically at the facility to access care insights.&hellip; If you need more information or believe you have reached this page because of an error, please email Christina from Memcara at christina@memcara.com right away and our team will get back to you right away. Thank you! <br /><br /><br />
           <Button onClick={() => {
             setCookie('careInsightsUsername', '');

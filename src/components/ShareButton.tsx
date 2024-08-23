@@ -43,7 +43,7 @@ const ShareButton = ({
   const getURL = () => {
     const u = new URL(window.location.href);
     u.searchParams.set('qrcode', refEmail);
-    return u.toString().replace('&dev=true', '').replace('&geo=true', '');
+    return u.toString().replace('&dev=true', '').replace('&geo=false', '');
   }
   const ComponentToPrint = React.forwardRef((props, ref: any) => (
     <div ref={ref}>

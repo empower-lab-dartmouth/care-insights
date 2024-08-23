@@ -27,7 +27,7 @@ import { GenericJsxEditor, JsxComponentDescriptor, NestedLexicalEditor, insertJs
 import { MenuButton } from "../../../components/UserShell"
 import { MessageCircleQuestion } from "lucide-react"
 import { replaceKeyInURI } from "../../videoAnalysis/programEventsTable/StreamGraph/utils"
-import { CRProgramEvents } from '../../../state/types';
+import { CRProgramEvents, ProgramEventIndex } from '../../../state/types';
 
 
 const inputStyles = {
@@ -104,25 +104,67 @@ const wrapAsLink = (text: string, pathname: string, currentCR: string) => {
   return wrappedBullets;
 }
 
-// const addCitations = (text: string, programEvents: CRProgramEvents) => {
-//   const regex = /({cite=[^},]*})|(,cite=[^},]*,\s?)|({cite=[^,}]*,)/g;
-//   const regex2 = /,cite=[^},]*}/g;
-//   const m = (r: RegExp) => {
-//     const res = text.match(regex);
-//     if (res === null) {
-//       return [];
-//     }
-//     return res;
-//   }
-//   const found = [...m(regex), ...m(regex)];
-//   const  = (momentId: string) => {
+const getIndex: (id: string, programEvents: CRProgramEvents) => ProgramEventIndex | undefined = (idUnstripped, programEvents) => {
+  const stripId = (str: string) => {
+    return str.replaceAll(',', '').replaceAll('cite=', '').replaceAll('{', '').replaceAll('}', '');
+  }
+  const id = stripId(idUnstripped);
+  const res = Object.values(programEvents).flatMap((p) => {
+    if (p.uuid === id) {
+      return {
+        programEventId: id,
+      };
+    } else {
+      if (p.type === 'manual-entry-event') {
+        return null;
+      } else {
+        return Object.values(p.meaningfulMoments).flatMap((m) => {
+          if (m.uuid === id) {
+            return ({
+              programEventId: id,
+              videoTimestamp: m.startTime,
+            });
+          } else {
+            return null;
+          }
+        });
+      }
+    }
+  });
+  const filtered = res.filter((v) => v !== null);
+  filtered.forEach((v) => {
+    if (v !== null) {
+      return v;
+    }
+  });
+  return undefined;
+}
 
-//   }
-//   const result = <span>{text}</span>
-//   return found.reduce((arr, curr) => {
-//     if 
-//   }, found);
-// }
+const splitTextIntoSegments = (text: string, keys: string[]) => {
+  const cleanText = (input: string) => keys.reduce((arr, curr) => {
+    return arr.replaceAll(curr, '');
+  }, input);
+  const ordering = keys.map((k) => ({ order: text.indexOf(k), value: k, segments: text.split(k)}));
+  if (ordering.map((v) => v.order).includes(-1)) {
+    return [text];
+  }
+  return ordering.sort((a, b) => a.order - b.order);
+}
+
+const addCitations = (text: string, programEvents: CRProgramEvents) => {
+  const regex = /({cite=[^},]*})|(,cite=[^},]*,\s?)|({cite=[^,}]*,)/g;
+  const regex2 = /,cite=[^},]*}/g;
+  const m = (r: RegExp) => {
+    const res = text.match(regex);
+    if (res === null) {
+      return [];
+    }
+    return res;
+  }
+  const found = [...m(regex), ...m(regex)];
+  const indecies = found.map((id) => getIndex(id, programEvents));
+  
+}
 
 
 const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({

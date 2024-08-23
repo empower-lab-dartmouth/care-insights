@@ -38,7 +38,10 @@ export const PERMISSIBLE_LOCATIONS: Location[] = [
         radius: 8000,
     }];
 
-
+export type ProgramEventIndex = {
+    programEventId: string
+    videoTimestamp?: number
+}
 
 
 export type PageState = {
