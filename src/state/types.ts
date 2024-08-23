@@ -16,8 +16,8 @@ export const VIDEO_APPROVAL_REQUIRED = ['@oakwoodmanor', '@lccc'];
 export const PERMISSIBLE_LOCATIONS: Location[] = [
     {
         name: '@oakwoodmanor',
-        latitude: 41.7877859,
-        longitude: -73.9724189,
+        latitude:  41.3488611111111,
+        longitude: -73.8376111111111,
         radius: 8000,
     },
     {
