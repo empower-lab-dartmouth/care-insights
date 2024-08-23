@@ -20,19 +20,25 @@ export const PERMISSIBLE_LOCATIONS: Location[] = [
         longitude: -73.8376111111111,
         radius: 8000,
     },
-    {
+//     {
+//     name: '@vwhp',
+//     latitude: 41.7121388888889,
+//     longitude: -73.86825,
+//     radius: 12000,
+// },
+{
+    name: '@trnu',
+    latitude: 41.6976944444444,
+    longitude: -73.9656944444444,
+    radius: 8000,
+},{
         name: '@lccc',
         latitude: 41.6991111111111,
         longitude: -73.9243055555556,
         radius: 8000,
     }];
 
-// , {
-//     name: '@vwhp,'
-//     latitude: 41.7121388888889,
-//     longitude: -73.86825,
-//     radius: 12000,
-// }
+
 
 
 export type PageState = {

@@ -27,6 +27,7 @@ import { GenericJsxEditor, JsxComponentDescriptor, NestedLexicalEditor, insertJs
 import { MenuButton } from "../../../components/UserShell"
 import { MessageCircleQuestion } from "lucide-react"
 import { replaceKeyInURI } from "../../videoAnalysis/programEventsTable/StreamGraph/utils"
+import { CRProgramEvents } from '../../../state/types';
 
 
 const inputStyles = {
@@ -102,6 +103,27 @@ const wrapAsLink = (text: string, pathname: string, currentCR: string) => {
   const wrappedBullets = newLineSplitText.map((t, i) => <ul key={t + i}><GoTo queryString={promptPreface + t} label={t} /></ul>);
   return wrappedBullets;
 }
+
+// const addCitations = (text: string, programEvents: CRProgramEvents) => {
+//   const regex = /({cite=[^},]*})|(,cite=[^},]*,\s?)|({cite=[^,}]*,)/g;
+//   const regex2 = /,cite=[^},]*}/g;
+//   const m = (r: RegExp) => {
+//     const res = text.match(regex);
+//     if (res === null) {
+//       return [];
+//     }
+//     return res;
+//   }
+//   const found = [...m(regex), ...m(regex)];
+//   const  = (momentId: string) => {
+
+//   }
+//   const result = <span>{text}</span>
+//   return found.reduce((arr, curr) => {
+//     if 
+//   }, found);
+// }
+
 
 const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   readOnly,

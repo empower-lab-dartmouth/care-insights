@@ -72,10 +72,15 @@ const getDescriptionOfEvent: (programEvent: ProgramEvent) => string = (p) => {
 // TODO: Bansharee (helper function)
 export function getRelevantRecords(
   inputQuery: string,
-  allCREvents: CRProgramEvents
+  allCREvents: CRProgramEvents,
+  longform: boolean,
 ) {
+
+  const dev = false;
   // const relevantEvents: string[] = [];
-  return Object.values(allCREvents).filter((e) => {
+  const prefix = dev && longform ? 'Each record is formatted with the schema: <Record start> Record ID=... Record content=... <Record end> ' : '';
+  const suffix = dev && longform ? ' <End of all records> Whenever relevant, add citations to relevant record IDs in your reponse. Format a citation to a specific record like this: {cite=recordID}' : ''
+  return prefix + Object.values(allCREvents).filter((e) => {
     if (e.type === 'manual-entry-event') {
       return true;
     } 
@@ -88,8 +93,13 @@ export function getRelevantRecords(
   }
   return Object.values(e.meaningfulMoments)
   .sort((a, b) => a.startTime - b.startTime)
-  .map((v) => v.description).join('\n\n');
-}).join('; Next record: ');
+  .map((v) => {
+    if (!longform || !dev) {
+      return v.description;
+    }
+    return '<Record start.> Record ID=' + v.uuid + ' Record content="' + v.description + '" <Record end>'
+  }).join('\n\n');
+}).join('; ') + suffix;
 
   // for (const e of Object.values(allCREvents)) {
   //   const eventDescription = getDescriptionOfEvent(e);
@@ -170,7 +180,7 @@ export async function askQuery(
   }
   const relevantQueries: QueryRecord[] = []//(await getRelevantQueries(inputQuery, allCRQueries));
   const relevantQueryResponses: String[] = [];
-  const relevantRecords = getRelevantRecords(inputQuery, allCREvents);
+  const relevantRecords = getRelevantRecords(inputQuery, allCREvents, longForm ?? false);
 
   // we need query responses, not queries themselves
   for (const q of Object.values(relevantQueries)) {
@@ -196,7 +206,7 @@ console.log('using longform', longForm);
     messages: [{ role: 'user', content: prompt }],
     model: 'gpt-3.5-turbo',
   });
-  // console.log('PROMPT', prompt);
+  console.log('PROMPT', prompt);
   const ChatGPTResponse = '' + queryResponse.choices[0].message.content;
   const completedQuery: QueryRecord = {
     query: inputQuery,
