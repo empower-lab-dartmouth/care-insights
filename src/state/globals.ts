@@ -30,7 +30,7 @@ export async function signInWithEmailAndPasswordCache(auth: Auth, email: string,
         AUTH_CACHE[`email:${email}`] = result.user;
         const r = (await result.user.getIdTokenResult());
         if (r) {
-            IS_ADMIN = r.claims.role !== undefined && (r.claims.role === "Facility Admin" || r.claims.role === "Facility Caregiver");
+            IS_ADMIN = r.claims.role !== undefined && r.claims.role === "Facility Admin";
         }
     } else {
         // console.log('SIGN-IN invalid auth from source' + source);
