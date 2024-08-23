@@ -12,7 +12,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { careRecipientsInfoState, extededAttributesState, pageContextState, queriesForCurrentCGState } from '../state/recoil';
 import { QueryRecord } from '../state/queryingTypes';
 import { askQuery } from '../state/querying';
-import { setRemoteQueryRecord } from '../state/setting';
+import { setCareRecipientInfo, setRemoteQueryRecord } from '../state/setting';
 import { resetAuthCache } from '../state/globals';
 import { reportTrackingEvent } from '../state/tracking';
 import Demo from '../state/LocationTracking';
@@ -150,6 +150,10 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
   const [opened, { toggle }] = useDisclosure();
   const { currentUser, signOut } = useContext(AuthContext);
   const [cookies, setCookie] = useCookies(['careInsightsUsername', 'careInsightsPassword']);
+  const [_, setCRs] = useRecoilState(careRecipientsInfoState);
+  const [extendedAttributes, setExtendedAttributes] = useRecoilState(extededAttributesState);
+  const [pageContext, setPageContext] = useRecoilState(pageContextState);
+
 
   return (
     <div>
@@ -183,7 +187,13 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
               <UnstyledButton color='red' onClick={() => {
                 setCookie('careInsightsUsername', '');
                 setCookie('careInsightsPassword', '');
+                setCRs({});
+                setExtendedAttributes({});
                 resetAuthCache();
+                setPageContext({
+                  ...pageContext,
+                  selectedCR: 'NONE',
+                });
                 signOut();
               }}>
                 <IconLogout size={24} color='	#db2b29' />
