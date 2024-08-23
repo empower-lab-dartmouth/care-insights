@@ -6,6 +6,7 @@ import { setRemoteQueryRecord } from './setting';
 import OpenAI from 'openai';
 import { formatExtendedAttributesAsInfoBox } from '../screens/summaryInsights/CareInsights';
 import { reportTrackingEvent, reportTrackingEventNoPageContext } from './tracking';
+import { DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG } from './globals';
 
 // Access the variable
 const openAPIKey = import.meta.env.VITE_REACT_APP_OPENAI_API_KEY;
@@ -76,10 +77,9 @@ export function getRelevantRecords(
   longform: boolean,
 ) {
 
-  const dev = false;
   // const relevantEvents: string[] = [];
-  const prefix = dev && longform ? 'Each record is formatted with the schema: <Record start> Record ID=... Record content=... <Record end> ' : '';
-  const suffix = dev && longform ? ' <End of all records> Whenever relevant, add citations to relevant record IDs in your reponse. Format a citation to a specific record like this: {cite=recordID}' : ''
+  const prefix = DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG && longform ? 'Each record is formatted with the schema: <Record start> Record ID=... Record content=... <Record end> ' : '';
+  const suffix = DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG && longform ? ' <End of all records> Whenever relevant, add citations to relevant record IDs in your reponse. Format a citation to a specific record like this: {cite=recordID}' : ''
   return prefix + Object.values(allCREvents).filter((e) => {
     if (e.type === 'manual-entry-event') {
       return true;
@@ -94,7 +94,7 @@ export function getRelevantRecords(
   return Object.values(e.meaningfulMoments)
   .sort((a, b) => a.startTime - b.startTime)
   .map((v) => {
-    if (!longform || !dev) {
+    if (!longform || !DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG) {
       return v.description;
     }
     return '<Record start.> Record ID=' + v.uuid + ' Record content="' + v.description + '" <Record end>'

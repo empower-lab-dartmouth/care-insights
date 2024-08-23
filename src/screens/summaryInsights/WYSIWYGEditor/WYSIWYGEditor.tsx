@@ -28,6 +28,7 @@ import { MenuButton } from "../../../components/UserShell"
 import { MessageCircleQuestion } from "lucide-react"
 import { replaceKeyInURI } from "../../videoAnalysis/programEventsTable/StreamGraph/utils"
 import { CRProgramEvents, ProgramEventIndex } from '../../../state/types';
+import { DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG } from '../../../state/globals';
 
 
 const inputStyles = {
@@ -140,15 +141,30 @@ const getIndex: (id: string, programEvents: CRProgramEvents) => ProgramEventInde
   return undefined;
 }
 
+type Ordering = {
+  order: number,
+  value: string,
+  segments: string[]
+}
+
 const splitTextIntoSegments = (text: string, keys: string[]) => {
   const cleanText = (input: string) => keys.reduce((arr, curr) => {
     return arr.replaceAll(curr, '');
   }, input);
-  const ordering = keys.map((k) => ({ order: text.indexOf(k), value: k, segments: text.split(k)}));
+  let ordering: Ordering[] = [];
+  keys.forEach((k, i) => {
+    const prior = i > 0 && ordering.length > i - 1 && ordering[i - 1].segments.length > 1 ? ordering[i - 1].segments[1] : text;
+    ordering = [...ordering, { order: text.indexOf(k), value: k, segments: prior.split(k) }];
+  });
   if (ordering.map((v) => v.order).includes(-1)) {
-    return [text];
+    return [{
+      order: 1,
+      value: '',
+      segments: [text, '']
+    }];
   }
-  return ordering.sort((a, b) => a.order - b.order);
+  const t = ordering.sort((a, b) => a.order - b.order);
+  return t;
 }
 
 const addCitations = (text: string, programEvents: CRProgramEvents) => {
@@ -162,9 +178,22 @@ const addCitations = (text: string, programEvents: CRProgramEvents) => {
     return res;
   }
   const found = [...m(regex), ...m(regex)];
-  const indecies = found.map((id) => getIndex(id, programEvents));
-  
-}
+  if (found.length === 0) {
+    return <span>{text}</span>;
+  }
+  return (<div> {
+    splitTextIntoSegments(text, found).map((v, i) => {
+      const index = getIndex(v.value, programEvents);
+      if (i === 0 && i === found.length - 1) {
+        return <span><span>{v.segments[0]}</span><Button>{index !== undefined ? 'p=' + index.programEventId + 'time=' + index.videoTimestamp : 'missing link'}</Button><span>{v.segments[1]}</span></span>;
+      } else if (i === found.length - 1) {
+        return <span><Button>{index !== undefined ? 'p=' + index.programEventId + 'time=' + index.videoTimestamp : 'missing link'}</Button><span>{v.segments[1]}</span></span>;
+      } else {
+        return <span><span>{v.segments[0]}</span><Button>{index !== undefined ? 'p=' + index.programEventId + 'time=' + index.videoTimestamp : 'missing link'}</Button></span>;
+      }
+    })}
+  </div>);
+};
 
 
 const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
@@ -197,9 +226,11 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   }
   if (readOnly) {
     if (longform) {
-      return (
-        markdown
-      );
+      if (DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG) {
+        addCitations(markdown, pageState.selectedCRProgramEvents);
+      } else {
+        return markdown;
+      }
     } else {
       return (
         wrapAsLink(markdown, pathname, pageState.selectedCR));

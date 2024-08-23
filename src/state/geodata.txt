@@ -1,0 +1,57 @@
+@jcrc
+
+latitude: 43.9751944444444
+
+longitude: -75.9136944444444
+
+radius: 8
+
+
+
+@exph
+
+latitude: 43.9670555555556
+
+longitude: -78.2837222222222
+
+radius: 8
+
+
+
+@well
+
+latitude: 43.2096111111111
+
+longitude: -79.8793888888889
+
+radius: 8
+
+
+
+@trnu:
+
+latitude: 41.6976944444444
+
+longitude: -73.9656944444444
+
+radius: 8
+
+
+
+@vwhp
+
+	latitude: 41.6991111111111
+
+	longitude: -73.9243055555556
+
+	radius: 8
+
+
+
+@lccc
+
+	latitude: 41.7121388888889 degrees North (therefore negative is South latitude)
+
+	longitude: -73.86825 degrees East (therefore negative is West longitude)
+
+	radius: 8 kilometers (5 miles)

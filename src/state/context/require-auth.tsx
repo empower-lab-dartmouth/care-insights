@@ -62,6 +62,7 @@ function RequireAuthLocations({ children }: { children: JSX.Element }) {
         setPageContext({
           ...pageContext,
           selectedCR: 'NONE',
+          selectedCRProgramEvents: {},
         });
         signOut();
       }}>Click here to return to the login page</Button></div>
@@ -81,6 +82,7 @@ function RequireAuthLocations({ children }: { children: JSX.Element }) {
           setPageContext({
             ...pageContext,
             selectedCR: 'NONE',
+            selectedCRProgramEvents: {},
           });
           signOut();
         }}>Click here to return to the login page</Button>
@@ -100,6 +102,7 @@ function RequireAuthLocations({ children }: { children: JSX.Element }) {
             setPageContext({
               ...pageContext,
               selectedCR: 'NONE',
+              selectedCRProgramEvents: {},
             });
             signOut();
           }}>Click here to return to the login page</Button></div>}
@@ -115,6 +118,7 @@ function RequireAuthLocations({ children }: { children: JSX.Element }) {
         setPageContext({
           ...pageContext,
           selectedCR: 'NONE',
+          selectedCRProgramEvents: {},
         });
         signOut();
       }}>Click here to return to the login page</Button></div>

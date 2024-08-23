@@ -193,6 +193,7 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
                 setPageContext({
                   ...pageContext,
                   selectedCR: 'NONE',
+                  selectedCRProgramEvents: {},
                 });
                 setTimeout(() => {
                   signOut();

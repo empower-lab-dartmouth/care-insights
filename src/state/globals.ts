@@ -8,6 +8,8 @@ export function setLoadedQueryFromURLTrue() {
     LOADED_CACHE = true;
 }
 
+export const DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG = false;
+
 export function getLoadedQueryFromURL() {
     return LOADED_CACHE;
 }
