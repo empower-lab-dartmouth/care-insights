@@ -49,7 +49,20 @@ function RequireAuthLocations({ children }: { children: JSX.Element }) {
   }, [coords]);
   return <>
     {!isGeolocationAvailable ? (
-      <div>Your browser does not support Geolocation, please try using Chrome</div>
+      <div>Your browser does not support Geolocation, please try using Chrome<br /><br /><br />
+      <Button onClick={() => {
+        setCookie('careInsightsUsername', '');
+        setCookie('careInsightsPassword', '');
+        resetAuthCache();
+        setCRs({});
+        setExtendedAttributes({});
+        resetAuthCache();
+        setPageContext({
+          ...pageContext,
+          selectedCR: 'NONE',
+        });
+        signOut();
+      }}>Click here to return to the login page</Button></div>
     ) : !isGeolocationEnabled ? (
       <div><h1>This site does not have access to your location data. </h1>You must be physically present at the facility to access care insights, so providing access to location data is required. <br />
         Please read the instrucitons here for <a href='https://docs.buddypunch.com/en/articles/919258-how-to-enable-location-services-for-chrome-safari-edge-and-android-ios-devices-gps-setting'><Button> more information for giving a web site access to your current location. </Button></a>
