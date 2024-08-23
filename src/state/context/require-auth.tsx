@@ -27,7 +27,7 @@ function RequireAuthLocations({ children }: { children: JSX.Element }) {
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
   const [cookies, setCookie] = useCookies(['careInsightsUsername', 'careInsightsPassword']);
   const [_, setOnSite] = useRecoilState(onSiteState);
-  if (search.includes('dev=true')) {
+  if (search.includes('geo=true')) {
     console.log('loading a location required site in dev mode.');
     return children;
   }

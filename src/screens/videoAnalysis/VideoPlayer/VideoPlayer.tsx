@@ -36,7 +36,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const ref = React.useRef<ReactPlayer>(null);
   const { currentUser } = useContext(AuthContext);
   const { search } = useLocation();
-  const dev = search.includes('geo=true');
+  const dev = search.includes('dev=true');
   const pageContext = useRecoilValue(pageContextState);
   const [showVideo, setShowVideo] = useState(true);
   const [videoStarted, setVideoStarted] = useState(false);
