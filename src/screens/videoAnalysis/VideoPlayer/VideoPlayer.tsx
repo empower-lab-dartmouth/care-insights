@@ -36,7 +36,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const ref = React.useRef<ReactPlayer>(null);
   const { currentUser } = useContext(AuthContext);
   const { search } = useLocation();
-  const dev = search.includes('dev=true');
+  const dev = search.includes('geo=true');
   const pageContext = useRecoilValue(pageContextState);
   const [showVideo, setShowVideo] = useState(true);
   const [videoStarted, setVideoStarted] = useState(false);
@@ -45,7 +45,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const displayName = currentUser?.displayName;
   const videoApprovalRequriedForSite = displayName !== null && VIDEO_APPROVAL_REQUIRED.filter((v) => displayName?.includes(v)).length > 0;
   const userHasPermissions = pageContext.position !== undefined && pageContext.position !== 'Family';
-  const showAdminControls = (IS_ADMIN) && videoApprovalRequriedForSite;
+  const showAdminControls = (dev || IS_ADMIN) && videoApprovalRequriedForSite;
   const videoHasBeenApproved = (programEvent.videoApproved != undefined && programEvent.videoApproved == true);
   const videoNotApproved = videoApprovalRequriedForSite && !userHasPermissions && !videoHasBeenApproved;
   // Check if we're dealing with a facility with location services required.
