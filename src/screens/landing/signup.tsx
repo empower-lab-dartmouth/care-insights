@@ -81,7 +81,7 @@ export default function SignUp(props: any) {
       userType: type,
       name,
     }, 'new-user', 'NONE');
-    window.location.assign(`mailto:yourmail@domain.com?subject=${subject(name, type, email)}&body=${body(name, type, email)}`);
+    window.location.assign(`mailto:info@memcara.com?subject=${subject(name, type, email)}&body=${body(name, type, email)}`);
     setHasClickedCreate(true);
     // const res = await handleSignUp(email, type, name);
     //   if (typeof res === 'string') {

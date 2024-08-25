@@ -129,7 +129,7 @@ function Home() {
           <TextInput
             label='Password: (Same as your Memcara Username)'
             type='password'
-            placeholder='Password: (Same as your Memcara Username)'
+            placeholder='Password: (Same as your Memcara password)'
             name='password'
             value={password}
             onChange={handleChange}
