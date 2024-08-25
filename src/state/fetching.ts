@@ -38,6 +38,7 @@ export const loadCRData = async (
   setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>,
   careRecipientsInfo: Record<string, CareRecipientInfo>,
   extendedAttributes: ExtendedAttributes | undefined,
+  skipLoadingQueries?: true,
 ) => {
   console.log('loading care recipient data');
   if (pageState.selectedCR !== 'NONE') {
@@ -69,6 +70,9 @@ export const loadCRData = async (
       }),
       temp
     );
+    if (skipLoadingQueries) {
+      return programEvents;
+    }
     const updatedPageState = {
       ...pageState,
       selectedCRProgramEvents: programEvents,
@@ -76,6 +80,7 @@ export const loadCRData = async (
     };
     setPageContext(updatedPageState);
     await loadQueriesForCR(updatedPageState, careRecipientsInfo, setPageContext, setLocalQueries, extendedAttributes);
+    return programEvents;
   } else {
     console.log('pull all cr data');
 
@@ -113,6 +118,7 @@ export const loadCRData = async (
       insightsQuery: defaultQueryEmpty,
       suggestedQueries: [],
     });
+    return {} as CRProgramEvents;
   }
 };
 
@@ -126,7 +132,7 @@ export const generateQuickFactsQueries = async (
   queries: Record<string, QueryRecord>,
   setLocalQueries: SetterOrUpdater<Record<string, QueryRecord>>,
   setPageContext: SetterOrUpdater<PageState>, CRName: string, extendedAttributes: ExtendedAttributes | undefined,
-override=false) => {
+  override = false) => {
   const handleLocalQueryResponse = (q: QueryRecord) => {
     // setLocalQueries({
     //   ...queries,
@@ -210,12 +216,12 @@ export const loadQueriesForCR = async (
   // const CR = careRecipientsInfo[pageState.selectedCR] ? ;
   // if (CR === undefined) {
 
-    // console.log("Invalid care recipient name, cancelling fetch");
-    // setPageContext({
-    //   ...pageState,
-    //   loadingCRInfo: false,
-    // });
-    // return;
+  // console.log("Invalid care recipient name, cancelling fetch");
+  // setPageContext({
+  //   ...pageState,
+  //   loadingCRInfo: false,
+  // });
+  // return;
   // }
   const CRName = careRecipientsInfo[pageState.selectedCR] ? careRecipientsInfo[pageState.selectedCR].name : 'NONE';
   if (querySnapshot.empty) {
@@ -319,10 +325,10 @@ export const loadQueryFromURL = async (
   extendedAttributes: ExtendedAttributes | undefined
 ) => {
   // console.log('load query from url', queries);
-  if (searchQuery !== '' && 
-    pageState.insightsQuery.query !== searchQuery && 
+  if (searchQuery !== '' &&
+    pageState.insightsQuery.query !== searchQuery &&
     Object.values(queries).length > 0) {
-      // console.log("loading search from url query");
+    // console.log("loading search from url query");
     const handleLocalQueryResponse = (q: QueryRecord) => { };
     setPageContext({
       ...pageState,

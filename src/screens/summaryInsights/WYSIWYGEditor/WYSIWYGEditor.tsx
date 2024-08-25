@@ -29,6 +29,7 @@ import { MessageCircleQuestion } from "lucide-react"
 import { replaceKeyInURI } from "../../videoAnalysis/programEventsTable/StreamGraph/utils"
 import { CRProgramEvents, ProgramEventIndex } from '../../../state/types';
 import { DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG } from '../../../state/globals';
+import { filter } from 'd3';
 
 
 const inputStyles = {
@@ -106,10 +107,7 @@ const wrapAsLink = (text: string, pathname: string, currentCR: string) => {
 }
 
 const getIndex: (id: string, programEvents: CRProgramEvents) => ProgramEventIndex | undefined = (idUnstripped, programEvents) => {
-  const stripId = (str: string) => {
-    return str.replaceAll(',', '').replaceAll('cite=', '').replaceAll('{', '').replaceAll('}', '');
-  }
-  const id = stripId(idUnstripped);
+  const id = idUnstripped.replaceAll(',', '').replaceAll('\\cite{','').replaceAll('}','')
   const res = Object.values(programEvents).flatMap((p) => {
     if (p.uuid === id) {
       return {
@@ -133,12 +131,11 @@ const getIndex: (id: string, programEvents: CRProgramEvents) => ProgramEventInde
     }
   });
   const filtered = res.filter((v) => v !== null);
-  filtered.forEach((v) => {
-    if (v !== null) {
-      return v;
-    }
-  });
-  return undefined;
+  if (filtered.length > 0) {
+    return filtered[0] as ProgramEventIndex;
+  } else {
+    return undefined;
+  }
 }
 
 type Ordering = {
@@ -148,9 +145,6 @@ type Ordering = {
 }
 
 const splitTextIntoSegments = (text: string, keys: string[]) => {
-  const cleanText = (input: string) => keys.reduce((arr, curr) => {
-    return arr.replaceAll(curr, '');
-  }, input);
   let ordering: Ordering[] = [];
   keys.forEach((k, i) => {
     const prior = i > 0 && ordering.length > i - 1 && ordering[i - 1].segments.length > 1 ? ordering[i - 1].segments[1] : text;
@@ -168,8 +162,7 @@ const splitTextIntoSegments = (text: string, keys: string[]) => {
 }
 
 const addCitations = (text: string, programEvents: CRProgramEvents) => {
-  const regex = /({cite=[^},]*})|(,cite=[^},]*,\s?)|({cite=[^,}]*,)/g;
-  const regex2 = /,cite=[^},]*}/g;
+  const regex = /\\cite{[^}]*}/g;
   const m = (r: RegExp) => {
     const res = text.match(regex);
     if (res === null) {
@@ -181,15 +174,16 @@ const addCitations = (text: string, programEvents: CRProgramEvents) => {
   if (found.length === 0) {
     return <span>{text}</span>;
   }
+  console.log('results ', found, splitTextIntoSegments(text, found), 'original text: ', text);
   return (<div> {
     splitTextIntoSegments(text, found).map((v, i) => {
       const index = getIndex(v.value, programEvents);
       if (i === 0 && i === found.length - 1) {
-        return <span><span>{v.segments[0]}</span><Button>{index !== undefined ? 'p=' + index.programEventId + 'time=' + index.videoTimestamp : 'missing link'}</Button><span>{v.segments[1]}</span></span>;
+        return <span key={index?.programEventId}><span>{v.segments[0]}</span><Button>{index !== undefined ? 'p=' + index.programEventId + 'time=' + index.videoTimestamp : 'missing link' + v.value}</Button><span>{v.segments[1]}</span></span>;
       } else if (i === found.length - 1) {
-        return <span><Button>{index !== undefined ? 'p=' + index.programEventId + 'time=' + index.videoTimestamp : 'missing link'}</Button><span>{v.segments[1]}</span></span>;
+        return <span key={index?.programEventId}><Button>{index !== undefined ? 'p=' + index.programEventId + 'time=' + index.videoTimestamp : 'missing link' + v.value}</Button><span>{v.segments[1]}</span></span>;
       } else {
-        return <span><span>{v.segments[0]}</span><Button>{index !== undefined ? 'p=' + index.programEventId + 'time=' + index.videoTimestamp : 'missing link'}</Button></span>;
+        return <span key={index?.programEventId}><span>{v.segments[0]}</span><Button>{index !== undefined ? 'p=' + index.programEventId + 'time=' + index.videoTimestamp : 'missing link' + v.value}</Button></span>;
       }
     })}
   </div>);
@@ -227,7 +221,7 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   if (readOnly) {
     if (longform) {
       if (DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG) {
-        addCitations(markdown, pageState.selectedCRProgramEvents);
+        return addCitations(markdown, pageState.selectedCRProgramEvents);
       } else {
         return markdown;
       }

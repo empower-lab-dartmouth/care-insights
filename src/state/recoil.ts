@@ -3,7 +3,8 @@ import {
   PageState, CGInfo,
   CaregiverInfo, CareGroupInfo, CareRecipientInfo,
   FacilityInfo,
-  ExtendedAttributes
+  ExtendedAttributes,
+  ProgramEventIndex
 } from './types';
 import { QueryRecord } from './queryingTypes';
 import { syncEffect, urlSyncEffect } from 'recoil-sync';
@@ -13,6 +14,12 @@ export const trackingTimeUntilNextPush = atom<number>({
   key: 'tracking-elapsed-time',
   default: 5000, // 30 sec
 });
+
+export const expandedProgramRowState = atom<ProgramEventIndex | undefined>({
+  key: 'expanded-program-row',
+  default: undefined,
+});
+
 
 export const defaultQueryLoading: QueryRecord = {
   query: '',

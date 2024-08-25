@@ -47,6 +47,7 @@ import { IconThumbUp, IconX } from '@tabler/icons-react';
 import { Check } from 'lucide-react';
 import { reportTrackingEvent } from '../../../state/tracking';
 import { setRemoteQueryRecord } from '../../../state/setting';
+import { loadCRData } from '../../../state/fetching';
 
 const inputStyles = {
   'width': '100%',
@@ -120,18 +121,26 @@ const QuestionAndAnswerPanel: React.FC = () => {
     setEditingQuery(q.query);
   };
   const displayName = extendedAttributes[pageContext.selectedCR] ? extendedAttributes[pageContext.selectedCR].firstName + ' ' + extendedAttributes[pageContext.selectedCR].lastName : CRName;
-  const makeQuery = async (q: string) => {
+  const makeQuery = async (regen: boolean, q: string) => {
     setLoadingResponse(true);
     setEditingDirectly(false);
     setFeedbackInputOpen(false);
+    const programEvents = Object.values(pageContext.selectedCRProgramEvents).length === 0 ? await loadCRData(
+      pageContext,
+      setPageContext,
+      setQueries,
+      careRecipientsInfo,
+      extendedAttributes[pageContext.selectedCR],
+      true,
+    ) : pageContext.selectedCRProgramEvents;
     const newQuery = await askQuery(
       q,
       handleLocalQueryResponse,
-      pageContext.selectedCRProgramEvents,
+      programEvents,
       currentUser?.email as string,
       pageContext.selectedCR,
       queries,
-      false,
+      regen,
       displayName,
       extendedAttributes[pageContext.selectedCR],
       true
@@ -145,6 +154,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
     setPageContext({
       ...pageContext,
       loadingCRInfo: false,
+      selectedCRProgramEvents: programEvents,
       insightsQuery: newQuery,
     });
     // console.log('made it here', newQuery, pageContext);
@@ -209,7 +219,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
   if (pageContext.insightsQuery.CRUUID !== pageContext.selectedCR) {
     return (<><Title>Get started by asking a question</Title>
     <Button onClick={() => {
-      makeQuery('What are some good ways to support ' + displayName + '?');
+      makeQuery(true, 'What are some good ways to support ' + displayName + '?');
     }}>Get started</Button>
     </>)
   }
@@ -425,7 +435,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
               onSelected={async option => {
                 // console.log('use query string: ' + option.query);
                 setEditingQuery(option.query);
-                makeQuery(option.query);
+                makeQuery(true, option.query);
               }}
               loadMoreSuggestions={() =>
                 setPageContext({
@@ -441,10 +451,10 @@ const QuestionAndAnswerPanel: React.FC = () => {
           </div>
           <SearchBox
             value={editingQuery}
-            onSearch={() => makeQuery(editingQuery)}
+            onSearch={(regen: boolean) => makeQuery(regen, editingQuery)}
             onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
               if (event.target.value.endsWith('\n')) {
-                makeQuery(editingQuery);
+                makeQuery(false, editingQuery);
               } else {
                 setEditingQuery(event.target.value);
               }

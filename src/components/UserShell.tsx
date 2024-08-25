@@ -16,6 +16,7 @@ import { setCareRecipientInfo, setRemoteQueryRecord } from '../state/setting';
 import { resetAuthCache } from '../state/globals';
 import { reportTrackingEvent } from '../state/tracking';
 import Demo from '../state/LocationTracking';
+import { loadCRData } from '../state/fetching';
 
 
 
@@ -58,10 +59,18 @@ export const MenuButton = ({
       ...pageContext,
       loadingCRInfo: true,
     });
+    const programEvents = Object.values(pageContext.selectedCRProgramEvents).length === 0 ? await loadCRData(
+      pageContext,
+      setPageContext,
+      setQueries,
+      careRecipientsInfo,
+      extendedAttributes[pageContext.selectedCR],
+      true,
+    ) : pageContext.selectedCRProgramEvents;
     const query = await askQuery(
       q,
       handleLocalQueryResponse,
-      pageContext.selectedCRProgramEvents,
+      programEvents,
       currentUser?.email as string,
       pageContext.selectedCR,
       queries,
@@ -78,6 +87,7 @@ export const MenuButton = ({
     });
     setPageContext({
       ...pageContext,
+      selectedCRProgramEvents: programEvents,
       loadingCRInfo: false,
       insightsQuery: query,
     });
@@ -145,7 +155,7 @@ const formatUsername = (input: string | null | undefined) => {
     return input;
   }
 }
- 
+
 const UserShell = ({ children }: { children: React.ReactNode }) => {
   const [opened, { toggle }] = useDisclosure();
   const { currentUser, signOut } = useContext(AuthContext);

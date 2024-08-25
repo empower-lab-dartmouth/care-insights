@@ -79,7 +79,7 @@ export function getRelevantRecords(
 
   // const relevantEvents: string[] = [];
   const prefix = DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG && longform ? 'Each record is formatted with the schema: <Record start> Record ID=... Record content=... <Record end> ' : '';
-  const suffix = DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG && longform ? ' <End of all records> Whenever relevant, add citations to relevant record IDs in your reponse. Format a citation to a specific record like this: {cite=recordID}' : ''
+  const suffix = DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG && longform ? ' <End of all records> Whenever relevant, add citations to relevant record IDs in your reponse. Cite records in line where appropriate by adding \\cite{RecordID}, where RecordID is a variable that is specified earlier for each record (see Record ID = ...).' : ''
   return prefix + Object.values(allCREvents).filter((e) => {
     if (e.type === 'manual-entry-event') {
       return true;
@@ -89,7 +89,11 @@ export function getRelevantRecords(
     }
 }).map((e) => {
   if (e.type === 'manual-entry-event') {
-    return e.description;
+    if (!DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG) {
+      return e.description;
+    } else {
+      return '<Record start.> Record ID=' + e.uuid + ' Record content="' + e.description + '" <Record end>'
+    }
   }
   return Object.values(e.meaningfulMoments)
   .sort((a, b) => a.startTime - b.startTime)
@@ -204,7 +208,7 @@ const formatting = longForm !== undefined && longForm ? `Format your response as
 console.log('using longform', longForm);
   const queryResponse = await openai.chat.completions.create({
     messages: [{ role: 'user', content: prompt }],
-    model: 'gpt-3.5-turbo',
+    model: longForm ? 'gpt-4o' : 'gpt-4o-mini',
   });
   console.log('PROMPT', prompt);
   const ChatGPTResponse = '' + queryResponse.choices[0].message.content;

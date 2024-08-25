@@ -1,5 +1,8 @@
 import React from 'react';
 import { IconSearch } from '@tabler/icons-react';
+import { useRecoilValue } from 'recoil';
+import { pageContextState } from '../../../state/recoil';
+import { Group } from '@mantine/core';
 
 const InputBox = ({
   value,
@@ -7,9 +10,11 @@ const InputBox = ({
   onChange,
 }: {
   value: string;
-  onSearch: () => void;
+  onSearch: (regenerate: boolean) => void;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }) => {
+  const pageContext = useRecoilValue(pageContextState);
+  const refreshSearch = pageContext.insightsQuery.query !== '' && pageContext.insightsQuery.query === value;
   return (
     <div className='bg-gray-200  gap-1.5 rounded-3xl flex items-center'>
       <div className='flex items-center w-full py-2 px-4  rounded-full shadow-sm'>
@@ -25,9 +30,16 @@ const InputBox = ({
 
       <div
         className='p-2 rounded-full bg-primary text-white mr-4 hover:bg-blue-400 cursor-pointer'
-        onClick={onSearch}
+        onClick={() => onSearch(refreshSearch)}
       >
+        {
+           refreshSearch ? 
+           <Group wrap="nowrap" justify="flex-end" h={20}>
         <IconSearch size={20} />
+        <p>Regenerate</p>
+           </Group> :
+        <IconSearch size={20} />
+        }
       </div>
     </div>
   );

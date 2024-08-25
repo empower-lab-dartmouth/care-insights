@@ -7,6 +7,7 @@ import {
   MeaningfulMoment,
   MusicProgramEvent,
   ProgramEvent,
+  ProgramEventIndex,
   RedirectionLevel,
   TranscriptSegment,
 } from '../../../state/types';
@@ -183,9 +184,11 @@ const programEventsToRows: (
     id: string
   ) => (v: Record<string, MeaningfulMoment>) => void,
   updateProgramEvent: (id: string) => (programEvent: ProgramEvent) => void,
-  cRInfo: Record<string, CareRecipientInfo>
-) => Row[] = (v, updateMeaningfulMoments, updateProgramEvent, CRInfo) =>
+  cRInfo: Record<string, CareRecipientInfo>,
+  programEventIndex?: ProgramEventIndex | undefined
+) => Row[] = (v, updateMeaningfulMoments, updateProgramEvent, CRInfo, programEventIndex) =>
     v.map(l => {
+      const expanded = l.uuid === programEventIndex?.programEventId;
       if (l.type === 'music-event') {
         return {
           ...l,
