@@ -200,14 +200,19 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
                 setCRs({});
                 setExtendedAttributes({});
                 resetAuthCache();
-                setPageContext({
-                  ...pageContext,
-                  selectedCR: 'NONE',
-                  selectedCRProgramEvents: {},
-                });
                 setTimeout(() => {
+                  setCookie('careInsightsUsername', '');
+                  setCookie('careInsightsPassword', '');
+                  setCRs({});
+                  setExtendedAttributes({});
+                  resetAuthCache();
+                  setPageContext({
+                    ...pageContext,
+                    selectedCR: 'NONE',
+                    selectedCRProgramEvents: {},
+                  });
                   signOut();
-                }, 200);
+                }, 400);
               }}>
                 <IconLogout size={24} color='	#db2b29' />
               </UnstyledButton>
