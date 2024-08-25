@@ -16,6 +16,7 @@ import DataTable, { TableColumn } from 'react-data-table-component';
 import {
   NO_CR_SELECTED,
   careRecipientsInfoState,
+  expandedProgramRowState,
   extededAttributesState,
   pageContextState,
   queriesForCurrentCGState,
@@ -188,7 +189,7 @@ const programEventsToRows: (
   programEventIndex?: ProgramEventIndex | undefined
 ) => Row[] = (v, updateMeaningfulMoments, updateProgramEvent, CRInfo, programEventIndex) =>
     v.map(l => {
-      const expanded = l.uuid === programEventIndex?.programEventId;
+      const expanded = programEventIndex !== undefined && l.uuid === programEventIndex.programEventId;
       if (l.type === 'music-event') {
         return {
           ...l,
@@ -201,7 +202,7 @@ const programEventsToRows: (
           engagement: l.engagement,
           redirection: l.redirection,
           CGName: l.caregiverName, // TODO revert back
-          defaultExpanded: false,
+          defaultExpanded: expanded,
         };
       } else {
         return {
@@ -214,7 +215,7 @@ const programEventsToRows: (
           CGName: l.CGUUID,
           redirection: l.redirection,
           setProgramEvent: updateProgramEvent(l.uuid),
-          defaultExpanded: false,
+          defaultExpanded: expanded,
         };
       }
     });
@@ -224,7 +225,7 @@ const ProgramEventsTable: React.FC = () => {
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
   const [opened, { open, close }] = useDisclosure(false);
   const [extendedAttributes, setExtendedAttributes] = useRecoilState(extededAttributesState);
-
+  const [programEventIndex, setProgramEventIndex] = useRecoilState(expandedProgramRowState);
 
   const CRInfo = useRecoilValue(careRecipientsInfoState);
 
@@ -262,7 +263,8 @@ const ProgramEventsTable: React.FC = () => {
     ),
     updateMeaningfulMoments,
     updateProgramEvent,
-    CRInfo
+    CRInfo,
+    programEventIndex,
   );
   const title =
     pageContext.selectedCR === NO_CR_SELECTED

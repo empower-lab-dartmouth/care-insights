@@ -14,8 +14,8 @@ import Transcript from '../Transcript/Transcript';
 import { StreamGraphPageViewsDemo } from '../programEventsTable/StreamGraph/StreamGraphPageViewsDemo';
 import PlayMux from './MuxPlayer';
 import { AuthContext } from '../../../state/context/auth-context';
-import { pageContextState } from '../../../state/recoil';
-import { useRecoilValue } from 'recoil';
+import { expandedProgramRowState, pageContextState } from '../../../state/recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { QuickInfo } from '../../summaryInsights/CareInsights';
 import { Center, Group, Switch } from '@mantine/core';
 import { IS_ADMIN } from '../../../state/globals';
@@ -39,17 +39,27 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const dev = search.includes('dev=true');
   const pageContext = useRecoilValue(pageContextState);
   const [showVideo, setShowVideo] = useState(true);
+  const [programEventIndex, setProgramEventIndex] = useRecoilState(expandedProgramRowState);
   const [videoStarted, setVideoStarted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [playedSeconds, setPlayedSeconds] = useState(0);
   const displayName = currentUser?.displayName;
+  const [isReady, setIsReady] = React.useState(false);
   const videoApprovalRequriedForSite = displayName !== null && VIDEO_APPROVAL_REQUIRED.filter((v) => displayName?.includes(v)).length > 0;
   const userHasPermissions = pageContext.position !== undefined && pageContext.position !== 'Family';
   const showAdminControls = (dev || IS_ADMIN) && videoApprovalRequriedForSite;
   const videoHasBeenApproved = (programEvent.videoApproved != undefined && programEvent.videoApproved == true);
   const videoNotApproved = videoApprovalRequriedForSite && !userHasPermissions && !videoHasBeenApproved;
+  const onReady = React.useCallback(() => {
+    if (!isReady) {
+      if (ref.current !== null) {
+        const timeToStart = programEventIndex !== undefined && programEventIndex.programEventId === programEvent.uuid && programEventIndex.videoTimestamp !== undefined ? programEventIndex.videoTimestamp / 1000 : 0;
+        ref.current.seekTo(timeToStart, "seconds");
+        setIsReady(true);
+      }
+    }
+  }, [isReady]);
   // Check if we're dealing with a facility with location services required.
-  console.log('user has permissions', !userHasPermissions, videoApprovalRequriedForSite, programEvent.videoApproved !== undefined, programEvent.videoApproved, videoNotApproved);
   const videoApproved = VIDEO_APPROVAL_REQUIRED;
   if (videoSrc === 'video-missing') {
     return 'This video has not yet been processed. It will be made available later.'
@@ -94,10 +104,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
                   {videoNotApproved ? <div style={{ width: 600, overflow: 'auto' }}><QuickInfo
                     value={'Unreleased'}
                     label={''}
-                  /><p>The facility admin <br />must manually <br/> review and <br/>release all videos.</p></div> :
+                  /><p>The facility admin <br />must manually <br /> review and <br />release all videos.</p></div> :
                     <>
                       <ReactPlayer
                         ref={ref}
+                        onReady={onReady}
                         onProgress={({
                           played,
                           playedSeconds,

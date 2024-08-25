@@ -118,8 +118,8 @@ function Home() {
         <Text className='text-center'>Sign in to your account</Text>
         <div className='w-full flex flex-col gap-4 pt-4'>
           <TextInput
-            label='Memcara username'
-            placeholder='Your username'
+            label='Username: (Same as your Memcara Username)'
+            placeholder='Username: (Same as your Memcara Username)'
             name='email'
             value={email}
             onChange={handleChange}
@@ -127,9 +127,9 @@ function Home() {
           />
 
           <TextInput
-            label='Password'
+            label='Password: (Same as your Memcara Username)'
             type='password'
-            placeholder='Your password'
+            placeholder='Password: (Same as your Memcara Username)'
             name='password'
             value={password}
             onChange={handleChange}

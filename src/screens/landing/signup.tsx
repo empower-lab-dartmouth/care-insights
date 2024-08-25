@@ -1,10 +1,24 @@
 import React, { useState } from 'react';
 import { handleSignUp } from '../../state/firebase/firebase';
 import { Button, Input, Modal, TextInput } from '@mantine/core';
+import { reportTrackingEventNoPageContext } from '../../state/tracking';
+
+const subject = (name: string, caregiverType: string, email: string) => {
+  return `Add New CareSuite User: ${name}`
+}
+
+const body = (name: string, caregiverType: string, email: string) => {
+  return `Hi,
+My name is ${name}, my email is ${email}, my caregiver type is ${caregiverType}. I would like to access Care Insights. Please go to CareSuite and add me as a caregiver. Thank you,
+
+Sincerely,
+${name}`
+}
 
 export default function SignUp(props: any) {
   const [appear, setAppear] = React.useState(false);
   const [message, setMessage] = React.useState('');
+  const [hasClickedCreate, setHasClickedCreate] = React.useState(false);
 
   const handleAppear = () => {
     setAppear(true);
@@ -14,8 +28,7 @@ export default function SignUp(props: any) {
 
   const [event, setEvent] = useState({
     email: '',
-    password: '',
-    confirm: '',
+    type: '',
     name: '',
   });
 
@@ -33,8 +46,7 @@ export default function SignUp(props: any) {
 
   const handleSubmit = async () => {
     const email = event.email;
-    const password = event.password;
-    const confirm = event.confirm;
+    const type = event.type;
     const name = event.name;
 
     // console.log(event);
@@ -42,29 +54,42 @@ export default function SignUp(props: any) {
     if (name === '') {
       // console.log('must enter a name');
       setMessage('Please enter your name');
+      handleAppear();
       return;
     } else {
       setMessage('');
     }
 
     if (email === '') {
-      console.log('must enter a username');
-      setMessage('Please enter your Memcara username');
+      setMessage('Please enter your email address');
+      handleAppear();
       return;
     } else {
       setMessage('');
     }
 
-    if (password === confirm) {
-      const res = await handleSignUp(email, password, name);
-      if (typeof res === 'string') {
-        setMessage(res);
-      }
+    if (type === '') {
+      setMessage('Please enter something for caregiver type.');
+      handleAppear();
+      return;
     } else {
-      setMessage('The passwords do not match');
+      setMessage('');
     }
+    reportTrackingEventNoPageContext({
+      type: 'new-user-request',
+      email,
+      userType: type,
+      name,
+    }, 'new-user', 'NONE');
+    window.location.assign(`mailto:yourmail@domain.com?subject=${subject(name, type, email)}&body=${body(name, type, email)}`);
+    setHasClickedCreate(true);
+    // const res = await handleSignUp(email, type, name);
+    //   if (typeof res === 'string') {
+    //     setMessage(res);
+    //   }
+    // } else {
+    //   setMessage('The passwords do not match');
 
-    handleAppear();
   };
 
   return (
@@ -75,126 +100,40 @@ export default function SignUp(props: any) {
       centered
     >
       <div className='flex flex-col gap-4 p-2'>
-        <p>You can use your existing Memcara CareSuite account to login. 
-          If you have trouble, please contact Christina at christina@memcara.com and our team will help you get set up right away. Thank you!</p>
-        {/* <TextInput
-          label='Name'
-          type='text'
-          name='name'
-          onChange={handleChange}
-          autoComplete='off'
-          required
-        />
+        {hasClickedCreate ? <h1>An email draft has been created for you, please review and send this. Once you do, we will create an account for you and respond with more info. If you have any further questions or concerns, contact info@memcara.com.</h1> : <>
+          <p>Please enter your information below and we'll help get you set up.</p>
+          <TextInput
+            label='Name'
+            type='text'
+            name='name'
+            onChange={handleChange}
+            autoComplete='off'
+            required
+          />
 
-        <TextInput
-          label='Email'
-          type='email'
-          name='email'
-          onChange={handleChange}
-          autoComplete='off'
-          required
-        />
+          <TextInput
+            label='Email'
+            type='email'
+            name='email'
+            onChange={handleChange}
+            autoComplete='off'
+            required
+          />
 
-        <TextInput
-          label='Password'
-          type='password'
-          name='password'
-          onChange={handleChange}
-          autoComplete='off'
-          required
-        />
-
-        <TextInput
-          label='Confirm Password'
-          type='password'
-          name='confirm'
-          onChange={handleChange}
-          autoComplete='off'
-          required
-        />
-
-        {appear && (
-          <span className='text-sm text-red-600 text-center'>{message}</span>
-        )}
-
-        <Button onClick={handleSubmit}>New Account</Button> */}
+          <TextInput
+            label='Caregiver role (e.g. family member, volunteer, full time)'
+            type='text'
+            name='type'
+            onChange={handleChange}
+            autoComplete='off'
+            required
+          />
+          {appear && (
+            <span className='text-sm text-red-600 text-center'>{message}</span>
+          )}
+          <Button onClick={handleSubmit}>Create</Button>
+        </>}
       </div>
-      {/* <div className='modal'>
-        <div className='landing-card'>
-          <form onSubmit={handleSubmit} className='group' autoComplete='off'>
-            <div>
-              <input
-                placeholder='Email'
-                type='text'
-                name='email'
-                onChange={handleChange}
-                style={{ backgroundColor: 'white', color: 'black' }}
-                autoComplete='off'
-              />
-            </div>
-
-            <div>
-              <input
-                placeholder='Password'
-                type='password'
-                name='password'
-                onChange={handleChange}
-                style={{ backgroundColor: 'white', color: 'black' }}
-                autoComplete='off'
-              />
-            </div>
-
-            <div>
-              <input
-                placeholder='Confirm Password'
-                type='password'
-                name='confirm'
-                onChange={handleChange}
-                style={{ backgroundColor: 'white', color: 'black' }}
-              />
-            </div>
-            <div>
-              <input
-                placeholder='Name'
-                type='text'
-                name='name'
-                onChange={handleChange}
-                style={{ backgroundColor: 'white', color: 'black' }}
-                autoComplete='off'
-              />
-            </div>
-
-            {appear && <span className='error-msg'>{message}</span>}
-
-            <div>
-              <input
-                id='signup'
-                style={{
-                  cursor: 'pointer',
-                  backgroundColor: 'white',
-                  fontWeight: 'bold',
-                  height: '60px',
-                  color: 'black',
-                }}
-                type='submit'
-              />
-              <Button
-                style={{
-                  cursor: 'pointer',
-                  fontWeight: 'normal',
-                  color: 'gray',
-                  backgroundColor: 'white',
-                  height: '60px',
-                }}
-                onClick={() => closeModal()}
-              >
-                {' '}
-                Back{' '}
-              </Button>
-            </div>
-          </form>
-        </div>
-      </div> */}
     </Modal>
   );
 }

@@ -9,7 +9,7 @@ import { IconLogout, IconMenu2, IconQuestionMark, IconX } from '@tabler/icons-re
 import { useCookies } from 'react-cookie';
 import SessionTracker from '../Tracker';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { careRecipientsInfoState, extededAttributesState, pageContextState, queriesForCurrentCGState } from '../state/recoil';
+import { careRecipientsInfoState, expandedProgramRowState, extededAttributesState, pageContextState, queriesForCurrentCGState } from '../state/recoil';
 import { QueryRecord } from '../state/queryingTypes';
 import { askQuery } from '../state/querying';
 import { setCareRecipientInfo, setRemoteQueryRecord } from '../state/setting';
@@ -17,6 +17,7 @@ import { resetAuthCache } from '../state/globals';
 import { reportTrackingEvent } from '../state/tracking';
 import Demo from '../state/LocationTracking';
 import { loadCRData } from '../state/fetching';
+import { ProgramEventIndex } from '../state/types';
 
 
 
@@ -24,15 +25,18 @@ export const MenuButton = ({
   children,
   path,
   icon,
+  programEventIndex,
   queryString,
   search: s,
 }: {
   children: React.ReactNode;
   path: string;
   icon: React.ReactNode;
+  programEventIndex?: ProgramEventIndex;
   queryString?: string;
   search?: string;
 }) => {
+  const [_, setProgramEventIndex] = useRecoilState(expandedProgramRowState)
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
   const { currentUser } = useContext(AuthContext);
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
@@ -97,6 +101,9 @@ export const MenuButton = ({
   const search = s ? s : s2;
   return (
     <Link to={{ pathname: path, search }} onClick={() => {
+      if (programEventIndex !== undefined)  {
+        setProgramEventIndex(programEventIndex);
+      }
       if (queryString !== undefined) {
         reportTrackingEvent({
           type: `clicked-details`,
@@ -106,7 +113,7 @@ export const MenuButton = ({
       }
     }}>
       <UnstyledButton
-        className={`px-2 py-3 hover:bg-slate-100 rounded-md w-full flex items-center gap-2 text-sm`}
+        className={programEventIndex === undefined ? `px-2 py-3 hover:bg-slate-100 rounded-md w-full flex items-center gap-2 text-sm` : `px-2 py-3 hover:bg-slate-100 rounded-md items-center gap-2 text-sm`}
         style={{
           backgroundColor: pathname === path ? '#e7f5ff' : 'transparent',
           color: pathname === path ? 'black' : 'white',

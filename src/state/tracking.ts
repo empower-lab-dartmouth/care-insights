@@ -16,6 +16,13 @@ export type EventWithContext = {
     query: QueryRecord
 }
 
+export type NewUserRequest = {
+    type: 'new-user-request'
+    name: string,
+    email: string,
+    userType: string,
+}
+
 type ExpandedEvent = TrackingEvent & {
     username: string,
     careRecipientID: string,
@@ -38,7 +45,7 @@ type ManualEventCreated = {
     event: ProgramEvent
 }
 
-export type TrackingEvent = ClickedDetails| BasicEvent | EventWithContext | DebuggingEvent | ManualEventCreated;
+export type TrackingEvent = NewUserRequest | ClickedDetails| BasicEvent | EventWithContext | DebuggingEvent | ManualEventCreated;
 
 export const reportTrackingEvent = async (e: TrackingEvent, username: string, pageState: PageState) => {
     console.log('tracking event');

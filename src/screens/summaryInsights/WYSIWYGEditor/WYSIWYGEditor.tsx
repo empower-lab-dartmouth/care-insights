@@ -20,12 +20,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { TextField, Typography } from '@mui/material';
 import Markdown from 'react-markdown'
 import { useLocation } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
-import { pageContextState } from '../../../state/recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { expandedProgramRowState, pageContextState } from '../../../state/recoil';
 import { Button, ButtonGroup, Group, Stack } from "@mantine/core"
 import { GenericJsxEditor, JsxComponentDescriptor, NestedLexicalEditor, insertJsx$, jsxPlugin, usePublisher } from "@mdxeditor/editor"
 import { MenuButton } from "../../../components/UserShell"
-import { MessageCircleQuestion } from "lucide-react"
+import { MessageCircleQuestion, SquarePlay } from "lucide-react"
 import { replaceKeyInURI } from "../../videoAnalysis/programEventsTable/StreamGraph/utils"
 import { CRProgramEvents, ProgramEventIndex } from '../../../state/types';
 import { DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG } from '../../../state/globals';
@@ -71,6 +71,22 @@ const GoTo: React.FC<GoToProps> = ({ label, queryString }) => {
       <i style={{ color: 'blue' }}>Details</i>
     </MenuButton>
   </Group></li>);
+}
+
+type CiteProps = {
+  p: ProgramEventIndex | undefined
+}
+
+const Cite: React.FC<CiteProps> = ({p}) => {
+  if (p === undefined) {
+    return <></>;
+  }
+  return (
+    <MenuButton path='/program-events' programEventIndex={p}
+      icon={<SquarePlay color='blue' size={18} />}>
+        <></>
+      {/* <i style={{ color: 'blue' }}></i> */}
+    </MenuButton>);
 }
 
 // import { uploadFile } from '../../../state/setting';
@@ -120,7 +136,7 @@ const getIndex: (id: string, programEvents: CRProgramEvents) => ProgramEventInde
         return Object.values(p.meaningfulMoments).flatMap((m) => {
           if (m.uuid === id) {
             return ({
-              programEventId: id,
+              programEventId: p.uuid,
               videoTimestamp: m.startTime,
             });
           } else {
@@ -170,7 +186,7 @@ const addCitations = (text: string, programEvents: CRProgramEvents) => {
     }
     return res;
   }
-  const found = [...m(regex), ...m(regex)];
+  const found = [...m(regex)];
   if (found.length === 0) {
     return <span>{text}</span>;
   }
@@ -179,11 +195,11 @@ const addCitations = (text: string, programEvents: CRProgramEvents) => {
     splitTextIntoSegments(text, found).map((v, i) => {
       const index = getIndex(v.value, programEvents);
       if (i === 0 && i === found.length - 1) {
-        return <span key={index?.programEventId}><span>{v.segments[0]}</span><Button>{index !== undefined ? 'p=' + index.programEventId + 'time=' + index.videoTimestamp : 'missing link' + v.value}</Button><span>{v.segments[1]}</span></span>;
+        return <span key={index?.programEventId}><span>{v.segments[0]}</span><Cite p={index} /><span>{v.segments[1]}</span></span>;
       } else if (i === found.length - 1) {
-        return <span key={index?.programEventId}><Button>{index !== undefined ? 'p=' + index.programEventId + 'time=' + index.videoTimestamp : 'missing link' + v.value}</Button><span>{v.segments[1]}</span></span>;
+        return <span key={index?.programEventId}><Cite p={index} /><span>{v.segments[1]}</span></span>;
       } else {
-        return <span key={index?.programEventId}><span>{v.segments[0]}</span><Button>{index !== undefined ? 'p=' + index.programEventId + 'time=' + index.videoTimestamp : 'missing link' + v.value}</Button></span>;
+        return <span key={index?.programEventId}><span>{v.segments[0]}</span><Cite p={index} /></span>;
       }
     })}
   </div>);

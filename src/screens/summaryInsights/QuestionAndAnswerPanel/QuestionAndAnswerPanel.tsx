@@ -94,7 +94,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [queries, setQueries] = useRecoilState(queriesForCurrentCGState);
   const [editingQuery, setEditingQuery] = useState(
-    pageContext.insightsQuery.query
+    pageContext.insightsQuery.query === '<loading>' ? '' : pageContext.insightsQuery.query
   );
   const [feedbackInputOpen, setFeedbackInputOpen] = useState(false);
   const [feedbackInput, setFeedbackInput] = useState('');
@@ -118,7 +118,11 @@ const QuestionAndAnswerPanel: React.FC = () => {
       ...pageContext,
       insightsQuery: q,
     });
-    setEditingQuery(q.query);
+    if (q.query === '<loading>') {
+      setEditingQuery('');
+    } else {
+      setEditingQuery(q.query);
+    }
   };
   const displayName = extendedAttributes[pageContext.selectedCR] ? extendedAttributes[pageContext.selectedCR].firstName + ' ' + extendedAttributes[pageContext.selectedCR].lastName : CRName;
   const makeQuery = async (regen: boolean, q: string) => {
@@ -233,7 +237,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
         {editingQuery === '' ? <Title order={5}>Use the gray search search box below to type in a question</Title> : <></>} 
         {editingQuery && (
           <div className='flex flex-col gap-2'>
-            <Title order={5}>{editingQuery || editedResponse === 'loading' || editedResponse === DEFAULT_QUERY_RESPONSE_MESSAGE ? 'Editing question:' : 'You asked:'}</Title>
+            <Title order={5}>{editingQuery || editedResponse === 'loading' || editingQuery === '<loading>' || editedResponse === DEFAULT_QUERY_RESPONSE_MESSAGE ? 'Editing question:' : 'You asked:'}</Title>
             <Text style={{ color: 'blue' }}>{editingQuery}</Text>
           </div>
         )}
@@ -243,11 +247,11 @@ const QuestionAndAnswerPanel: React.FC = () => {
             <div className='flex gap-3'>
             {editingQuery === '' ? <></> : <>
               {
-                queryModified || editedResponse === 'loading' || editedResponse === DEFAULT_QUERY_RESPONSE_MESSAGE ? <Title order={5}>Ask a question!</Title> :
+                queryModified || editedResponse === 'loading' || editingQuery === '<loading>' || editedResponse === DEFAULT_QUERY_RESPONSE_MESSAGE ? <Title order={5}>Ask a question!</Title> :
                   <Title order={5}>More details regarding your question:</Title>}</>}
             </div>
             {
-              editedResponse === 'loading' || editedResponse === DEFAULT_QUERY_RESPONSE_MESSAGE ?
+              editedResponse === 'loading' || editingQuery === '<loading>' || editedResponse === DEFAULT_QUERY_RESPONSE_MESSAGE ?
                 <></> :
                 <WYSIWYGEditor
                   longform={true}
