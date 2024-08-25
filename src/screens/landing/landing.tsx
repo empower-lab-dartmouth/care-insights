@@ -127,7 +127,7 @@ function Home() {
           />
 
           <TextInput
-            label='Password: (Same as your Memcara Username)'
+            label='Password: (Same as your Memcara Password)'
             type='password'
             placeholder='Password: (Same as your Memcara password)'
             name='password'
