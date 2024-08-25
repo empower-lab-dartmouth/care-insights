@@ -122,10 +122,10 @@ export const loadCRData = async (
   }
 };
 
-export const sampleAvoidQuery = (name: string) => `What specific things should you as a caregiver avoid when working with ${name}?`;
-export const sampleDoQuery = (name: string) => `What things should you as a caregiver do more of when working with ${name}?`;
-export const sampleSymptomsQuery = (name: string) => `What common symptoms does ${name} show?`;
-export const sampleRedirectQuery = (name: string) => `What things should you do as a dementia caregiver to redirect ${name} show?`;
+export const sampleAvoidQuery = (name: string) => `What specific things should you as a caregiver avoid when working with ${name}? DO NOT COMMENT on anything other than things to avoid and BE SPECIFIC.`;
+export const sampleDoQuery = (name: string) => `What things should you as a caregiver do more of when working with ${name}? DO NOT COMMENT on anything other than things to do and BE SPECIFIC.`;
+export const sampleSymptomsQuery = (name: string) => `What symptoms does ${name} show? DO NOT COMMENT on anything positive, ONLY KNOWN SYMPTOMS, and BE SPECIFIC.`;
+export const sampleRedirectQuery = (name: string) => `What things should you do as a dementia caregiver to redirect ${name} when they have negative thoughts or behaviors? DO NOT COMMENT on anything other than ways to redirect and BE SPECIFIC.`;
 
 export const generateQuickFactsQueries = async (
   pageState: PageState,
