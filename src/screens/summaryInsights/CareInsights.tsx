@@ -28,7 +28,7 @@ import {
 } from '@mantine/core';
 import QuickFactsBox, { LOADING_STRING } from './QuickFactsBox';
 import { QueryRecord } from '../../state/queryingTypes';
-import { generateQuickFactsQueries, sampleAvoidQuery, sampleDoQuery, sampleRedirectQuery, sampleSymptomsQuery } from '../../state/fetching';
+import { generateQuickFactsQueries, loadCRData, sampleAvoidQuery, sampleDoQuery, sampleRedirectQuery, sampleSymptomsQuery } from '../../state/fetching';
 import { RefreshCcw, RefreshCw } from 'lucide-react';
 import { ExtendedAttributes, InfoBox } from '../../state/types';
 import { reportTrackingEvent } from '../../state/tracking';
@@ -164,19 +164,28 @@ const CareInsightsPage = () => {
                 loadingCRInfo: true,
               };
               setPageContext(updatedPageContext);
-              generateQuickFactsQueries(updatedPageContext, queries, setQueries, setPageContext, CRName, extendedAttributes[pageContext.selectedCR], true);
+              await generateQuickFactsQueries(updatedPageContext, queries, setQueries, setPageContext, CRName, extendedAttributes[pageContext.selectedCR], true);
             }}><RefreshCw size={17} className='mr-1' />Generate new feedback</Button> : <></>}
           {pageContext.loadingCRInfo ? (
             <>
               <CircularProgress />
-              If this takes more than several seconds, please <Button style={{width: 250}} onClick={() => {
+              If this takes more than several seconds, please <Button style={{width: 250}} onClick={async () => {
                 reportTrackingEvent({
                   type: `debugging`,
                   message: 'click here to manually update—CareInsights.tsx'
                 }, pageContext.username, pageContext);
+                const programEvents = Object.values(pageContext.selectedCRProgramEvents).length === 0 ? await loadCRData(
+                  pageContext,
+                  setPageContext,
+                  setQueries,
+                  careRecipients,
+                  extendedAttributes[pageContext.selectedCR],
+                  true,
+                ) : pageContext.selectedCRProgramEvents;
                 setPageContext({
                   ...pageContext,
                   loadingCRInfo: false,
+                  selectedCRProgramEvents: programEvents,
               });
               }}>click here to manually update.</Button> If that does not work, please refresh the page or log out and log back in again. Thank you for your patience!
             </>

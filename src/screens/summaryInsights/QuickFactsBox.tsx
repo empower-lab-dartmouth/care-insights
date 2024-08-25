@@ -53,7 +53,7 @@ import { PageState } from '../../state/types';
 import { Divide, List, Smile, TriangleAlert } from 'lucide-react';
 
 import '@mdxeditor/editor/style.css';
-import { generateQuickFactsQueries, sampleAvoidQuery, sampleDoQuery, sampleRedirectQuery, sampleSymptomsQuery } from '../../state/fetching';
+import { generateQuickFactsQueries, loadCRData, sampleAvoidQuery, sampleDoQuery, sampleRedirectQuery, sampleSymptomsQuery } from '../../state/fetching';
 import { reportTrackingEvent } from '../../state/tracking';
 
 export const LOADING_STRING = 'Loading...';
@@ -335,12 +335,26 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = props => {
               type === 'do' ?
                 <>
                   <CircularProgress />
-                  If this takes more than several seconds, please <Button style={{ width: 250 }} onClick={() => {
+                  If this takes more than several seconds, please <Button style={{ width: 250 }} onClick={async () => {
                     reportTrackingEvent({
                       type: `debugging`,
                       message: 'click here to manually update—QuickFacts.tsx'
                     }, caregiverId, pageContext);
-                    generateQuickFactsQueries(pageContext, queries, setQueries, setPageContext, CRName, extendedAttributes[pageContext.selectedCR], true);
+                    const programEvents = Object.values(pageContext.selectedCRProgramEvents).length === 0 ? await loadCRData(
+                      pageContext,
+                      setPageContext,
+                      setQueries,
+                      careRecipientsInfo,
+                      extendedAttributes[pageContext.selectedCR],
+                      true,
+                    ) : pageContext.selectedCRProgramEvents;
+                    const newPageContext = {
+                      ...pageContext,
+                      loadingCRInfo: false,
+                      selectedCRProgramEvents: programEvents,
+                  };
+                    setPageContext(newPageContext);
+                    await generateQuickFactsQueries(newPageContext, queries, setQueries, setPageContext, CRName, extendedAttributes[pageContext.selectedCR], true);
                     //   setPageContext({
                     //     ...pageContext,
                     //     loadingCRInfo: false,
