@@ -154,7 +154,7 @@ const CareInsightsPage = () => {
         <div>
           <CommonCRActions page={'snapshot'} />
           {CRName !== 'NONE' ?
-            <Button onClick={() => {
+            <Button onClick={async () => {
               const updatedPageContext = {
                 ...pageContext,
                 doQuery: sampleDoQuery(CRName),
@@ -164,7 +164,7 @@ const CareInsightsPage = () => {
                 loadingCRInfo: true,
               };
               setPageContext(updatedPageContext);
-              await generateQuickFactsQueries(updatedPageContext, queries, setQueries, setPageContext, CRName, extendedAttributes[pageContext.selectedCR], true);
+              generateQuickFactsQueries(updatedPageContext, queries, setQueries, setPageContext, CRName, extendedAttributes[pageContext.selectedCR], true);
             }}><RefreshCw size={17} className='mr-1' />Generate new feedback</Button> : <></>}
           {pageContext.loadingCRInfo ? (
             <>
