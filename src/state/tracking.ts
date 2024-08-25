@@ -1,7 +1,8 @@
 import { collection, doc, setDoc } from "firebase/firestore";
 import {
     CareGroupInfo, CareRecipientInfo,
-    CaregiverInfo, FacilityInfo, PageState, ProgramEvent
+    CaregiverInfo, FacilityInfo, PageState, ProgramEvent,
+    ProgramEventIndex
 } from "./types";
 import { db } from "./firebase/firebase-config";
 import { QueryRecord } from "./queryingTypes";
@@ -23,6 +24,8 @@ export type NewUserRequest = {
     userType: string,
 }
 
+
+
 type ExpandedEvent = TrackingEvent & {
     username: string,
     careRecipientID: string,
@@ -33,6 +36,11 @@ type ExpandedEvent = TrackingEvent & {
 type DebuggingEvent = {
     type: 'debugging',
     message: string
+}
+
+type ClickOnCitation = {
+    type: 'citation',
+    index: ProgramEventIndex,
 }
 
 type ClickedDetails = {

@@ -62,7 +62,7 @@ const CommonCRActions: React.FC<CommonCRActionsProps> = ({ page }) => {
         disabled={pageContext.selectedCR === NO_CR_SELECTED}
       >
         <Plus size={17} className='mr-1' />
-        Record event
+        Add care note
       </Button>
     );
   };

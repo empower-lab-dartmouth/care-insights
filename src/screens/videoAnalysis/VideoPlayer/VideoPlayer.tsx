@@ -106,6 +106,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
                     label={''}
                   /><p>The facility admin <br />must manually <br /> review and <br />release all videos.</p></div> :
                     <>
+                    {
+                    (() => {try {
                       <ReactPlayer
                         ref={ref}
                         onReady={onReady}
@@ -118,6 +120,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
                           setProgress(played);
                           setPlayedSeconds(playedSeconds);
                         }} onStart={() => setVideoStarted(true)} controls={true} url={videoSrc} />
+                      } catch (e) {
+                        <p>Video took too long to load. Please reload the page.</p>
+                      }})()}
                       {
                         programEvent.transcript.length > 0 ?
                           <Transcript setVideoTime={seekTo} transcriptSegments={programEvent.transcript}
