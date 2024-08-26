@@ -102,6 +102,10 @@ export const MenuButton = ({
   return (
     <Link to={{ pathname: path, search }} onClick={() => {
       if (programEventIndex !== undefined)  {
+        reportTrackingEvent({
+          type: 'citation',
+          index: programEventIndex
+        }, currentUser?.email as string, pageContext);
         setProgramEventIndex(programEventIndex);
       }
       if (queryString !== undefined) {

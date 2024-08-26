@@ -142,7 +142,7 @@ export const generateQuickFactsQueries = async (
   }
   const displayName = extendedAttributes !== undefined ? extendedAttributes.firstName + ' ' + extendedAttributes.lastName : CRName;
   console.log('Generating quick facts queries');
-  Promise.all([askQuery(pageState.avoidQuery,
+  return Promise.all([askQuery(pageState.avoidQuery,
     handleLocalQueryResponse,
     pageState.selectedCRProgramEvents,
     pageState.username,
@@ -189,7 +189,6 @@ export const generateQuickFactsQueries = async (
         })
       }
     });
-
 }
 
 export const loadQueriesForCR = async (

@@ -4,7 +4,9 @@ import {
   CaregiverInfo, CareGroupInfo, CareRecipientInfo,
   FacilityInfo,
   ExtendedAttributes,
-  ProgramEventIndex
+  ProgramEventIndex,
+  FeedbackEventTypes,
+  FeedbackContent
 } from './types';
 import { QueryRecord } from './queryingTypes';
 import { syncEffect, urlSyncEffect } from 'recoil-sync';
@@ -13,6 +15,11 @@ import { string } from '@recoiljs/refine';
 export const trackingTimeUntilNextPush = atom<number>({
   key: 'tracking-elapsed-time',
   default: 5000, // 30 sec
+});
+
+export const feedbackModalState = atom<false | FeedbackContent>({
+  key: 'feedback-modal-opened',
+  default: false,
 });
 
 export const expandedProgramRowState = atom<ProgramEventIndex | undefined>({
@@ -24,6 +31,14 @@ export const expandedProgramRowState = atom<ProgramEventIndex | undefined>({
 export const defaultQueryLoading: QueryRecord = {
   query: '',
   queryResponse: 'loading',
+  queryUUID: '',
+  CGUUID: '',
+  CRUUID: '',
+};
+
+export const defaultQueryManualEntryEvent: QueryRecord = {
+  query: '',
+  queryResponse: 'manual-entry',
   queryUUID: '',
   CGUUID: '',
   CRUUID: '',

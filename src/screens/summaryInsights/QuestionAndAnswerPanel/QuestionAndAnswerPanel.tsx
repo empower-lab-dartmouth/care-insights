@@ -254,6 +254,8 @@ const QuestionAndAnswerPanel: React.FC = () => {
               editedResponse === 'loading' || editingQuery === '<loading>' || editedResponse === DEFAULT_QUERY_RESPONSE_MESSAGE ?
                 <></> :
                 <WYSIWYGEditor
+                  hideFeedback={false}
+                  query={pageContext.insightsQuery}
                   longform={true}
                   loading={loadingResponse}
                   readOnly={!editingDirectly}

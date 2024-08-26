@@ -158,7 +158,7 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
         <Group justify='flex-end' h={'auto'}>
           {responseChip(loadingResponse, alreadyApproved)}
         </Group>
-        <div className='flex items-center gap-2' style={{paddingLeft: 10}}>
+        <div className='flex items-center gap-2' style={{ paddingLeft: 10 }}>
 
           {icon(type)}
           <Title order={3} c={type == 'avoid' ? 'red' : 'dark'}>
@@ -267,6 +267,7 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
         <div className='px-6 pt-2 pb-8'>
           {!editingDirectly ? (
             <WYSIWYGEditor
+              hideFeedback={false}
               readOnly={true}
               markdown={editedResponse}
               loading={false}
@@ -276,6 +277,7 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
               onChange={(t: string) => { }}
               updateCallback={() => { }}
               longform={false}
+              query={queryRecord}
             />
             // <Text
             //   style={{
@@ -289,6 +291,7 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
           ) : (
             <WYSIWYGEditor
               readOnly={false}
+              hideFeedback={false}
               markdown={editedResponse}
               loading={false}
               showDefaultMessage={false}
@@ -297,6 +300,7 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
               onChange={setEditedResponse}
               updateCallback={() => { }}
               longform={false}
+              query={queryRecord}
             />
           )}
         </div>
@@ -352,7 +356,7 @@ const QuickFactsBox: React.FC<QuickFactsBoxProps> = props => {
                       ...pageContext,
                       loadingCRInfo: false,
                       selectedCRProgramEvents: programEvents,
-                  };
+                    };
                     setPageContext(newPageContext);
                     await generateQuickFactsQueries(newPageContext, queries, setQueries, setPageContext, CRName, extendedAttributes[pageContext.selectedCR], true);
                     //   setPageContext({

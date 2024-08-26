@@ -1,7 +1,7 @@
 import { collection, doc, setDoc } from "firebase/firestore";
 import {
     CareGroupInfo, CareRecipientInfo,
-    CaregiverInfo, FacilityInfo, PageState, ProgramEvent,
+    CaregiverInfo, FacilityInfo, FeedbackEventTypes, PageState, ProgramEvent,
     ProgramEventIndex
 } from "./types";
 import { db } from "./firebase/firebase-config";
@@ -24,7 +24,11 @@ export type NewUserRequest = {
     userType: string,
 }
 
-
+type FeedbackCreated = {
+    type: 'feedback-created',
+    event: ProgramEvent,
+    query: QueryRecord,
+}
 
 type ExpandedEvent = TrackingEvent & {
     username: string,
@@ -53,7 +57,7 @@ type ManualEventCreated = {
     event: ProgramEvent
 }
 
-export type TrackingEvent = NewUserRequest | ClickedDetails| BasicEvent | EventWithContext | DebuggingEvent | ManualEventCreated;
+export type TrackingEvent = NewUserRequest | ClickedDetails| BasicEvent | EventWithContext | DebuggingEvent | ManualEventCreated | ClickOnCitation | FeedbackCreated;
 
 export const reportTrackingEvent = async (e: TrackingEvent, username: string, pageState: PageState) => {
     console.log('tracking event');

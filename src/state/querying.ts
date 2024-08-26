@@ -57,7 +57,7 @@ export async function getRelevantQueries(
 const getDescriptionOfEvent: (programEvent: ProgramEvent) => string = (p) => {
   if (p.type == 'manual-entry-event') {
     return p.description;
-  } else {
+  } else if (p.type === 'music-event') {
     if (Object.values(p.meaningfulMoments).length > 0) {
       return '';
     } else {
@@ -66,6 +66,8 @@ const getDescriptionOfEvent: (programEvent: ProgramEvent) => string = (p) => {
         m.description
       }).join(' ');
     }
+  } else {
+    return p.description;
   }
 }
 
@@ -76,34 +78,35 @@ export function getRelevantRecords(
   allCREvents: CRProgramEvents,
   longform: boolean,
 ) {
-
   // const relevantEvents: string[] = [];
   const prefix = DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG && longform ? 'Each record is formatted with the schema: <Record start> Record ID=... Record content=... <Record end> ' : '';
   const suffix = DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG && longform ? ' <End of all records> Whenever relevant, add citations to relevant record IDs in your reponse. Cite records in line where appropriate by adding \\cite{RecordID}, where RecordID is a variable that is specified earlier for each record (see Record ID = ...).' : ''
   return prefix + Object.values(allCREvents).filter((e) => {
     if (e.type === 'manual-entry-event') {
       return true;
-    } 
-    if (Object.values(e.meaningfulMoments).length > 0) {
+    }
+    if (e.type === 'music-event' && Object.values(e.meaningfulMoments).length > 0) {
+      return true;
+    } else {
       return true;
     }
-}).map((e) => {
-  if (e.type === 'manual-entry-event') {
-    if (!DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG) {
+  }).map((e) => {
+    if (e.type === 'music-event') {
+      return Object.values(e.meaningfulMoments)
+        .sort((a, b) => a.startTime - b.startTime)
+        .map((v) => {
+          if (!longform || !DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG) {
+            return v.description;
+          }
+          return '<Record start.> Record ID=' + v.uuid + ' Record content="' + v.description + '" <Record end>'
+        }).join('\n\n');
+    }
+    if (!longform || !DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG) {
       return e.description;
     } else {
       return '<Record start.> Record ID=' + e.uuid + ' Record content="' + e.description + '" <Record end>'
     }
-  }
-  return Object.values(e.meaningfulMoments)
-  .sort((a, b) => a.startTime - b.startTime)
-  .map((v) => {
-    if (!longform || !DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG) {
-      return v.description;
-    }
-    return '<Record start.> Record ID=' + v.uuid + ' Record content="' + v.description + '" <Record end>'
-  }).join('\n\n');
-}).join('; ') + suffix;
+  }).join(' ') + suffix;
 
   // for (const e of Object.values(allCREvents)) {
   //   const eventDescription = getDescriptionOfEvent(e);
@@ -117,7 +120,7 @@ export function getRelevantRecords(
   //           note or description is trustworthy and meaningful; that is, the information within each note is significant.
   //           Here is a description of a therapy session event for this patient, written by the therapist: ${e.description}.
   //           Can the aforementioned descrition be used, even slightly, to answer the question "${inputQuery}"?
-            
+
   //           Respond Y for yes or N for no, following with your reasoning.`;
 
   //   // console.log(prompt)
@@ -149,11 +152,11 @@ const complileExtendedAttributesIntoPrompt = (e: ExtendedAttributes) => {
   const thingsToAvoid = checkIfReported(e.avoid) ? 'Things to avoid: ' + e.avoid + '. ' : '';
   const symptoms = e.symptoms != undefined && e.symptoms.length > 0 ? 'Symptoms to watch for: ' + e.symptoms.join(', ') + '. ' : '';
   const redirect = checkIfReported(e.waysToRedirect) ? 'Ways to redirect: ' + e.waysToRedirect + '. ' : '';
-  const hobbies = e.hobbies && e.hobbies.length > 0 ? 'Care recipients hobbies: ' + e.hobbies.join(', ') + '. ': '';
-  const history = checkIfReported(e.historyOfIncidents) ? 'Care recipients history of incidents: ' + e.historyOfIncidents + '. ': '';
-  const music = checkIfReported(e.music) ? 'Music preferences: ' + e.music + '. ': '';
+  const hobbies = e.hobbies && e.hobbies.length > 0 ? 'Care recipients hobbies: ' + e.hobbies.join(', ') + '. ' : '';
+  const history = checkIfReported(e.historyOfIncidents) ? 'Care recipients history of incidents: ' + e.historyOfIncidents + '. ' : '';
+  const music = checkIfReported(e.music) ? 'Music preferences: ' + e.music + '. ' : '';
   const joined = [thingsToTalkAbout, activitiesToDo, thingsToAvoid, symptoms, redirect, hobbies, history, music]
-  .filter((v) => v !== '').join('\n\n');
+    .filter((v) => v !== '').join('\n\n');
   return 'Details about the care recipient: ' + start.map((v) => v.label + ': ' + v.value + '.').join('\n') + joined;
 }
 
@@ -194,8 +197,8 @@ export async function askQuery(
   const ext = extendedAttributes ? complileExtendedAttributesIntoPrompt(extendedAttributes) : '';
   // console.log('here are the responses to relevant queries:');
   // console.log(relevantQueryResponses);
-const formatting = longForm !== undefined && longForm ? `Format your response as several short sentences. Don't use generalities, focus on what a caregiver would find actionable. If possible, reference specific info from the care notes, such as songs or family memories. Be specific to this individual. You can also bring in concepts from music based memory loss therapy. Do not use opening statements like "Based on the care notes", just get to the point.` :
-`Format your response as a short list of bullet points, where each bullet is a short sentence or phrase (no more than five words). Again, heavily leverage the care records, reference specific info from the care notes, such as songs or family memories.`;
+  const formatting = longForm !== undefined && longForm ? `Format your response as several short sentences. Don't use generalities, focus on what a caregiver would find actionable. If possible, reference specific info from the care notes, such as songs or family memories. Be specific to this individual. You can also bring in concepts from music based memory loss therapy. Do not use opening statements like "Based on the care notes", just get to the point.` :
+    `Format your response as a short list of bullet points, where each bullet is a short sentence or phrase (no more than five words). Again, heavily leverage the care records, reference specific info from the care notes, such as songs or family memories.`;
 
 
   const prompt = `you are an expert memory loss therapist with deep knowldge of ${careRecipientName}. A less knowlegable peer caregiver asks you the question:"${inputQuery}" Answer the question. Your response should use information from the following care notes you have, created by yourself or other caregivers. The following list describes important key info, reference this information most of all: ${ext}. 
@@ -205,7 +208,7 @@ const formatting = longForm !== undefined && longForm ? `Format your response as
 
         ${formatting}
         `;
-console.log('using longform', longForm);
+  console.log('using longform', longForm);
   const queryResponse = await openai.chat.completions.create({
     messages: [{ role: 'user', content: prompt }],
     model: longForm ? 'gpt-4o' : 'gpt-4o-mini',
@@ -227,6 +230,17 @@ console.log('using longform', longForm);
     }, CGUUID, CRUUID);
   }
   return completedQuery;
+}
+
+export async function sythesizeFeedback(feedback: string) {
+  const prompt = `You are a caregiver at a long term dementia care facility. You have been tasked with updating the care notes about a particular resident given the following feedback from an admin: <Feedback begins>${feedback}<Feedback ends> Simplify the feedback into a short sentence that is clear.`
+  const queryResponse = await openai.chat.completions.create({
+    messages: [{ role: 'user', content: prompt }],
+    model: 'gpt-4o-mini',
+  });
+  console.log('PROMPT', prompt);
+  const ChatGPTResponse = '' + queryResponse.choices[0].message.content;
+  return ChatGPTResponse;
 }
 
 // TODO: Bansharee (do this after the above functions are working)

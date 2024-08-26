@@ -7,6 +7,7 @@ import { Button } from '@mantine/core';
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
 import WYSIWYGEditor from '../../summaryInsights/WYSIWYGEditor/WYSIWYGEditor';
+import { defaultQueryManualEntryEvent } from '../../../state/recoil';
 
 type ManualEntryExpandedViewProps = {
   programEvent: ManualEntryEvent | FeedbackEvent;
@@ -24,6 +25,7 @@ const ManualEntryExpandedView: React.FC<
     setForceUpdateRequired(true);
   };
   const [forceUpdateRequired, setForceUpdateRequired] = useState(false);
+  const query = programEvent.type === 'manual-entry-event' ? defaultQueryManualEntryEvent : programEvent.query;
   return (
     <>
       {editing ? (
@@ -52,6 +54,8 @@ const ManualEntryExpandedView: React.FC<
             </Button>
           </Stack>
           <WYSIWYGEditor
+            hideFeedback={true}
+            query={query}
             loading={false}
             longform={true}
             readOnly={false}
@@ -91,6 +95,8 @@ const ManualEntryExpandedView: React.FC<
             />
           </Stack>
           <WYSIWYGEditor
+            hideFeedback={true}
+            query={query}
             loading={false}
             readOnly={true}
             longform={true}

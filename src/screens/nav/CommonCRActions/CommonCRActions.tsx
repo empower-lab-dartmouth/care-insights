@@ -2,7 +2,7 @@ import React from 'react';
 import { Fab, Stack, Typography } from '@mui/material';
 import AddEvent from '../../summaryInsights/AddEventModal/AddEventModal';
 import AutocompleteCRSearch from '../AutocompleteCRSearch/AutocompleteCRSearch';
-import { NO_CR_SELECTED, pageContextState } from '../../../state/recoil';
+import { NO_CR_SELECTED, feedbackModalState, pageContextState } from '../../../state/recoil';
 import { useRecoilState } from 'recoil';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 
@@ -16,6 +16,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { Plus } from 'lucide-react';
 import ShareButton from '../../../components/ShareButton';
 import { useLocation } from 'react-router-dom';
+import FeedbackModal from '../../summaryInsights/AddEventModal/FeedbackModal';
 
 type CommonCRActionsProps = {
   page: 'details' | 'program-events' | 'care-team' | 'snapshot';
@@ -38,6 +39,7 @@ function convertToTitleCase(input: string) {
 
 const CommonCRActions: React.FC<CommonCRActionsProps> = ({ page }) => {
   const [opened, { open, close }] = useDisclosure(false);
+  const [feedbackModal, setFeedbackModalOpened] = useRecoilState(feedbackModalState);
   const { pathname } = useLocation();
 
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
@@ -97,8 +99,11 @@ const CommonCRActions: React.FC<CommonCRActionsProps> = ({ page }) => {
                 }>Degugging tool: Push sample event</Button> */}
       </div>
 
-      <Modal opened={opened} onClose={close} title='New event'>
+      <Modal opened={opened} onClose={close} title='New care note'>
         <AddEvent close={close} />
+      </Modal>
+      <Modal opened={feedbackModal !== false} onClose={() => setFeedbackModalOpened(false)} title='Give feedback to the A.I.'>
+        <FeedbackModal close={() => setFeedbackModalOpened(false)} />
       </Modal>
     </>
   );
