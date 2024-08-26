@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   CareRecipientInfo,
   EngagementLevel,
@@ -93,55 +93,6 @@ const redirectionLevelLabel = (redirectionLevel: RedirectionLevel) => {
   }
 };
 
-const columns: TableColumn<Row>[] = [
-  {
-    name: 'Description',
-    selector: (row: Row) => row.description,
-    sortable: false,
-  },
-  {
-    name: 'Date',
-    selector: (row: Row) => dayjs(row.date).format('MMM, DD YYYY, HH:mm A'),
-    sortable: true,
-    sortFunction: (rowA, rowB) =>
-      new Date(rowB.date).getTime() - new Date(rowA.date).getTime(),
-  },
-  // {
-  //   name: 'Engagement level',
-  //   selector: (row: Row) => (
-  //     <Label>{engagementLevelLabel(row.engagement)}</Label>
-  //   ),
-  //   sortable: true,
-  // },
-  // {
-  //   name: 'Redirections',
-  //   selector: (row: Row) => (
-  //     <Label> {redirectionLevelLabel(row.redirection)}</Label>
-  //   ),
-  //   sortable: true,
-  // },
-  {
-    name: 'Event type',
-    selector: (row: Row) => row.label,
-    sortable: true,
-  },
-  {
-    name: 'Care recipient',
-    selector: (row: Row) => row.CRName,
-    sortable: true,
-  },
-  {
-    name: 'Caregiver',
-    selector: (row: Row) => row.CGName,
-    sortable: true,
-  },
-  {
-    name: 'Has video',
-    sortable: true,
-    selector: (row: Row) => (row.programEvent.type === 'music-event' && row.programEvent.videoUrl !== 'video-missing') ? 'Yes' : 'No',
-  },
-];
-
 const ExpandedComponent: ExpandableRowsComponent<Row> = d => {
   if (d.data.type === 'music-event') {
     const { videoUrl, programEvent, setMeaningfulMoments, setProgramEvent } =
@@ -226,8 +177,24 @@ const ProgramEventsTable: React.FC = () => {
   const [opened, { open, close }] = useDisclosure(false);
   const [extendedAttributes, setExtendedAttributes] = useRecoilState(extededAttributesState);
   const [programEventIndex, setProgramEventIndex] = useRecoilState(expandedProgramRowState);
+  // const [defaultPage, setDefaultPage] = useState(0);
 
   const CRInfo = useRecoilValue(careRecipientsInfoState);
+  // useEffect(() => {
+  //   const d = (() => {
+  //     if (programEventIndex === undefined) {
+  //       return 0;
+  //     }
+  //     const i = data.findIndex((r) => r.uuid === programEventIndex.programEventId);
+  //     if (i === -1) {
+  //       return 0;
+  //     }
+  //     console.log('page: ', i % 50);
+  //     return i % 50;
+  //   })();
+  //   setDefaultPage(d);
+  // }, []);
+
 
   // TODO: also update remote. (maybe this is already done? TODO check)
   const updateMeaningfulMoments: (
@@ -271,26 +238,83 @@ const ProgramEventsTable: React.FC = () => {
       ? 'Showing recent events for ' + 'all care recipients'
       : `${CRInfo[pageContext.selectedCR] != undefined ? 'Showing events for ' + CRInfo[pageContext.selectedCR].name : ''}`;
 
+  const columns: TableColumn<Row>[] = [
+    {
+      name: 'Description',
+      selector: (row: Row) => row.description,
+      sortable: false,
+    },
+    {
+      name: 'Date',
+      id: 'date',
+      selector: (row: Row) => dayjs(row.date).format('MMM, DD YYYY, HH:mm A'),
+      sortable: true,
+      sortFunction: (rowA, rowB) =>
+        new Date(rowB.date).getTime() - new Date(rowA.date).getTime(),
+    },
+    // {
+    //   name: 'Engagement level',
+    //   selector: (row: Row) => (
+    //     <Label>{engagementLevelLabel(row.engagement)}</Label>
+    //   ),
+    //   sortable: true,
+    // },
+    // {
+    //   name: 'Redirections',
+    //   selector: (row: Row) => (
+    //     <Label> {redirectionLevelLabel(row.redirection)}</Label>
+    //   ),
+    //   sortable: true,
+    // },
+    {
+      name: 'Event type',
+      selector: (row: Row) => row.label,
+      sortable: true,
+    },
+    {
+      name: 'Care recipient',
+      selector: (row: Row) => row.CRName,
+      sortable: true,
+    },
+    {
+      name: 'Caregiver',
+      selector: (row: Row) => row.CGName,
+      sortable: true,
+    },
+    {
+      name: 'Has video',
+      sortable: true,
+      id: 'Has video',
+      selector: (row: Row) => (programEventIndex !== undefined && programEventIndex.programEventId === row.uuid) ? 'Cited' : (row.programEvent.type === 'music-event' && row.programEvent.videoUrl !== 'video-missing') ? 'Yes' : 'No',
+    },
+  ];
   return (
     <div className='mt-12'>
       {showNothing ? <QuickInfo
-                        value={'No care recipient selected.'}
-                        label={'Please select a care recipient from the box above that says "Select a care recipient"'}
-                      /> :
+        value={'No care recipient selected.'}
+        label={'Please select a care recipient from the box above that says "Select a care recipient"'}
+      /> :
         <><DataTable
           columns={columns}
           data={data}
           pagination
           expandableRows
+          // paginationPerPage={50}
           highlightOnHover
+          // paginationDefaultPage={defaultPage}
+          defaultSortAsc={true}
+          defaultSortFieldId={programEventIndex !== undefined ? 'Has video' : 'date'}
           expandOnRowClicked
+          onRowClicked={(r) => {
+            setProgramEventIndex(undefined);
+          }}
           expandableRowExpanded={(row: Row) => row.defaultExpanded}
           expandableRowsComponent={ExpandedComponent}
           customStyles={tableStyles}
         />
-        {data.length === 0 ? <h1>Try clicking below if this care recipient should have data</h1> : <></>}
-        <Button onClick={() => {
-          const newPageState = {
+          {data.length === 0 ? <h1>Try clicking below if this care recipient should have data</h1> : <></>}
+          <Button onClick={() => {
+            const newPageState = {
               ...pageContext,
               selectedCR: pageContext.selectedCR,
               loadingCRInfo: true,
@@ -302,7 +326,8 @@ const ProgramEventsTable: React.FC = () => {
               setQueries,
               CRInfo,
               extendedAttributes[pageContext.selectedCR]
-            );}}>Refresh</Button>
+            );
+          }}>Refresh</Button>
         </>
       }
     </div>
