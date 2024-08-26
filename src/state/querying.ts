@@ -26,7 +26,7 @@ export async function getRelevantQueries(
     q => q.dateApproved !== undefined
   );
 
-  const relevantQueries: QueryRecord[] = [];
+  const relevantQueries: QueryRecord[] = approvedQueries;
 
   for (const q of approvedQueries) {
     // get gpt to figure out relevance
@@ -182,7 +182,7 @@ export async function askQuery(
     }
     // console.log('overwriting existing for ' + existingQueryMatchesExactly.query);
   }
-  const relevantQueries: QueryRecord[] = []//(await getRelevantQueries(inputQuery, allCRQueries));
+  const relevantQueries: QueryRecord[] = [];//(await getRelevantQueries(inputQuery, allCRQueries));
   const relevantQueryResponses: String[] = [];
   const relevantRecords = getRelevantRecords(inputQuery, allCREvents, longForm ?? false);
 

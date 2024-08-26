@@ -11,6 +11,7 @@ import { useCookies } from 'react-cookie';
 import { loadCareRecipientsInfo } from '../../state/fetching';
 import { useRecoilState } from 'recoil';
 import { careRecipientsInfoState, extededAttributesState, onOpenLoadingState, pageContextState } from '../../state/recoil';
+import { resetAuthCache } from '../../state/globals';
 
 const defaultFormFields = {
   email: '',
@@ -75,17 +76,20 @@ function Home() {
         // console.log('navigate to INFO');
         // navigate(`/info${search}`);
       } else {
-        // setError('Sign in failed');
-        alert('User Sign In Failed');
+        setError('Please sign in again.');
+        // alert('User Sign In Failed');
         setCookie('careInsightsUsername', '');
         setCookie('careInsightsPassword', '');
+        resetAuthCache();
       }
     } catch (error: any) {
       // setError(error.message);
+      setError('Please sign in again.');
       console.log('TESTING');
-      alert(error.message);
+      // alert(error.message);
       setCookie('careInsightsUsername', '');
       setCookie('careInsightsPassword', '');
+      resetAuthCache();
       console.log('User Sign In Failed', error.message);
     }
   };
