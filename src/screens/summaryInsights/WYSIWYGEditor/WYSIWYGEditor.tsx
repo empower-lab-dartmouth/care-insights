@@ -77,14 +77,14 @@ type CiteProps = {
   p: ProgramEventIndex | undefined
 }
 
-const Cite: React.FC<CiteProps> = ({p}) => {
+const Cite: React.FC<CiteProps> = ({ p }) => {
   if (p === undefined) {
     return <></>;
   }
   return (
     <MenuButton path='/program-events' programEventIndex={p}
       icon={<SquarePlay color='blue' size={18} />}>
-        <></>
+      <></>
       {/* <i style={{ color: 'blue' }}></i> */}
     </MenuButton>);
 }
@@ -123,26 +123,33 @@ const wrapAsLink = (text: string, pathname: string, currentCR: string) => {
 }
 
 const getIndex: (id: string, programEvents: CRProgramEvents) => ProgramEventIndex | undefined = (idUnstripped, programEvents) => {
-  const id = idUnstripped.replaceAll(',', '').replaceAll('\\cite{','').replaceAll('}','')
+  const id = idUnstripped.replaceAll(',', '').replaceAll('\\cite{', '').replaceAll('}', '')
   const res = Object.values(programEvents).flatMap((p) => {
     if (p.uuid === id) {
       return {
         programEventId: id,
       };
     } else {
-      if (p.type === 'manual-entry-event') {
+      if (p.type === 'manual-entry-event' || p.type === 'avoid-feedback' ||
+        p.type === 'details-feedback' || p.type === 'do-feedback' ||
+        p.type === 'redirection-feedback' || p.type === 'symptom-feedback'
+      ) {
         return null;
       } else {
-        return Object.values(p.meaningfulMoments).flatMap((m) => {
-          if (m.uuid === id) {
-            return ({
-              programEventId: p.uuid,
-              videoTimestamp: m.startTime,
-            });
-          } else {
-            return null;
-          }
-        });
+        if (p.type === 'music-event') {
+          return Object.values(p.meaningfulMoments).flatMap((m) => {
+            if (m.uuid === id) {
+              return ({
+                programEventId: p.uuid,
+                videoTimestamp: m.startTime,
+              });
+            } else {
+              return null;
+            }
+          });
+        } else {
+          return null;
+        }
       }
     }
   });

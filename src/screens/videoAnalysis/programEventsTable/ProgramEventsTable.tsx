@@ -3,6 +3,7 @@ import {
   CareRecipientInfo,
   EngagementLevel,
   EventUUID,
+  FeedbackEvent,
   ManualEntryEvent,
   MeaningfulMoment,
   MusicProgramEvent,
@@ -63,7 +64,12 @@ type ManualEntryRow = CommonRowFields & {
   programEvent: ManualEntryEvent;
 };
 
-export type Row = MusicEventRow | ManualEntryRow;
+type FeedbackRow = CommonRowFields & {
+  type: 'feedback-event';
+  programEvent: FeedbackEvent;
+};
+
+export type Row = MusicEventRow | ManualEntryRow | FeedbackRow;
 
 const engagementLevelLabel = (engagmentLevel: EngagementLevel) => {
   switch (engagmentLevel) {
@@ -113,21 +119,37 @@ const ExpandedComponent: ExpandableRowsComponent<Row> = d => {
         />
       </pre>
     );
+  } else if (d.data.type === 'manual-entry-event') {
+    return (
+      <pre
+        style={{
+          borderWidth: '30px',
+          borderStyle: 'none none none solid',
+          borderColor: 'lightgray',
+        }}
+      >
+        <ManualEntryExpandedView
+          programEvent={d.data.programEvent}
+          setProgramEvent={d.data.setProgramEvent}
+        />
+      </pre>
+    );
+  } else {
+    return (
+      <pre
+        style={{
+          borderWidth: '30px',
+          borderStyle: 'none none none solid',
+          borderColor: 'lightgray',
+        }}
+      >
+        <ManualEntryExpandedView
+          programEvent={d.data.programEvent}
+          setProgramEvent={d.data.setProgramEvent}
+        />
+      </pre>
+    );
   }
-  return (
-    <pre
-      style={{
-        borderWidth: '30px',
-        borderStyle: 'none none none solid',
-        borderColor: 'lightgray',
-      }}
-    >
-      <ManualEntryExpandedView
-        programEvent={d.data.programEvent}
-        setProgramEvent={d.data.setProgramEvent}
-      />
-    </pre>
-  );
 };
 
 const programEventsToRows: (
@@ -155,9 +177,23 @@ const programEventsToRows: (
           CGName: l.caregiverName, // TODO revert back
           defaultExpanded: expanded,
         };
+      } else if (l.type === 'manual-entry-event') {
+        return {
+          ...l,
+          description: l.description,
+          date: new Date(l.date).toString(),
+          CRName: CRInfo[l.CRUUID] != undefined ? CRInfo[l.CRUUID].name : '',
+          programEvent: l,
+          engagement: l.engagement,
+          CGName: l.CGUUID,
+          redirection: l.redirection,
+          setProgramEvent: updateProgramEvent(l.uuid),
+          defaultExpanded: expanded,
+        };
       } else {
         return {
           ...l,
+          type: 'feedback-event',
           description: l.description,
           date: new Date(l.date).toString(),
           CRName: CRInfo[l.CRUUID] != undefined ? CRInfo[l.CRUUID].name : '',

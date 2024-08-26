@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ManualEntryEvent, ProgramEvent } from '../../../state/types';
+import { FeedbackEvent, ManualEntryEvent, ProgramEvent } from '../../../state/types';
 import CommonRowControls from '../CommonRowControls/CommonRowControls';
 import SaveIcon from '@mui/icons-material/Save';
 import { Stack } from '@mui/material';
@@ -9,7 +9,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import WYSIWYGEditor from '../../summaryInsights/WYSIWYGEditor/WYSIWYGEditor';
 
 type ManualEntryExpandedViewProps = {
-  programEvent: ManualEntryEvent;
+  programEvent: ManualEntryEvent | FeedbackEvent;
   setProgramEvent: (programEvent: ProgramEvent) => void;
 };
 
@@ -53,7 +53,7 @@ const ManualEntryExpandedView: React.FC<
           </Stack>
           <WYSIWYGEditor
             loading={false}
-            longform={false}
+            longform={true}
             readOnly={false}
             update={forceUpdateRequired}
             updateCallback={f => {
@@ -80,7 +80,7 @@ const ManualEntryExpandedView: React.FC<
               onClick={() => setEditing(true)}
               color='green'
             >
-              Edit details{' '}
+              Edit{' '}
             </Button>
             <CommonRowControls
               programEvent={programEvent}
@@ -93,7 +93,7 @@ const ManualEntryExpandedView: React.FC<
           <WYSIWYGEditor
             loading={false}
             readOnly={true}
-            longform={false}
+            longform={true}
             update={forceUpdateRequired}
             updateCallback={f => {
               // setForceUpdateRequired(false);

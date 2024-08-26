@@ -149,7 +149,7 @@ export type CGInfo = {
 
 export type CRProgramEvents = Record<EventUUID, ProgramEvent>
 
-export type ProgramEvent = MusicProgramEvent | ManualEntryEvent;
+export type ProgramEvent = MusicProgramEvent | ManualEntryEvent | SnapshotFeedbackEntryEvent | DetailsFeedbackEntryEvent;
 
 export type EngagementLevel = 'low' | 'average' | 'high' | 'none' | 'na'
 export type RedirectionLevel = 'success' | 'none' | 'unsuccessful' | 'na'
@@ -193,6 +193,19 @@ export type MusicProgramEvent = {
 export type ManualEntryEvent = {
     type: 'manual-entry-event',
 } & CommonEventFields
+
+export type SnapshotFeedbackEntryEvent = {
+    type: 'avoid-feedback' | 'symptom-feedback' | 'redirection-feedback' | 'do-feedback',
+    query: QueryRecord
+} & CommonEventFields
+
+export type DetailsFeedbackEntryEvent = {
+    type: 'details-feedback',
+    query: QueryRecord
+} & CommonEventFields
+
+export type FeedbackEvent = SnapshotFeedbackEntryEvent | DetailsFeedbackEntryEvent;
+
 
 export type CaregiverInfo = {
     imageURL: string
