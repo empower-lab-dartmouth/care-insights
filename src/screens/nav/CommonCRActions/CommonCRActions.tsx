@@ -102,7 +102,7 @@ const CommonCRActions: React.FC<CommonCRActionsProps> = ({ page }) => {
       <Modal opened={opened} onClose={close} title='New care note'>
         <AddEvent close={close} />
       </Modal>
-      <Modal opened={feedbackModal !== false} onClose={() => setFeedbackModalOpened(false)} title='Give feedback to the A.I.'>
+      <Modal size="auto" opened={feedbackModal !== false} onClose={() => setFeedbackModalOpened(false)} title='Improve your Care Insights with feedback to our A.I.'>
         <FeedbackModal close={() => setFeedbackModalOpened(false)} />
       </Modal>
     </>

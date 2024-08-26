@@ -195,7 +195,7 @@ export type ManualEntryEvent = {
 } & CommonEventFields
 
 export type FeedbackEventTypes = 'avoid-feedback' | 'symptom-feedback' | 'redirection-feedback' | 'do-feedback' | 'details-feedback';
-export type FeedbackModifier = 'not relevant' | 'not accurate' | 'useful';
+export type FeedbackModifier = 'opposite' | 'not relevant' | 'not accurate' | 'useful' | 'opposite' | 'custom' | 'correct summary sentence' | 'correct summary list' | 'correct summary long' | 'correct custom';
 export const feedbackModifierOptions: FeedbackModifier[] = ['not relevant', 'not accurate', 'useful'];
 
 export type FeedbackContent = {
@@ -204,16 +204,17 @@ export type FeedbackContent = {
     query: QueryRecord
     modifier: FeedbackModifier,
     feedbackType: FeedbackEventTypes
+    references: ProgramEventIndex[]
 }
 
 export type SnapshotFeedbackEntryEvent = {
     type: 'avoid-feedback' | 'symptom-feedback' | 'redirection-feedback' | 'do-feedback',
-    query: QueryRecord
+    content: FeedbackContent
 } & CommonEventFields
 
 export type DetailsFeedbackEntryEvent = {
     type: 'details-feedback',
-    query: QueryRecord
+    content: FeedbackContent
 } & CommonEventFields
 
 export type FeedbackEvent = SnapshotFeedbackEntryEvent | DetailsFeedbackEntryEvent;

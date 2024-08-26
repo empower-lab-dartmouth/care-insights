@@ -59,7 +59,7 @@ export const loadCRData = async (
     const docs: ProgramEvent[] = querySnapshot.docs.map((doc: any) => {
       const d = doc.data() as any as ProgramEvent;
       return d as ProgramEvent;
-    });
+    }).filter((d) => d.deleted === undefined);
     console.log('DOCS:');
     // console.log(docs);
     const temp: CRProgramEvents = {};

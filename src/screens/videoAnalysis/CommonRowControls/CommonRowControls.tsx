@@ -103,8 +103,10 @@ const CommonRowControls: React.FC<ManualEntryExpandedViewProps> = props => {
 
   return (
     <>
-      <Button variant='transparent' onClick={handleOpen} size='xs'>
-        Key Metrics
+      <Button variant='light'
+        size='md'
+        color='gray' onClick={handleOpen}>
+        Set date
       </Button>
       <Modal opened={opened} onClose={close} title='Key Metrics'>
         <div className='flex flex-col gap-3'>
@@ -118,7 +120,7 @@ const CommonRowControls: React.FC<ManualEntryExpandedViewProps> = props => {
               });
             }}
           />
-          <Select
+          {/* <Select
             label='Engagement level'
             data={ENGAGEMENT_LEVEL_OPTIONS}
             onChange={c =>
@@ -128,8 +130,8 @@ const CommonRowControls: React.FC<ManualEntryExpandedViewProps> = props => {
               })
             }
             defaultValue={localProgramEvent.engagement}
-          />
-          <Select
+          /> */}
+          {/* <Select
             label='Redirections'
             data={REDIRECTION_LEVEL_OPTIONS}
             onChange={c =>
@@ -139,10 +141,11 @@ const CommonRowControls: React.FC<ManualEntryExpandedViewProps> = props => {
               })
             }
             defaultValue={localProgramEvent.redirection}
-          />
+          /> */}
           <DateTimePicker
             label='Date of event'
-            value={new Date(programEvent.date)}
+            clearable={false}
+            defaultValue={new Date(programEvent.date)}
             onChange={newValue => {
               if (newValue != null) {
                 setLocalProgramEvent({
@@ -169,6 +172,9 @@ const CommonRowControls: React.FC<ManualEntryExpandedViewProps> = props => {
             }}
           />
           <Button
+          variant='light'
+          size='md'
+          color='dark'
             onClick={() => {
               setRemoteProgramEvent(localProgramEvent);
               setProgramEvent(localProgramEvent);

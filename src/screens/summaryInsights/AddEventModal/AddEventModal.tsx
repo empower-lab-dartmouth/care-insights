@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import {
   careRecipientsInfoState,
+  extededAttributesState,
   pageContextState,
 } from '../../../state/recoil';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -19,7 +20,8 @@ const AddEvent = ({ close }: { close: () => void }) => {
   const CRInfo = useRecoilValue(careRecipientsInfoState);
   const CRname = CRInfo[pageContext.selectedCR] === undefined ? "the care recipient" : CRInfo[pageContext.selectedCR].name;
   const [eventDescription, setEventDescription] = React.useState('');
-
+  const extendedAttributes = useRecoilValue(extededAttributesState);
+  const displayName = extendedAttributes[pageContext.selectedCR] ? extendedAttributes[pageContext.selectedCR].firstName + ' ' + extendedAttributes[pageContext.selectedCR].lastName : CRname;
   const id = uuidv4();
 
   const submit = () => {
@@ -58,12 +60,12 @@ const AddEvent = ({ close }: { close: () => void }) => {
         <Text className='text-sm'>
           {' '}
           Record an event for {' ' } 
-          <span className='font-semibold text-sm'>{CRname}</span>.{' '}
+          <span className='font-semibold text-sm'>{displayName}</span>.{' '}
           More information will help our A.I. provide better feedback!
         </Text>
 
         <Textarea
-          label='What happened?'
+          label='Add a sentence or two with some key details. You can edit the care note later on the "Program Events" page'
           className='mt-3'
           rows={6}
           value={eventDescription}

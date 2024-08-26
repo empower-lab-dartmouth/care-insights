@@ -25,7 +25,7 @@ import { careRecipientsInfoState, expandedProgramRowState, feedbackModalState, p
 import { Button, ButtonGroup, Group, Stack } from "@mantine/core"
 import { GenericJsxEditor, JsxComponentDescriptor, NestedLexicalEditor, insertJsx$, jsxPlugin, usePublisher } from "@mdxeditor/editor"
 import { MenuButton } from "../../../components/UserShell"
-import { MessageCircleQuestion, SquarePlay } from "lucide-react"
+import { MessageCircleQuestion, MessageSquareText, SquarePlay } from "lucide-react"
 import { replaceKeyInURI } from "../../videoAnalysis/programEventsTable/StreamGraph/utils"
 import { CRProgramEvents, FeedbackContent, FeedbackEventTypes, FeedbackModifier, ProgramEventIndex } from '../../../state/types';
 import { DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG } from '../../../state/globals';
@@ -33,8 +33,6 @@ import { filter } from 'd3';
 import { IconThumbDown, IconThumbUp } from '@tabler/icons-react';
 import { QueryRecord } from '../../../state/queryingTypes';
 import { sampleAvoidQuery, sampleDoQuery, sampleRedirectQuery, sampleSymptomsQuery } from '../../../state/fetching';
-import { sythesizeFeedback } from '../../../state/querying';
-
 
 const inputStyles = {
   'width': '100%',
@@ -69,11 +67,12 @@ type GoToProps = {
   query: QueryRecord,
   hideFeedback: boolean,
   setFeedbackModule: SetterOrUpdater<false | FeedbackContent>
+  longform: boolean
 }
 
-const GoTo: React.FC<GoToProps> = ({ label, queryString, type, query, setFeedbackModule, hideFeedback }) => {
+const GoTo: React.FC<GoToProps> = ({ label, queryString, type, query, setFeedbackModule,longform, hideFeedback }) => {
   const pageState = useRecoilValue(pageContextState);
-  return (<li><Group>{addCitations(label, pageState.selectedCRProgramEvents, type, query, setFeedbackModule, hideFeedback)}
+  return (<li><Group>{addCitations(label, pageState.selectedCRProgramEvents, type, query, setFeedbackModule, hideFeedback, longform)}
     <MenuButton queryString={queryString} path='/questions'
       icon={<MessageCircleQuestion color='blue' size={18} />}>
       <i style={{ color: 'blue' }}>Details</i>
@@ -89,9 +88,10 @@ const Cite: React.FC<CiteProps> = ({ p }) => {
   if (p === undefined) {
     return <></>;
   }
+  const icon = p.videoTimestamp === undefined ? <MessageSquareText color='blue' size={18} /> : <SquarePlay color='blue' size={18} />;
   return (
     <MenuButton path='/program-events' programEventIndex={p}
-      icon={<SquarePlay color='blue' size={18} />}>
+      icon={icon}>
       <></>
       {/* <i style={{ color: 'blue' }}></i> */}
     </MenuButton>);
@@ -118,11 +118,11 @@ type WYSIWYGEditorProps = {
   hideFeedback: boolean;
 };
 
-const cleanLink = (t: string) => t.replaceAll('-', '').replaceAll('*', '').replaceAll(' ', '%20').trim();
+const cleanLink = (t: string) => t.replaceAll('\\cite{', '').replaceAll('}', '').trim();
 
 const wrapAsLink = (text: string, pathname: string, currentCR: string, type: FeedbackEventTypes,
   query: QueryRecord,
-  setFeedbackModule: SetterOrUpdater<false | FeedbackContent>, hideFeedback: boolean) => {
+  setFeedbackModule: SetterOrUpdater<false | FeedbackContent>, hideFeedback: boolean, longform: boolean) => {
   const newLineSplitText = text.split(/\n/);
   // const baseURLLocal = 'https://main--care-insights.netlify.app/'; //http://localhost:3000/';
   // const path = 'questions'
@@ -130,7 +130,7 @@ const wrapAsLink = (text: string, pathname: string, currentCR: string, type: Fee
 
   const prompt = (t: string) => promptPreface + t;
   // const wrappedBullets = newLineSplitText.map((t) => `[${t}](${baseURLLocal}${path}?cr="${currentCR}"&q="${prompt(t)}")`);
-  const wrappedBullets = newLineSplitText.map((t, i) => <ul key={t + i}><GoTo setFeedbackModule={setFeedbackModule} query={query} hideFeedback={hideFeedback}
+  const wrappedBullets = newLineSplitText.map((t, i) => <ul key={t + i}><GoTo setFeedbackModule={setFeedbackModule} longform={longform} query={query} hideFeedback={hideFeedback}
     type={type} queryString={promptPreface + t} label={t} /></ul>);
   return wrappedBullets;
 }
@@ -198,28 +198,28 @@ const splitTextIntoSegments = (text: string, keys: string[]) => {
 }
 
 export const DEFAULT_BECAUSE_VALUE = 'Because: ' 
-export const formatFeedback = async (input: string, type: FeedbackEventTypes, query: string, modifier: FeedbackModifier, because: string) => {
-  const becauseSuffix = because !== DEFAULT_BECAUSE_VALUE ? because : '';
-  const template = (() => {switch (type) {
-    case 'avoid-feedback':
-      return `An outdated care note "${input}" is ${modifier} to notes on "things that a caregiver should avoid doing." ${becauseSuffix}`;
-    case 'do-feedback':
-      return `An outdated care note "${input}" is ${modifier} to notes on "things that a caregiver should focus on doing." ${becauseSuffix}`;
-    case 'redirection-feedback':
-      return `An outdated care note "${input}" is ${modifier} to notes on "ways that a caregiver can redirect the care recipient." ${becauseSuffix}`;
-    case 'symptom-feedback':
-      return `An outdated care note "${input}" is ${modifier} to notes on "symptoms that the care recipient shows" ${becauseSuffix}`;
-    case 'details-feedback':
-      return `An outdated care note "${input}" is ${modifier} to the question "${query}". ${becauseSuffix}`;
-  }})();
-  if (type === 'details-feedback') {
-    return await sythesizeFeedback(template);
-  }
-  return template;
-}
+// export const formatFeedback = async (input: string, type: FeedbackEventTypes, query: string, modifier: FeedbackModifier, because: string) => {
+//   const becauseSuffix = because !== DEFAULT_BECAUSE_VALUE ? because : '';
+//   const template = (() => {switch (type) {
+//     case 'avoid-feedback':
+//       return `An outdated care note "${input}" is ${modifier} to notes on "things that a caregiver should avoid doing." ${becauseSuffix}`;
+//     case 'do-feedback':
+//       return `An outdated care note "${input}" is ${modifier} to notes on "things that a caregiver should focus on doing." ${becauseSuffix}`;
+//     case 'redirection-feedback':
+//       return `An outdated care note "${input}" is ${modifier} to notes on "ways that a caregiver can redirect the care recipient." ${becauseSuffix}`;
+//     case 'symptom-feedback':
+//       return `An outdated care note "${input}" is ${modifier} to notes on "symptoms that the care recipient shows" ${becauseSuffix}`;
+//     case 'details-feedback':
+//       return `An outdated care note "${input}" is ${modifier} to the question "${query}". ${becauseSuffix}`;
+//   }})();
+//   if (type === 'details-feedback') {
+//     return await sythesizeFeedback(template);
+//   }
+//   return template;
+// }
 
 const addCitations = (text: string, programEvents: CRProgramEvents, type: FeedbackEventTypes,
-  query: QueryRecord, setFeedbackModule: SetterOrUpdater<false | FeedbackContent>, hideFeedback: boolean) => {
+  query: QueryRecord, setFeedbackModule: SetterOrUpdater<false | FeedbackContent>, hideFeedback: boolean, longform: boolean) => {
   const regex = /\\cite{[^}]*}/g;
   const m = (r: RegExp) => {
     const res = text.match(regex);
@@ -229,8 +229,9 @@ const addCitations = (text: string, programEvents: CRProgramEvents, type: Feedba
     return res;
   }
   const found = [...m(regex)];
+  const references: ProgramEventIndex[] = found.map((v) => getIndex(v, programEvents)).filter((v) => v !== undefined) as ProgramEventIndex[];
   const wrapped = (t: string, v: string | ReactNode) => {
-    if (hideFeedback) {
+    if (hideFeedback || (!longform && found.length > 0)) {
       return v;
     } else {
       return (<span>{v}<Group><Button
@@ -239,9 +240,10 @@ const addCitations = (text: string, programEvents: CRProgramEvents, type: Feedba
           setFeedbackModule({
             targetContent: t,
             modifier: 'useful',
-            feedback: await formatFeedback(t, type, query.query, 'useful', ''),
+            feedback: '', //await formatFeedback(t, type, query.query, 'useful', ''),
             query: query,
             feedbackType: type,
+            references,
           });
         }}
         variant='outline'
@@ -255,9 +257,10 @@ const addCitations = (text: string, programEvents: CRProgramEvents, type: Feedba
           setFeedbackModule({
             targetContent: t,
             modifier: 'not relevant',
-            feedback: await formatFeedback(t, type, query.query, 'not relevant', ''),
+            feedback: '',//await formatFeedback(t, type, query.query, 'not relevant', ''),
             query: query,
             feedbackType: type,
+            references,
           });
         }}
         variant='outline'
@@ -354,13 +357,13 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   if (readOnly) {
     if (longform) {
       if (DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG) {
-        return addCitations(markdown, pageState.selectedCRProgramEvents, getFeedbackType(query), query, setFeedbackModal, hideFeedback);
+        return addCitations(markdown, pageState.selectedCRProgramEvents, getFeedbackType(query), query, setFeedbackModal, false, longform);
       } else {
         return markdown;
       }
     } else {
       return (
-        wrapAsLink(markdown, pathname, pageState.selectedCR, getFeedbackType(query), query, setFeedbackModal, hideFeedback));
+        wrapAsLink(markdown, pathname, pageState.selectedCR, getFeedbackType(query), query, setFeedbackModal, false, longform));
     }
   }
   return (

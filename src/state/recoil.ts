@@ -27,7 +27,6 @@ export const expandedProgramRowState = atom<ProgramEventIndex | undefined>({
   default: undefined,
 });
 
-
 export const defaultQueryLoading: QueryRecord = {
   query: '',
   queryResponse: 'loading',

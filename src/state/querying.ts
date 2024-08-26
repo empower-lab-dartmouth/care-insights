@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 import { QueryRecord } from './queryingTypes';
 import { timeout } from './sampleData';
-import { CRProgramEvents, ExtendedAttributes, ProgramEvent } from './types';
+import { CRProgramEvents, ExtendedAttributes, FeedbackContent, FeedbackEventTypes, FeedbackModifier, ProgramEvent } from './types';
 import { setRemoteQueryRecord } from './setting';
 import OpenAI from 'openai';
 import { formatExtendedAttributesAsInfoBox } from '../screens/summaryInsights/CareInsights';
@@ -79,8 +79,9 @@ export function getRelevantRecords(
   longform: boolean,
 ) {
   // const relevantEvents: string[] = [];
-  const prefix = DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG && longform ? 'Each record is formatted with the schema: <Record start> Record ID=... Record content=... <Record end> ' : '';
-  const suffix = DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG && longform ? ' <End of all records> Whenever relevant, add citations to relevant record IDs in your reponse. Cite records in line where appropriate by adding \\cite{RecordID}, where RecordID is a variable that is specified earlier for each record (see Record ID = ...).' : ''
+  const hasEvents = Object.values(allCREvents).length > 0;
+  const prefix = hasEvents ? 'Each record is formatted with the schema: <Record start> Record ID=... Record content=... <Record end> ' : '';
+  const suffix = hasEvents ? ' <End of all records> Whenever relevant, add citations to relevant record IDs in your reponse. Cite records in line where appropriate by adding \\cite{RecordID}, where RecordID is a variable that is specified earlier for each record (see Record ID = ...).' : ''
   return prefix + Object.values(allCREvents).filter((e) => {
     if (e.type === 'manual-entry-event') {
       return true;
@@ -95,13 +96,13 @@ export function getRelevantRecords(
       return Object.values(e.meaningfulMoments)
         .sort((a, b) => a.startTime - b.startTime)
         .map((v) => {
-          if (!longform || !DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG) {
+          if (!hasEvents) {
             return v.description;
           }
           return '<Record start.> Record ID=' + v.uuid + ' Record content="' + v.description + '" <Record end>'
         }).join('\n\n');
     }
-    if (!longform || !DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG) {
+    if (!hasEvents) {
       return e.description;
     } else {
       return '<Record start.> Record ID=' + e.uuid + ' Record content="' + e.description + '" <Record end>'
@@ -232,15 +233,50 @@ export async function askQuery(
   return completedQuery;
 }
 
-export async function sythesizeFeedback(feedback: string) {
-  const prompt = `You are a caregiver at a long term dementia care facility. You have been tasked with updating the care notes about a particular resident given the following feedback from an admin: <Feedback begins>${feedback}<Feedback ends> Simplify the feedback into a short sentence that is clear.`
+export type PromptReponse = {
+  value: FeedbackModifier
+  label: string
+}
+
+export async function getNegativeFeedbackPrompts(content: FeedbackContent, name: string) {
+  const preface = `A dementia caregiver was asked ${content.query.query} about the care recipient ${name} and incorrectly replied: "${content.targetContent}. Reformulate the caregiver's incorrect response to make it CORRECT by`;
+  const suffix = `Format the response as one short, simple sentence. DO NOT add any citations. Formulate your response as if you were replying to the original question. Use the care recipient"s name, ${name}.`;
+  const opposite = `${preface} saying the exact opposite of the incorrect statement. ${suffix}`;
+  const notAccurate = `${preface} summarizing the question and the previous answer briefly, and saying that is it absolutely never an appropriate response for the ${name}. ${suffix}`;
+  const notRelevant = `${preface} summarizing the question and the previous answer briefly, explain why the answer has nothing to do with the question. ${suffix}`;
+  const res = await Promise.all([askGPT(notRelevant, 'not relevant'), askGPT(opposite, 'opposite'), askGPT(notAccurate, 'not accurate')]);
+  const thirdChoicePrompt = `Four different dementia caregivers were asked ${preface} about the care recipient ${name}. They replied: <Response 1 starts>${content.targetContent}<Response 1 ends>\n\n<Response 2 starts>${res[0].label}<Response 2 ends>\n\n<Response 3 starts>${res[1].label}<Response 3 ends>\n\n<Response 4 starts>${res[2].label}<Response 4 ends>  The first caregiver's response is definitely incorrect, the other three are either not correct or poorly worded. Formulate a better, more CORRECT, and succinct response, please FOCUS on the original question. ${suffix}`;
+  const res2 = await askGPT(thirdChoicePrompt, 'other');
+  return [...res, res2, {
+    value: 'custom',
+    label: 'Other (enter feedback manually)'
+  }] as PromptReponse[];
+}
+
+export async function getPositivePrompts(content: FeedbackContent, name: string) {
+  const preface = `A dementia caregiver was asked ${content.query.query} about the care recipient ${name} and replied: "${content.targetContent}. The feedback is correct, make it more succinct by `;
+  const suffix = 'DO NOT respond with more than one sentence and DO NOT add any citations.'
+  const summarySentence = `${preface} summarizing it in a single sentence. ${suffix}`;
+  const summaryList = `${preface} summarizing it in a few bullet points. ${suffix}`;
+  const explainedLong = `${preface} summarzing the response and the question in one sentences. ${suffix}`;
+  const res = await Promise.all([askGPT(summarySentence, 'useful'), askGPT(summaryList, 'correct summary list'), askGPT(explainedLong, 'correct summary long')]);
+  return [...res, {
+    value: 'correct custom',
+    label: 'Other (enter feedback manually)'
+  }] as PromptReponse[];
+}
+
+export async function askGPT(prompt: string, type: string) {
   const queryResponse = await openai.chat.completions.create({
     messages: [{ role: 'user', content: prompt }],
-    model: 'gpt-4o-mini',
+    model: 'gpt-4o',
   });
   console.log('PROMPT', prompt);
   const ChatGPTResponse = '' + queryResponse.choices[0].message.content;
-  return ChatGPTResponse;
+  return ({
+    value: type,
+    label: ChatGPTResponse,
+  });
 }
 
 // TODO: Bansharee (do this after the above functions are working)

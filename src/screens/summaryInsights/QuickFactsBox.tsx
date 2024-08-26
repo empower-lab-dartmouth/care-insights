@@ -168,7 +168,7 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
         <div>
           <div className='px-4 pb-2 flex justify-between'>
             <Stack align='flex-end' justify='flex-end'>
-              <Group justify='flex-end' h={'auto'}>
+              {/* <Group justify='flex-end' h={'auto'}>
                 {
                   alreadyApproved && !editingDirectly ?
                     <Button
@@ -258,7 +258,7 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
                 >
                   Improve feedback
                 </Button>
-              </Group>
+              </Group> */}
             </Stack>
           </div>
           <Divider />

@@ -43,7 +43,7 @@ const Transcript: React.FC<TranscriptParams> = ({ transcriptSegments, setVideoTi
             {showTranscript ?
                 <>
                     <Box >
-                        <div style={{ maxHeight: 300, overflowY: 'scroll' }}>
+                        <div style={{ maxHeight: 400, overflowY: 'scroll' }}>
                             <Text>
                                 {transcriptSegments.map((t) => (
                                     <span onClick={() => setVideoTime(t.offsetSeconds)} key={t.text + t.offsetSeconds}

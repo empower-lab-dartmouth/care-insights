@@ -14,11 +14,17 @@ import { AuthContext } from '../../../state/context/auth-context';
 import { FeedbackModifier, feedbackModifierOptions, PageState, ProgramEvent } from '../../../state/types';
 import { setRemoteProgramEvent, setRemoteQueryRecord } from '../../../state/setting';
 
-import { Textarea, Text, Button, Switch, Select } from '@mantine/core';
+import { Textarea, Text, Button, Switch, Select, Stack, SegmentedControl, Center } from '@mantine/core';
 import { reportTrackingEvent } from '../../../state/tracking';
 import { generateQuickFactsQueries, loadCRData, sampleAvoidQuery, sampleDoQuery, sampleRedirectQuery, sampleSymptomsQuery } from '../../../state/fetching';
-import { askQuery } from '../../../state/querying';
-import { DEFAULT_BECAUSE_VALUE, formatFeedback } from '../WYSIWYGEditor/WYSIWYGEditor';
+import { PromptReponse, askQuery, getNegativeFeedbackPrompts, getPositivePrompts } from '../../../state/querying';
+import { DEFAULT_BECAUSE_VALUE } from '../WYSIWYGEditor/WYSIWYGEditor';
+
+const inputStyles = {
+  'inner': {
+      'whiteSpace': 'normal',
+  }
+};
 
 const FeedbackModal = ({ close }: { close: () => void }) => {
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
@@ -32,8 +38,32 @@ const FeedbackModal = ({ close }: { close: () => void }) => {
   const id = uuidv4();
   const [editText, setEditText] = React.useState(false);
   const [modalLoading, setModalLoading] = React.useState(false);
-  const becauseDefault = DEFAULT_BECAUSE_VALUE;
-  const [becauseText, setBecauseText] = React.useState(becauseDefault);
+  // const becauseDefault = DEFAULT_BECAUSE_VALUE;
+  const [customText, setCustomText] = React.useState('');
+  const [prompts, setPrompts] = React.useState<PromptReponse[]>([])
+  const [selectedPrompt, setSelectedPrompt] = React.useState('');
+
+  React.useEffect(() => {
+    async function fetch() {
+      if (feedbackModal === false) {
+        setPrompts([]);
+      } else {
+        if (prompts.length === 0) {
+          if (feedbackModal.modifier === 'useful') {
+            const r = await getPositivePrompts(feedbackModal, displayName);
+            setPrompts(r);
+            setSelectedPrompt(r[0].value);
+          } else {
+            const r = await getNegativeFeedbackPrompts(feedbackModal, displayName);
+            setPrompts(r);
+            setSelectedPrompt(r[0].value);
+          }
+        }
+      }
+    }
+
+    fetch();
+  }, [feedbackModal, prompts]);
 
   const makeQuery = async (regen: boolean) => {
     const programEvents = Object.values(pageContext.selectedCRProgramEvents).length === 0 ? await loadCRData(
@@ -80,10 +110,19 @@ const FeedbackModal = ({ close }: { close: () => void }) => {
     }
     setModalLoading(true);
     console.log('update page context');
-    const feedback = editText ? feedbackModal.feedback : await formatFeedback(feedbackModal.targetContent, feedbackModal.feedbackType, feedbackModal.query.query, feedbackModal.modifier, becauseText);
+    const i = prompts.map((p) => p.value).indexOf(selectedPrompt as FeedbackModifier);
+    const feedback = selectedPrompt === 'custom' || i === -1 ? {value: 'custom', label: customText} : prompts[i];
+    if (feedback.label === '') {
+      close();
+      return;
+    }
     const newProgramEvent: ProgramEvent = {
       type: feedbackModal.feedbackType,
-      query: feedbackModal.query,
+      content: {
+        ...feedbackModal,
+        feedback: feedback.label,
+        modifier: feedback.value as FeedbackModifier,
+      },
       date: new Date().getTime(),
       label: 'Feedback',
       uuid: id,
@@ -91,7 +130,7 @@ const FeedbackModal = ({ close }: { close: () => void }) => {
       engagement: 'na',
       CGUUID: currentUser?.email as string,
       CRUUID: pageContext.selectedCR,
-      description: feedback,
+      description: feedback.label,
     };
     // console.log(newProgramEvent);
     reportTrackingEvent({
@@ -110,7 +149,6 @@ const FeedbackModal = ({ close }: { close: () => void }) => {
       addEventModalOpen: false,
     };
     setPageContext(newPageContext);
-    const displayName = extendedAttributes !== undefined ? extendedAttributes.firstName + ' ' + extendedAttributes.lastName : CRname;
     if (feedbackModal.feedbackType === 'details-feedback') {
       await makeQuery(true);
     } else {
@@ -127,77 +165,52 @@ const FeedbackModal = ({ close }: { close: () => void }) => {
     });
   };
   return (
-    <>
-      {modalLoading ? <CircularProgress /> :
+    <div>
+      {modalLoading || prompts.length === 0 ? <CircularProgress /> :
         <>{feedbackModal === false ? <>Error submitting feedback. Please close this dialog.</> :
           <div>
-            <Text className='text-sm'>
-              {' '}
-              {' '}
-              More information will help our A.I. provide better responses. Specific details about {displayName} are especially helpful.
-            </Text>
-            <Switch
-              checked={!editText}
-              label={'Simple response'}
-              onChange={(event) => setEditText(!editText)}
-            />
-            <br />
-            {editText ?
-              <>
-                <Button variant={'light'} onClick={() => {
-                  setFeedbackModal({
-                    ...feedbackModal,
-                    feedback: '',
-                  });
-                }}>Clear feedback</Button>
-                <Button variant={'light'} onClick={async () => {
-                  setFeedbackModal({
-                    ...feedbackModal,
-                    feedback: await formatFeedback(feedbackModal.targetContent, feedbackModal.feedbackType, feedbackModal.query.query, feedbackModal.modifier, becauseText),
-                  });
-                }}>Suggest feedback</Button>
+            <Center>
+              <Text className='text-sm' style={{color: 'darkgray'}}>
+                Tell the A.I. something about {displayName}.
+                Then, it will get smarter over time.<br /><br />
+                </Text>
+                </Center>
+                <Center><Text className='text-sm' style={{color: 'darkgray'}}>
+                <b>Which statement about {displayName} is most correct?</b>
+              </Text>
+            </Center>
+            <Stack>
+              <SegmentedControl
+                styles={{
+                  label: { 'whiteSpace': 'normal'}
+                }}
+                orientation="vertical"
+                fullWidth
+                color="green"
+                style={inputStyles}
+                value={selectedPrompt}
+                onChange={setSelectedPrompt}
+                data={prompts}
+              />
+              {selectedPrompt === 'custom' ?
                 <Textarea
-                  label='More nuanced, specific feedback will improve the A.I. feedback.'
+                  label='What should the A.I. know? What should the correct answer be? Or what should it avoid? Be specific.'
                   className='mt-3'
-                  rows={6}
-                  value={feedbackModal.feedback}
+                  rows={4}
+                  value={customText}
                   onChange={(event) => {
-                    setFeedbackModal({
-                      ...feedbackModal,
-                      feedback: event.target.value
-                    });
+                    setCustomText(event.target.value);
                   }}
-                /></> : <>
-                <Text style={{ color: 'darkgray' }}>I think that the content {feedbackModal.feedbackType === 'details-feedback' ? ' here is: ' : '"' + feedbackModal.targetContent + '" is: '}</Text>
-                <Select
-                  style={{ color: 'blue', fontWeight: 'bold' }}
-                  value={feedbackModal.modifier}
-                  onChange={(v) => {
-                    if (v !== null && (feedbackModifierOptions as string[]).indexOf(v) !== -1) {
-                      setFeedbackModal({
-                        ...feedbackModal,
-                        modifier: v as FeedbackModifier,
-                      });
-                    }
-                  }}
-                  data={feedbackModifierOptions}
-                />
-                <Textarea
-              label='Provide some details please:'
-              className='mt-3'
-              rows={6}
-              value={becauseText}
-              onChange={(event) => {
-                setBecauseText(event.target.value);
-              }}
-            />
-              </>}
-            <p>You can always edit or delete your feedback to the A.I. using the program events table.</p>
-            <Button disabled={feedbackModal.feedback === '' && editText} onClick={submit} className='w-full mt-3'>
-              Submit
-            </Button>
+                /> : <></>}
+              <Center>
+                <Text style={{ color: 'darkgray' }}>You can always edit or delete your feedback to the A.I. using the program events table.<br />After you submit, you need to <b>click "Regenerate feedback"</b> on the top left of the page to update the snapshot.</Text>
+              </Center>
+              <Button disabled={feedbackModal.feedback === '' && editText} onClick={submit} className='w-full mt-3'>
+                Submit
+              </Button>
+            </Stack>
           </div>}</>}
-    </>
+    </div>
   );
 };
 

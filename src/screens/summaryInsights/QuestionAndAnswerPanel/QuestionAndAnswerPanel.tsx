@@ -300,7 +300,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
                   ) : (
                     <></>
                   )}
-                  <div className='flex gap-4 mt-3'>
+                  {/* <div className='flex gap-4 mt-3'>
                     {alreadyApproved && !editingDirectly ? (
                       <><Button
                         disabled
@@ -427,8 +427,8 @@ const QuestionAndAnswerPanel: React.FC = () => {
                 }}
               >
                 Suggest changes...{' '}
-              </Button> */}
-                  </div>
+              </Button> 
+                  </div> */}
                 </>
               )}
               </>)}

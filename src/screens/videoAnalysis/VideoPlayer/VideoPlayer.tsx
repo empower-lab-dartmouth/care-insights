@@ -20,6 +20,9 @@ import { QuickInfo } from '../../summaryInsights/CareInsights';
 import { Center, Group, Switch } from '@mantine/core';
 import { IS_ADMIN } from '../../../state/globals';
 import { useLocation } from 'react-router-dom';
+import { ErrorBoundary }
+  from "react-error-boundary";
+
 
 type VideoPlayerProps = {
   videoSrc: string;
@@ -50,11 +53,24 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const showAdminControls = (dev || IS_ADMIN) && videoApprovalRequriedForSite;
   const videoHasBeenApproved = (programEvent.videoApproved != undefined && programEvent.videoApproved == true);
   const videoNotApproved = videoApprovalRequriedForSite && !userHasPermissions && !videoHasBeenApproved;
+
+  const ErrorFallback: React.FC<any> =
+    ({ error }) => (
+      <div role="alert">
+        <h2>
+          Video could not load. Try again later.
+        </h2>
+      </div>
+    );
+
+
   const onReady = React.useCallback(() => {
     if (!isReady) {
       if (ref.current !== null) {
         const timeToStart = programEventIndex !== undefined && programEventIndex.programEventId === programEvent.uuid && programEventIndex.videoTimestamp !== undefined ? programEventIndex.videoTimestamp / 1000 : 0;
-        ref.current.seekTo(timeToStart, "seconds");
+        if (timeToStart !== 0) {
+          ref.current.seekTo(timeToStart, "seconds");
+        }
         setIsReady(true);
       }
     }
@@ -101,28 +117,27 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
             {
               videoSrc === 'video-missing' ? <h3>This video is no longer available</h3> :
                 <>
-                  {videoNotApproved ? <div style={{ width: 600, overflow: 'auto' }}><QuickInfo
+                  {videoNotApproved ? <div style={{ width: 600, overflow: 'auto' }}>TEST<QuickInfo
                     value={'Unreleased'}
                     label={''}
                   /><p>The facility admin <br />must manually <br /> review and <br />release all videos.</p></div> :
                     <>
-                    {
-                    (() => {try {
-                      <ReactPlayer
-                        ref={ref}
-                        onReady={onReady}
-                        onProgress={({
-                          played,
-                          playedSeconds,
-                          loaded,
-                          loadedSeconds,
-                        }) => {
-                          setProgress(played);
-                          setPlayedSeconds(playedSeconds);
-                        }} onStart={() => setVideoStarted(true)} controls={true} url={videoSrc} />
-                      } catch (e) {
-                        <p>Video took too long to load. Please reload the page.</p>
-                      }})()}
+                      <ErrorBoundary
+                        FallbackComponent={ErrorFallback}>
+                        <ReactPlayer
+                          ref={ref}
+                          onReady={onReady}
+                          onProgress={({
+                            played,
+                            playedSeconds,
+                            loaded,
+                            loadedSeconds,
+                          }) => {
+                            setProgress(played);
+                            setPlayedSeconds(playedSeconds);
+                          }} onStart={() => setVideoStarted(true)} controls={true} url={videoSrc} />
+                      </ErrorBoundary>
+
                       {
                         programEvent.transcript.length > 0 ?
                           <Transcript setVideoTime={seekTo} transcriptSegments={programEvent.transcript}

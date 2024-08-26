@@ -349,7 +349,7 @@ const ProgramEventsTable: React.FC = () => {
           customStyles={tableStyles}
         />
           {data.length === 0 ? <h1>Try clicking below if this care recipient should have data</h1> : <></>}
-          <Button onClick={() => {
+          <Button disabled={pageContext.selectedCR === 'NONE'} onClick={() => {
             const newPageState = {
               ...pageContext,
               selectedCR: pageContext.selectedCR,

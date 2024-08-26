@@ -475,7 +475,7 @@ const EventsTimeline: React.FC<TimelineProps> = props => {
       <Stack>
         <Stack direction={'row'}>
           <Button startIcon={<EditIcon />} onClick={() => setEditModeOn(true)}>
-            Improve feedback{' '}
+            Edit{' '}
           </Button>
           <CommonRowControls
             programEvent={programEvent}
