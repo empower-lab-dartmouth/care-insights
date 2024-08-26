@@ -6,7 +6,9 @@ import {
   ExtendedAttributes,
   ProgramEventIndex,
   FeedbackEventTypes,
-  FeedbackContent
+  FeedbackContent,
+  HeatmapKey,
+  noOverlayName
 } from './types';
 import { QueryRecord } from './queryingTypes';
 import { syncEffect, urlSyncEffect } from 'recoil-sync';
@@ -42,6 +44,11 @@ export const defaultQueryManualEntryEvent: QueryRecord = {
   CGUUID: '',
   CRUUID: '',
 };
+
+export const heatmapSelectedKeyState = atom<HeatmapKey>({
+  key: 'heatmap-selected-key',
+  default: noOverlayName,
+})
 
 export const onlyCRWithRoomNumber = atom({
   key: 'only-cr-rooms',
@@ -211,6 +218,7 @@ export type SessionActivityEvent = {
   support: UserActivityReport
   programEvents: UserActivityReport
   url: string
+  heatmapKey?: HeatmapKey
   onSite?: {
     onSite: boolean,
     latitude: number,
@@ -233,6 +241,7 @@ export const newActivtySession: (
       id: `${username}-${startDate}`,
       username,
       viewingCR: {},
+      heatmapKey: noOverlayName,
       snapshot: {
         events: 0,
         idleTime: 0,

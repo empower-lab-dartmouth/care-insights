@@ -213,6 +213,7 @@ const ProgramEventsTable: React.FC = () => {
   const [opened, { open, close }] = useDisclosure(false);
   const [extendedAttributes, setExtendedAttributes] = useRecoilState(extededAttributesState);
   const [programEventIndex, setProgramEventIndex] = useRecoilState(expandedProgramRowState);
+  const displayName = (n: string) =>  extendedAttributes[n] ? extendedAttributes[n].firstName + ' ' + extendedAttributes[n].lastName : n;
   // const [defaultPage, setDefaultPage] = useState(0);
 
   const CRInfo = useRecoilValue(careRecipientsInfoState);
@@ -279,12 +280,14 @@ const ProgramEventsTable: React.FC = () => {
       name: 'Description',
       selector: (row: Row) => row.description,
       sortable: false,
+      width: '220px', 
     },
     {
       name: 'Date',
       id: 'date',
       selector: (row: Row) => dayjs(row.date).format('MMM, DD YYYY, HH:mm A'),
       sortable: true,
+      width: '200px',
       sortFunction: (rowA, rowB) =>
         new Date(rowB.date).getTime() - new Date(rowA.date).getTime(),
     },
@@ -304,23 +307,27 @@ const ProgramEventsTable: React.FC = () => {
     // },
     {
       name: 'Event type',
+      width: '200px', 
       selector: (row: Row) => row.label,
       sortable: true,
     },
     {
       name: 'Care recipient',
-      selector: (row: Row) => row.CRName,
+      selector: (row: Row) => displayName(row.CRName),
       sortable: true,
+      width: '200px', 
     },
     {
       name: 'Caregiver',
       selector: (row: Row) => row.CGName,
       sortable: true,
+      width: 'auto',
     },
     {
       name: 'Has video',
       sortable: true,
       id: 'Has video',
+      width: '200px', 
       selector: (row: Row) => (programEventIndex !== undefined && programEventIndex.programEventId === row.uuid) ? 'Cited' : (row.programEvent.type === 'music-event' && row.programEvent.videoUrl !== 'video-missing') ? 'Yes' : 'No',
     },
   ];

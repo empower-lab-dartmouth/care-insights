@@ -1,7 +1,7 @@
 import { collection, doc, setDoc } from "firebase/firestore";
 import {
     CareGroupInfo, CareRecipientInfo,
-    CaregiverInfo, FacilityInfo, FeedbackEventTypes, PageState, ProgramEvent,
+    CaregiverInfo, FacilityInfo, FeedbackEventTypes, HeatmapKey, PageState, ProgramEvent,
     ProgramEventIndex
 } from "./types";
 import { db } from "./firebase/firebase-config";
@@ -22,6 +22,20 @@ export type NewUserRequest = {
     name: string,
     email: string,
     userType: string,
+}
+
+export type ToggleTranscript = {
+    type: 'toggle-transcript',
+    programEventId: string,
+}
+
+export type JumpToTimeInInTranscript = {
+    type: 'jump-to-time-in-transcript',
+    text: string,
+    time: number, // seconds offset
+    engagementScore: number,
+    engagementType: HeatmapKey,
+    programEventId: string,
 }
 
 type FeedbackCreated = {
@@ -57,7 +71,7 @@ type ManualEventCreated = {
     event: ProgramEvent
 }
 
-export type TrackingEvent = NewUserRequest | ClickedDetails| BasicEvent | EventWithContext | DebuggingEvent | ManualEventCreated | ClickOnCitation | FeedbackCreated;
+export type TrackingEvent = JumpToTimeInInTranscript | ToggleTranscript | NewUserRequest | ClickedDetails| BasicEvent | EventWithContext | DebuggingEvent | ManualEventCreated | ClickOnCitation | FeedbackCreated;
 
 export const reportTrackingEvent = async (e: TrackingEvent, username: string, pageState: PageState) => {
     console.log('tracking event');

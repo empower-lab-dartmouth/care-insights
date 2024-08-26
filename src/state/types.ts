@@ -198,6 +198,22 @@ export type FeedbackEventTypes = 'avoid-feedback' | 'symptom-feedback' | 'redire
 export type FeedbackModifier = 'opposite' | 'not relevant' | 'not accurate' | 'useful' | 'opposite' | 'custom' | 'correct summary sentence' | 'correct summary list' | 'correct summary long' | 'correct custom';
 export const feedbackModifierOptions: FeedbackModifier[] = ['not relevant', 'not accurate', 'useful'];
 
+export const attentionColumnName = 'Heightened attention to program';
+export const reactionColumnName = 'Heightened physical engagement in program';
+export const symptomColumnName = 'Behavioral disturbance';
+export const memoryRecallColumnName = 'Heightened memory recall';
+export const emotionColumnName = 'Heightened positive emotional response';
+export const combinedEngagementName = 'Combined engagement';
+export const noOverlayName = 'No overlay';
+export type HeatmapDataPoint = {
+    [attentionColumnName]: number,
+    [reactionColumnName]: number,
+    [symptomColumnName]: number,
+    [memoryRecallColumnName]: number,
+    [emotionColumnName]: number,
+}
+export type HeatmapKey = keyof HeatmapDataPoint | typeof combinedEngagementName | typeof noOverlayName;
+
 export type FeedbackContent = {
     targetContent: string
     feedback: string,

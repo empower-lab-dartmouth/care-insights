@@ -4,7 +4,7 @@ import { AuthContext } from './state/context/auth-context';
 import {
   SESSION_LENGTH,
   SessionActivityEvent,
-  currentSessionActivityState, newActivtySession,
+  currentSessionActivityState, heatmapSelectedKeyState, newActivtySession,
   onSiteState,
   pageContextState,
   trackingTimeUntilNextPush, userIsActiveState
@@ -58,6 +58,7 @@ const SessionTracker = () => {
   const pageContext = useRecoilValue(pageContextState);
   const [isActive, setIsActive] = useRecoilState(userIsActiveState);
   const location = useLocation();
+  const heatmapKey = useRecoilValue(heatmapSelectedKeyState);
   const startingEventCount: EventCountByPage = {
     snapshot: 0,
     questions: 0,
@@ -177,6 +178,7 @@ const SessionTracker = () => {
         const updatedSessionPreTime: SessionActivityEvent = {
           ...sessionActivity,
           onSite,
+          heatmapKey: heatmapKey,
           username: currentUser.email,
           id: sessionId(currentUser.email, sessionActivity.date),
           programEvents: {

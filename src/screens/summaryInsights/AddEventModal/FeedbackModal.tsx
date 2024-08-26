@@ -111,7 +111,7 @@ const FeedbackModal = ({ close }: { close: () => void }) => {
     setModalLoading(true);
     console.log('update page context');
     const i = prompts.map((p) => p.value).indexOf(selectedPrompt as FeedbackModifier);
-    const feedback = selectedPrompt === 'custom' || i === -1 ? {value: 'custom', label: customText} : prompts[i];
+    const feedback = selectedPrompt === 'custom' || selectedPrompt === 'correct custom' || i === -1 ? {value: selectedPrompt, label: customText} : prompts[i];
     if (feedback.label === '') {
       close();
       return;
@@ -192,7 +192,7 @@ const FeedbackModal = ({ close }: { close: () => void }) => {
                 onChange={setSelectedPrompt}
                 data={prompts}
               />
-              {selectedPrompt === 'custom' ?
+              {selectedPrompt === 'custom' || selectedPrompt === 'correct custom' ?
                 <Textarea
                   label='What should the A.I. know? What should the correct answer be? Or what should it avoid? Be specific.'
                   className='mt-3'

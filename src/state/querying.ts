@@ -255,10 +255,10 @@ export async function getNegativeFeedbackPrompts(content: FeedbackContent, name:
 
 export async function getPositivePrompts(content: FeedbackContent, name: string) {
   const preface = `A dementia caregiver was asked ${content.query.query} about the care recipient ${name} and replied: "${content.targetContent}. The feedback is correct, make it more succinct by `;
-  const suffix = 'DO NOT respond with more than one sentence and DO NOT add any citations.'
-  const summarySentence = `${preface} summarizing it in a single sentence. ${suffix}`;
-  const summaryList = `${preface} summarizing it in a few bullet points. ${suffix}`;
-  const explainedLong = `${preface} summarzing the response and the question in one sentences. ${suffix}`;
+  const suffix = 'Keep your response very short and DO NOT add any citations.'
+  const summarySentence = `${preface} summarizing it in a single VERY, VERY short sentence. Less than 10 words! ${suffix}`;
+  const summaryList = `${preface} summarizing in a few words. Less than 10 words! ${suffix}`;
+  const explainedLong = `${preface} summarize the question and the response together using the most succinct wording possible. Less than 10 words! ${suffix}`;
   const res = await Promise.all([askGPT(summarySentence, 'useful'), askGPT(summaryList, 'correct summary list'), askGPT(explainedLong, 'correct summary long')]);
   return [...res, {
     value: 'correct custom',

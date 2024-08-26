@@ -70,7 +70,7 @@ type GoToProps = {
   longform: boolean
 }
 
-const GoTo: React.FC<GoToProps> = ({ label, queryString, type, query, setFeedbackModule,longform, hideFeedback }) => {
+const GoTo: React.FC<GoToProps> = ({ label, queryString, type, query, setFeedbackModule, longform, hideFeedback }) => {
   const pageState = useRecoilValue(pageContextState);
   return (<li><Group>{addCitations(label, pageState.selectedCRProgramEvents, type, query, setFeedbackModule, hideFeedback, longform)}
     <MenuButton queryString={queryString} path='/questions'
@@ -180,24 +180,85 @@ type Ordering = {
   segments: string[]
 }
 
-const splitTextIntoSegments = (text: string, keys: string[]) => {
-  let ordering: Ordering[] = [];
-  keys.forEach((k, i) => {
-    const prior = i > 0 && ordering.length > i - 1 && ordering[i - 1].segments.length > 1 ? ordering[i - 1].segments[1] : text;
-    ordering = [...ordering, { order: text.indexOf(k), value: k, segments: prior.split(k) }];
-  });
-  if (ordering.map((v) => v.order).includes(-1)) {
-    return [{
-      order: 1,
-      value: '',
-      segments: [text, '']
-    }];
-  }
-  const t = ordering.sort((a, b) => a.order - b.order);
-  return t;
+type KeyPosition = {
+  key: string,
+  order: number,
+  textAfter: string,
+  textBefore: string,
 }
 
-export const DEFAULT_BECAUSE_VALUE = 'Because: ' 
+const splitTextIntoSegments = (text: string, keys: string[]) => {
+  let ordering: Ordering[] = [];
+  let remainingText = text;
+  const findNextKey: (t: KeyPosition) => KeyPosition | undefined = (t) => {
+    const keysMapped = keys.map((k) => {
+      const index = t.textAfter.indexOf(k);
+      if (index === -1) {
+        return null;
+      }
+      return ({
+        order: index,
+        key: k,
+        textAfter: t.textAfter.slice(index + k.length),
+        textBefore: t.textAfter.slice(0, index),
+      });
+    }).filter((a) => a !== null) as KeyPosition[];
+    // console.log('keys mapped ', keysMapped, 'reference ', text);
+    if (keysMapped.length === 0) {
+      console.log('no keys found!');
+      return undefined;
+    } else {
+      const f = keysMapped.sort((a, b) => a.order - b.order)[0];
+      return f;
+      // console.log('sorted values: ', f, 'reference: ', text);
+    }
+  };
+  const firstKey: KeyPosition = {
+    key: '',
+    order: 0,
+    textAfter: text,
+    textBefore: ''
+  }
+  let result: KeyPosition[] = [firstKey];
+  let nextKey: KeyPosition | undefined = firstKey;
+  while (nextKey != undefined) {
+    nextKey = findNextKey(nextKey);
+    if (nextKey === undefined) {
+      console.log('next key is empty');
+      break;
+    }
+    console.log('next key is ', nextKey);
+    result = [...result, nextKey];
+  }
+  console.log('final result is', result);
+  return result;
+};
+// while ()
+// keys.forEach((k, i) => {
+//   const prior = i > 0 && ordering.length > i - 1 && ordering[i - 1].segments.length > 1 ? ordering[i - 1].segments[1] : text;
+//   ordering = [...ordering, { order: text.indexOf(k), value: k, segments: prior.split(k) }];
+// });
+// if (ordering.map((v) => v.order).includes(-1)) {
+//   return [{
+//     order: 1,
+//     value: '',
+//     segments: [text, '']
+//   }];
+// }
+// const t = ordering.sort((a, b) => a.order - b.order);
+// t.map((k, i) => {
+//   if (k.segments.length <= 1) {
+//     return k;
+//   }
+//   let prior: = [];
+//   let j = 0;
+//   while (i < p)
+//   ordering = [...ordering, { order: text.indexOf(k), value: k, segments: prior.split(k) }];
+// });
+// return t;
+// }
+
+export const DEFAULT_BECAUSE_VALUE = 'Because: '
 // export const formatFeedback = async (input: string, type: FeedbackEventTypes, query: string, modifier: FeedbackModifier, because: string) => {
 //   const becauseSuffix = because !== DEFAULT_BECAUSE_VALUE ? because : '';
 //   const template = (() => {switch (type) {
@@ -217,18 +278,20 @@ export const DEFAULT_BECAUSE_VALUE = 'Because: '
 //   }
 //   return template;
 // }
+export const CITATION_REGEX = /\\cite{[^}]*}/g;
+export const cleanStringOfCitations = (dirtyString: string) => dirtyString.replace(CITATION_REGEX, '');
 
 const addCitations = (text: string, programEvents: CRProgramEvents, type: FeedbackEventTypes,
   query: QueryRecord, setFeedbackModule: SetterOrUpdater<false | FeedbackContent>, hideFeedback: boolean, longform: boolean) => {
-  const regex = /\\cite{[^}]*}/g;
+
   const m = (r: RegExp) => {
-    const res = text.match(regex);
+    const res = text.match(CITATION_REGEX);
     if (res === null) {
       return [];
     }
     return res;
   }
-  const found = [...m(regex)];
+  const found = [...m(CITATION_REGEX)];
   const references: ProgramEventIndex[] = found.map((v) => getIndex(v, programEvents)).filter((v) => v !== undefined) as ProgramEventIndex[];
   const wrapped = (t: string, v: string | ReactNode) => {
     if (hideFeedback || (!longform && found.length > 0)) {
@@ -271,15 +334,18 @@ const addCitations = (text: string, programEvents: CRProgramEvents, type: Feedba
         </Button></Group></span>);
     }
   };
-  const wrapLinesInFeedback = (input: string) => {
-    return input; // TODO look more at this later.
-    // const wrap = input.split('\n').length > 1;
-    // if (wrap) {
-    //   return wrapped(input);
-    // } else {
-    //   return input;
-    // }
-  }
+  // const getSegment = (input: string[], final: boolean) => {
+  //   // let returnIndex = Math.max(0, input.length - 2);
+  //   // if (final) {
+  //   //   returnIndex = input.length - 1;
+  //   // }
+  //   return input[returnIndex]; // TODO look more at this later.
+  // const wrap = input.split('\n').length > 1;
+  // if (wrap) {
+  //   return wrapped(input);
+  // } else {
+  //   return input;
+  // }
   if (found.length === 0) {
     if (hideFeedback) {
       return text;
@@ -287,17 +353,11 @@ const addCitations = (text: string, programEvents: CRProgramEvents, type: Feedba
       return wrapped(text, text);
     }
   }
-  // console.log('results ', found, splitTextIntoSegments(text, found), 'original text: ', text);
+  console.log('results ', found, splitTextIntoSegments(text, found), 'original text: ', text);
   return (wrapped(text, <div> {
     splitTextIntoSegments(text, found).map((v, i) => {
-      const index = getIndex(v.value, programEvents);
-      if (i === 0 && i === found.length - 1) {
-        return <span key={index?.programEventId + '-' + i}><span>{wrapLinesInFeedback(v.segments[0])}</span><Cite p={index} /><span>{wrapLinesInFeedback(v.segments[1])}</span></span>;
-      } else if (i === found.length - 1) {
-        return <span key={index?.programEventId + '-' + i}><Cite p={index} /><span>{wrapLinesInFeedback(v.segments[1])}</span></span>;
-      } else {
-        return <span key={index?.programEventId + '-' + i}><span>{wrapLinesInFeedback(v.segments[0])}</span><Cite p={index} /></span>;
-      }
+      const index = getIndex(v.key, programEvents);
+      return <span key={index?.programEventId + '-' + i}><span>{v.textBefore}</span><Cite p={index} /></span>;
     })}
   </div>));
 };

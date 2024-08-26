@@ -142,7 +142,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
                         programEvent.transcript.length > 0 ?
                           <Transcript setVideoTime={seekTo} transcriptSegments={programEvent.transcript}
                             videoStarted={videoStarted}
+                            programEventId={programEvent.uuid}
                             progress={progress}
+                            heatmapStringified={programEvent.heatmap}
                             playedSeconds={playedSeconds}
                           /> :
                           <></>
