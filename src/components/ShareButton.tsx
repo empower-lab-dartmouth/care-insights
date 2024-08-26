@@ -30,8 +30,8 @@ const ShareButton = ({
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
   const filename =
     careRecipients[pageContext.selectedCR] !== undefined
-      ? careRecipients[pageContext.selectedCR].name + '_QR_Code'
-      : 'QR_Code';
+      ? careRecipients[pageContext.selectedCR].name + '_QR_Code.png'
+      : 'QR_Code.png';
   const extendedAttributes = useRecoilValue(extededAttributesState);
   const CRName1 =
     careRecipients[pageContext.selectedCR] !== undefined
@@ -47,10 +47,12 @@ const ShareButton = ({
   }
   const ComponentToPrint = React.forwardRef((props, ref: any) => (
     <div ref={ref}>
+      <Center style={{padding: 20}}>
       <QRCode value={getURL()} />
+      </Center>
       <Center>
         {CRName !== 'NONE' ?
-          <h1>Care insights for:<br /><Center><b>{CRName}</b></Center></h1> : <></>}
+      <h1 style={{fontSize: 27}}><b style={{color: 'red'}}>Memcara Dementia Care Tools</b><br /><br /><Center style={{color: 'darkblue'}}>Privacy protected data regarding </Center><Center><br /><br /><b>{CRName}</b></Center></h1> : <></>}
       </Center>
     </div>
   ));
