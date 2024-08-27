@@ -95,6 +95,9 @@ const Transcript: React.FC<TranscriptParams> = ({ transcriptSegments, programEve
             v.push(getValueForSecond(i, key));
             i = i + 1;
         }
+        if (v.length === 0) {
+            return 0;
+        }
         return mean(v);
     }
 
