@@ -240,14 +240,14 @@ export type PromptReponse = {
 
 export async function getNegativeFeedbackPrompts(content: FeedbackContent, name: string) {
   const preface = `A dementia caregiver was asked ${content.query.query} about the care recipient ${name} and incorrectly replied: "${content.targetContent}. Reformulate the caregiver's incorrect response to make it CORRECT by`;
-  const suffix = `Format the response as one short, simple sentence. DO NOT add any citations. Formulate your response as if you were replying to the original question. Use the care recipient"s name, ${name}.`;
-  const opposite = `${preface} saying the exact opposite of the incorrect statement. ${suffix}`;
-  const notAccurate = `${preface} summarizing the question and the previous answer briefly, and saying that is it absolutely never an appropriate response for the ${name}. ${suffix}`;
-  const notRelevant = `${preface} summarizing the question and the previous answer briefly, explain why the answer has nothing to do with the question. ${suffix}`;
-  const res = await Promise.all([askGPT(notRelevant, 'not relevant'), askGPT(opposite, 'opposite'), askGPT(notAccurate, 'not accurate')]);
-  const thirdChoicePrompt = `Four different dementia caregivers were asked ${preface} about the care recipient ${name}. They replied: <Response 1 starts>${content.targetContent}<Response 1 ends>\n\n<Response 2 starts>${res[0].label}<Response 2 ends>\n\n<Response 3 starts>${res[1].label}<Response 3 ends>\n\n<Response 4 starts>${res[2].label}<Response 4 ends>  The first caregiver's response is definitely incorrect, the other three are either not correct or poorly worded. Formulate a better, more CORRECT, and succinct response, please FOCUS on the original question. ${suffix}`;
-  const res2 = await askGPT(thirdChoicePrompt, 'other');
-  return [...res, res2, {
+  const suffix = `Format the response as one short, simple sentence (less than ten words). DO NOT add any citations.`;
+  // const opposite = `${preface} saying the exact opposite of the incorrect statement. ${suffix}`;
+  const notAccurate = `${preface} restating the previous response and restating the question, reformulate these two to say that the response it absolutely NEVER an appropriate action to take for ${name}. ${suffix}`;
+  const notRelevant = `${preface} just restating the previous response and commenting that it is not relevant to the question, but restate the question. Do all this in eight words or fewer. ${suffix}`;
+  const res = await Promise.all([askGPT(notRelevant, 'not relevant'), askGPT(notAccurate, 'not accurate')]);
+  // const thirdChoicePrompt = `Four different dementia caregivers were asked ${preface} about the care recipient ${name}. They replied: <Response 1 starts>${content.targetContent}<Response 1 ends>\n\n<Response 2 starts>${res[0].label}<Response 2 ends>\n\n<Response 3 starts>${res[1].label}<Response 3 ends>\n\n<Response 4 starts>${res[2].label}<Response 4 ends>  The first caregiver's response is definitely incorrect, the other three are either not correct or poorly worded. Formulate a better, more CORRECT, and succinct response, please FOCUS on the original question. ${suffix}`;
+  // const res2 = await askGPT(thirdChoicePrompt, 'other');
+  return [...res, {
     value: 'custom',
     label: 'Other (enter feedback manually)'
   }] as PromptReponse[];
@@ -256,10 +256,10 @@ export async function getNegativeFeedbackPrompts(content: FeedbackContent, name:
 export async function getPositivePrompts(content: FeedbackContent, name: string) {
   const preface = `A dementia caregiver was asked ${content.query.query} about the care recipient ${name} and replied: "${content.targetContent}. The feedback is correct, make it more succinct by `;
   const suffix = 'Keep your response very short and DO NOT add any citations.'
-  const summarySentence = `${preface} summarizing it in a single VERY, VERY short sentence. Less than 10 words! ${suffix}`;
-  const summaryList = `${preface} summarizing in a few words. Less than 10 words! ${suffix}`;
-  const explainedLong = `${preface} summarize the question and the response together using the most succinct wording possible. Less than 10 words! ${suffix}`;
-  const res = await Promise.all([askGPT(summarySentence, 'useful'), askGPT(summaryList, 'correct summary list'), askGPT(explainedLong, 'correct summary long')]);
+  const summarySentence = `${preface} summarizing it in a single VERY, VERY short sentence. Less than seven words! ${suffix}`;
+  // const summaryList = `${preface} summarizing in a few words. Less than 10 words! ${suffix}`;
+  // const explainedLong = `${preface} summarize the question and the response together using the most succinct wording possible. Less than 10 words! ${suffix}`;
+  const res = await Promise.all([askGPT(summarySentence, 'useful')]);
   return [...res, {
     value: 'correct custom',
     label: 'Other (enter feedback manually)'

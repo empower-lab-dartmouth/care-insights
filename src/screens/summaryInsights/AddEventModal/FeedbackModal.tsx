@@ -194,7 +194,7 @@ const FeedbackModal = ({ close }: { close: () => void }) => {
               />
               {selectedPrompt === 'custom' || selectedPrompt === 'correct custom' ?
                 <Textarea
-                  label='What should the A.I. know? What should the correct answer be? Or what should it avoid? Be specific.'
+                  label='Select one:'
                   className='mt-3'
                   rows={4}
                   value={customText}
@@ -203,7 +203,6 @@ const FeedbackModal = ({ close }: { close: () => void }) => {
                   }}
                 /> : <></>}
               <Center>
-                <Text style={{ color: 'darkgray' }}>You can always edit or delete your feedback to the A.I. using the program events table.<br />After you submit, you need to <b>click "Regenerate feedback"</b> on the top left of the page to update the snapshot.</Text>
               </Center>
               <Button disabled={feedbackModal.feedback === '' && editText} onClick={submit} className='w-full mt-3'>
                 Submit
