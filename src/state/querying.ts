@@ -240,9 +240,9 @@ export type PromptReponse = {
 
 export async function getNegativeFeedbackPrompts(content: FeedbackContent, name: string) {
   const preface = `You have been asked ${content.query.query} about the care recipient ${name}. You know that "${content.targetContent} is not true. Now, `;
-  const suffix = ` DO NOT add any citations. Use nine words or fewer`;
+  const suffix = ` DO NOT add any citations. Use ten words or fewer`;
   // const opposite = `${preface} saying the exact opposite of the incorrect statement. ${suffix}`;
-  const notAccurate = `${preface} briefly summarize that ${content.targetContent} is not a correct response in this context.  Use active tense. CRITICAL: Your response to this prompt should make sense WITHOUT the additional context, that means don't say "question," restate the question. ${suffix}`;
+  const notAccurate = `${preface} briefly summarize that ${content.targetContent} is not a correct response in this context.  Use active tense. CRITICAL: Your response to this prompt should make sense WITHOUT ANY additional context, that means don't say "question," "context" or anything like that, restate all ideas you mention. ${suffix}`;
   const notRelevant = `${preface} write a short, standalone phrase that summarizes the idea that ${content.targetContent} is not just relevant in this context. Use active tense. CRITICAL: Your response to this prompt should make sense WITHOUT the additional context! That means, don't say "question" restate the question. ${suffix}`;
   const res = await Promise.all([askGPT(notAccurate, 'not accurate')]);
   // const thirdChoicePrompt = `Four different dementia caregivers were asked ${preface} about the care recipient ${name}. They replied: <Response 1 starts>${content.targetContent}<Response 1 ends>\n\n<Response 2 starts>${res[0].label}<Response 2 ends>\n\n<Response 3 starts>${res[1].label}<Response 3 ends>\n\n<Response 4 starts>${res[2].label}<Response 4 ends>  The first caregiver's response is definitely incorrect, the other three are either not correct or poorly worded. Formulate a better, more CORRECT, and succinct response, please FOCUS on the original question. ${suffix}`;
