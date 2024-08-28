@@ -319,7 +319,7 @@ const addCitations = (text: string, programEvents: CRProgramEvents, type: Feedba
         onClick={async () => {
           setFeedbackModule({
             targetContent: t,
-            modifier: 'not relevant',
+            modifier: 'not accurate',
             feedback: '',//await formatFeedback(t, type, query.query, 'not relevant', ''),
             query: query,
             feedbackType: type,

@@ -170,10 +170,10 @@ const FeedbackModal = ({ close }: { close: () => void }) => {
         <>{feedbackModal === false ? <>Error submitting feedback. Please close this dialog.</> :
           <div>
             <Center>
-              <Text className='text-sm' style={{color: 'darkgray'}}>
+              {/* <Text className='text-sm' style={{color: 'darkgray'}}>
                 Tell the A.I. something about {displayName}.
                 Then, it will get smarter over time.<br /><br />
-                </Text>
+                </Text> */}
                 </Center>
                 <Center><Text className='text-sm' style={{color: 'darkgray'}}>
                 <b>Which statement about {displayName} is most correct?</b>
