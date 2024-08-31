@@ -1,3 +1,5 @@
+import { Reviews } from "./types"
+
 type UUID = string
 type RecordUUID = UUID
 type QueryUUID = UUID
@@ -32,6 +34,7 @@ export type QueryRecord = {
     queryResponse: string
     queryUUID: QueryUUID
     dateApproved?: Timestamp
+    reviews?: Record<string, Reviews>
 }
 
 export type QueryFeedback = {

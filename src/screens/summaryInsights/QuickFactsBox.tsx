@@ -49,12 +49,13 @@ import {
   IconThumbUp,
   IconArrowBounce,
 } from '@tabler/icons-react';
-import { PageState } from '../../state/types';
+import { PageState, Reviews } from '../../state/types';
 import { Divide, List, Smile, TriangleAlert } from 'lucide-react';
 
 import '@mdxeditor/editor/style.css';
 import { generateQuickFactsQueries, loadCRData, sampleAvoidQuery, sampleDoQuery, sampleRedirectQuery, sampleSymptomsQuery } from '../../state/fetching';
 import { reportTrackingEvent } from '../../state/tracking';
+import { setRemoteQueryRecord } from '../../state/setting';
 
 export const LOADING_STRING = 'Loading...';
 
@@ -267,6 +268,52 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
         <div className='px-6 pt-2 pb-8'>
           {!editingDirectly ? (
             <WYSIWYGEditor
+              updateRating={(key, value) => {
+                if (value === undefined) {
+                  return;
+                } else {
+                  const getRating: () => Reviews = () => {
+                    if (queryRecord.reviews === undefined) {
+                      return {
+                        'infoIsActionable': 'N/A',
+                        'infoIsCorrect': 'N/A',
+                        'infoIsMissing': 'N/A',
+                      }
+                    } else {
+                      if (queryRecord.reviews[currentUser?.email as string] === undefined) {
+                        return {
+                          'infoIsActionable': 'N/A',
+                          'infoIsCorrect': 'N/A',
+                          'infoIsMissing': 'N/A',
+                        }
+                      } else {
+                        return queryRecord.reviews[currentUser?.email as string];
+                      }
+                    }
+                  };
+                  const currentReviews = queryRecord.reviews === undefined ? {} : queryRecord.reviews;
+                  const updatedUserReview: Reviews = {
+                    ...getRating(),
+                    [key]: value,
+                  };
+                  const newQuery: QueryRecord = {
+                    ...queryRecord,
+                    reviews: {
+                      ...currentReviews,
+                      [currentUser?.email as string]: updatedUserReview,
+                    },
+                  };
+                  setRemoteQueryRecord(newQuery);
+                  reportTrackingEvent({
+                    type: 'update-rating-for-query',
+                    query: newQuery
+                  }, currentUser?.email as string, pageContext);
+                  setQueries({
+                    ...queries,
+                    [queryRecord.query]: newQuery
+                  });
+                }
+              }}
               hideFeedback={false}
               readOnly={true}
               markdown={editedResponse}
@@ -290,6 +337,52 @@ const QuickFactsBoxInner: React.FC<QuickFactsBoxProps> = props => {
             // </Text>
           ) : (
             <WYSIWYGEditor
+              updateRating={(key, value) => {
+                if (value === undefined) {
+                  return;
+                } else {
+                  const getRating: () => Reviews = () => {
+                    if (queryRecord.reviews === undefined) {
+                      return {
+                        'infoIsActionable': 'N/A',
+                        'infoIsCorrect': 'N/A',
+                        'infoIsMissing': 'N/A',
+                      }
+                    } else {
+                      if (queryRecord.reviews[currentUser?.email as string] === undefined) {
+                        return {
+                          'infoIsActionable': 'N/A',
+                          'infoIsCorrect': 'N/A',
+                          'infoIsMissing': 'N/A',
+                        }
+                      } else {
+                        return queryRecord.reviews[currentUser?.email as string];
+                      }
+                    }
+                  };
+                  const currentReviews = queryRecord.reviews === undefined ? {} : queryRecord.reviews;
+                  const updatedUserReview: Reviews = {
+                    ...getRating(),
+                    [key]: value,
+                  };
+                  const newQuery: QueryRecord = {
+                    ...queryRecord,
+                    reviews: {
+                      ...currentReviews,
+                      [currentUser?.email as string]: updatedUserReview,
+                    },
+                  };
+                  setRemoteQueryRecord(newQuery);
+                  reportTrackingEvent({
+                    type: 'update-rating-for-query',
+                    query: newQuery
+                  }, currentUser?.email as string, pageContext);
+                  setQueries({
+                    ...queries,
+                    [queryRecord.query]: newQuery
+                  });
+                }
+              }}
               readOnly={false}
               hideFeedback={false}
               markdown={editedResponse}

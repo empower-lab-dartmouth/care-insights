@@ -171,6 +171,14 @@ export type TranscriptSegment = {
     offsetSeconds: number,
 }
 
+export type LikertScale = 'Strongly disagree' | 'Disagree' | 'Agree' |  'Strongly agree' | 'N/A';
+
+export type Reviews = {
+  infoIsCorrect: LikertScale;
+  infoIsMissing: LikertScale;
+  infoIsActionable: LikertScale;
+}
+
 export type MusicProgramEvent = {
     type: 'music-event',
     facilityId: string,
@@ -188,6 +196,7 @@ export type MusicProgramEvent = {
     heatmap: string,
     meaningfulMoments: Record<string, MeaningfulMoment>,
     transcript: TranscriptSegment[],
+    reviews?: Record<string, Reviews>
 } & CommonEventFields
 
 export type ManualEntryEvent = {

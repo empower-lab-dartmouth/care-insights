@@ -6,6 +6,8 @@ import {
   VIDEO_APPROVAL_REQUIRED,
   MusicProgramEvent,
   ProgramEvent,
+  Reviews,
+  LikertScale,
 } from '../../../state/types';
 import EventsTimeline from '../Timeline/Timeline';
 import Stack from '@mui/material/Stack';
@@ -17,7 +19,7 @@ import { AuthContext } from '../../../state/context/auth-context';
 import { expandedProgramRowState, pageContextState } from '../../../state/recoil';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { QuickInfo } from '../../summaryInsights/CareInsights';
-import { Center, Group, Switch } from '@mantine/core';
+import { Center, Group, SegmentedControl, Switch, Text } from '@mantine/core';
 import { IS_ADMIN } from '../../../state/globals';
 import { useLocation } from 'react-router-dom';
 import { ErrorBoundary }
@@ -53,6 +55,67 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const showAdminControls = (dev || IS_ADMIN) && videoApprovalRequriedForSite;
   const videoHasBeenApproved = (programEvent.videoApproved != undefined && programEvent.videoApproved == true);
   const videoNotApproved = videoApprovalRequriedForSite && !userHasPermissions && !videoHasBeenApproved;
+  const includeRating = true;//location.search.includes('review=true');
+  const scale: { label: LikertScale, value: LikertScale }[] = [
+    { label: 'Strongly disagree', value: 'Strongly disagree' },
+    { label: 'Disagree', value: 'Disagree' },
+    { label: 'Agree', value: 'Agree' },
+    { label: 'Strongly agree', value: 'Strongly agree' },
+    { label: 'N/A', value: 'N/A' },
+  ];
+  const updateProgramEventsWithReview = (key: keyof Reviews, value: LikertScale | undefined) => {
+    if (value === undefined) {
+      return;
+    } else {
+      const currentReviews = programEvent.reviews === undefined ? {} : programEvent.reviews;
+      const updatedUserReview: Reviews = {
+        ...getRating(),
+        [key]: value,
+      };
+      setProgramEvent({
+        ...programEvent,
+        reviews: {
+          ...currentReviews,
+          [currentUser?.email as string]: updatedUserReview,
+        },
+      });
+    }
+  }
+
+  const getColor = (key: LikertScale) => {
+    switch (key) {
+      case 'Agree':
+        return 'green';
+      case 'Strongly agree':
+        return 'darkGreen';
+      case 'Disagree':
+        return 'red';
+      case 'Strongly disagree':
+        return 'darkRed'
+      default:
+        return 'grey';
+    }
+  }
+  const getRating: () => Reviews = () => {
+    if (programEvent.reviews === undefined) {
+      return {
+        'infoIsActionable': 'N/A',
+        'infoIsCorrect': 'N/A',
+        'infoIsMissing': 'N/A',
+      }
+    } else {
+      if (programEvent.reviews[currentUser?.email as string] === undefined) {
+        return {
+          'infoIsActionable': 'N/A',
+          'infoIsCorrect': 'N/A',
+          'infoIsMissing': 'N/A',
+        }
+      } else {
+        return programEvent.reviews[currentUser?.email as string];
+      }
+    }
+  }
+  const rating = getRating();
 
   const ErrorFallback: React.FC<any> =
     ({ error }) => (
@@ -117,11 +180,52 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
             {
               videoSrc === 'video-missing' ? <h3>This video is no longer available</h3> :
                 <>
-                  {videoNotApproved ? <div style={{ width: 600, overflow: 'auto' }}>TEST<QuickInfo
+                  {videoNotApproved ? <div style={{ width: 600, overflow: 'auto' }}><QuickInfo
                     value={'Unreleased'}
                     label={''}
                   /><p>The facility admin <br />must manually <br /> review and <br />release all videos.</p></div> :
                     <>
+                      {includeRating ? <Stack style={{backgroundColor: '#F1F1F1', borderRadius: 25,color: 'darkBlue', padding: 20}}>
+                        <div>
+                          <Text size="sm" fw={500} mb={3}>
+                            The generated summary is accurate.
+                          </Text>
+                          <SegmentedControl
+                            color={getColor(rating.infoIsCorrect)}
+                            value={rating.infoIsCorrect}
+                            onChange={(value) => {
+                              updateProgramEventsWithReview('infoIsCorrect', value as LikertScale);
+                            }}
+                            data={scale}
+                          />
+                        </div>
+                        <div>
+                          <Text size="sm" fw={500} mb={3}>
+                            The generated summary includes all the important information.
+                          </Text>
+                          <SegmentedControl
+                            color={getColor(rating.infoIsMissing)}
+                            value={rating.infoIsMissing}
+                            onChange={(value) => {
+                              updateProgramEventsWithReview('infoIsMissing', value as LikertScale);
+                            }}
+                            data={scale}
+                          />
+                        </div>
+                        <div>
+                          <Text size="sm" fw={500} mb={3}>
+                            The generated summary is appropriately concise and actionable.
+                          </Text>
+                          <SegmentedControl
+                            color={getColor(rating.infoIsActionable)}
+                            value={rating.infoIsActionable}
+                            onChange={(value) => {
+                              updateProgramEventsWithReview('infoIsActionable', value as LikertScale);
+                            }}
+                            data={scale}
+                          />
+                        </div>
+                      </Stack> : <></>}
                       <ErrorBoundary
                         FallbackComponent={ErrorFallback}>
                         <ReactPlayer

@@ -27,7 +27,7 @@ import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import LoopIcon from '@mui/icons-material/Loop';
 import CancelIcon from '@mui/icons-material/Cancel';
 import WYSIWYGEditor from '../WYSIWYGEditor/WYSIWYGEditor';
-import { PageState } from '../../../state/types';
+import { PageState, Reviews } from '../../../state/types';
 import { delayThenDo } from '../../../state/sampleData';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import SearchBox from './SearchBox';
@@ -48,6 +48,7 @@ import { Check } from 'lucide-react';
 import { reportTrackingEvent } from '../../../state/tracking';
 import { setRemoteQueryRecord } from '../../../state/setting';
 import { loadCRData } from '../../../state/fetching';
+import { query } from 'firebase/firestore';
 
 const inputStyles = {
   'width': '100%',
@@ -222,9 +223,9 @@ const QuestionAndAnswerPanel: React.FC = () => {
   }
   if (pageContext.insightsQuery.CRUUID !== pageContext.selectedCR) {
     return (<><Title>Get started by asking a question</Title>
-    <Button onClick={() => {
-      makeQuery(true, 'What are some good ways to support ' + displayName + '?');
-    }}>Get started</Button>
+      <Button onClick={() => {
+        makeQuery(true, 'What are some good ways to support ' + displayName + '?');
+      }}>Get started</Button>
     </>)
   }
 
@@ -234,7 +235,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
         <Group justify='flex-end'>
           {responseChip(loadingResponse, alreadyApproved)}
         </Group>
-        {editingQuery === '' ? <Title order={5}>Use the gray search search box below to type in a question</Title> : <></>} 
+        {editingQuery === '' ? <Title order={5}>Use the gray search search box below to type in a question</Title> : <></>}
         {editingQuery && (
           <div className='flex flex-col gap-2'>
             <Title order={5}>{editingQuery || editedResponse === 'loading' || editingQuery === '<loading>' || editedResponse === DEFAULT_QUERY_RESPONSE_MESSAGE ? 'Editing question:' : 'You asked:'}</Title>
@@ -245,15 +246,65 @@ const QuestionAndAnswerPanel: React.FC = () => {
         {editedResponse && (
           <div className='mt-4'>
             <div className='flex gap-3'>
-            {editingQuery === '' ? <></> : <>
-              {
-                queryModified || editedResponse === 'loading' || editingQuery === '<loading>' || editedResponse === DEFAULT_QUERY_RESPONSE_MESSAGE ? <Title order={5}>Ask a question!</Title> :
-                  <Title order={5}>More details regarding your question:</Title>}</>}
+              {editingQuery === '' ? <></> : <>
+                {
+                  queryModified || editedResponse === 'loading' || editingQuery === '<loading>' || editedResponse === DEFAULT_QUERY_RESPONSE_MESSAGE ? <Title order={5}>Ask a question!</Title> :
+                    <Title order={5}>More details regarding your question:</Title>}</>}
             </div>
             {
               editedResponse === 'loading' || editingQuery === '<loading>' || editedResponse === DEFAULT_QUERY_RESPONSE_MESSAGE ?
                 <></> :
                 <WYSIWYGEditor
+                  updateRating={(key, value) => {
+                    if (value === undefined) {
+                      return;
+                    } else {
+                      const getRating: () => Reviews = () => {
+                        if (pageContext.insightsQuery.reviews === undefined) {
+                          return {
+                            'infoIsActionable': 'N/A',
+                            'infoIsCorrect': 'N/A',
+                            'infoIsMissing': 'N/A',
+                          }
+                        } else {
+                          if (pageContext.insightsQuery.reviews[currentUser?.email as string] === undefined) {
+                            return {
+                              'infoIsActionable': 'N/A',
+                              'infoIsCorrect': 'N/A',
+                              'infoIsMissing': 'N/A',
+                            }
+                          } else {
+                            return pageContext.insightsQuery.reviews[currentUser?.email as string];
+                          }
+                        }
+                      };
+                      const currentReviews = pageContext.insightsQuery.reviews === undefined ? {} : pageContext.insightsQuery.reviews;
+                      const updatedUserReview: Reviews = {
+                        ...getRating(),
+                        [key]: value,
+                      };
+                      const newQuery: QueryRecord = {
+                        ...pageContext.insightsQuery,
+                        reviews: {
+                          ...currentReviews,
+                          [currentUser?.email as string]: updatedUserReview,
+                        },
+                      };
+                      setRemoteQueryRecord(newQuery);
+                      reportTrackingEvent({
+                        type: 'update-rating-for-query',
+                        query: newQuery
+                      }, currentUser?.email as string, pageContext);
+                      setQueries({
+                        ...queries,
+                        [pageContext.insightsQuery.query]: newQuery
+                      });
+                      setPageContext({
+                        ...pageContext,
+                        insightsQuery: newQuery,
+                      });
+                    }
+                  }}
                   hideFeedback={false}
                   query={pageContext.insightsQuery}
                   longform={true}
@@ -433,39 +484,39 @@ const QuestionAndAnswerPanel: React.FC = () => {
               )}
               </>)}
       </Card>
-        <div className='block lg:absolute w-full bottom-1 lg:flex flex-col gap-6'>
-          <div className='mt-8'>
-            <SuggestedText
-              textSuggestions={pageContext.suggestedQueries}
-              currentText={editingQuery}
-              onSelected={async option => {
-                // console.log('use query string: ' + option.query);
-                setEditingQuery(option.query);
-                makeQuery(true, option.query);
-              }}
-              loadMoreSuggestions={() =>
-                setPageContext({
-                  ...pageContext,
-                  suggestedQueries: Object.values(queries),
-                })
-              }
-              hasMoreSuggestions={
-                pageContext.suggestedQueries.length !==
-                Object.values(queries).length
-              }
-            />
-          </div>
-          <SearchBox
-            value={editingQuery}
-            onSearch={(regen: boolean) => makeQuery(regen, editingQuery)}
-            onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
-              if (event.target.value.endsWith('\n')) {
-                makeQuery(false, editingQuery);
-              } else {
-                setEditingQuery(event.target.value);
-              }
+      <div className='block lg:absolute w-full bottom-1 lg:flex flex-col gap-6'>
+        <div className='mt-8'>
+          <SuggestedText
+            textSuggestions={pageContext.suggestedQueries}
+            currentText={editingQuery}
+            onSelected={async option => {
+              // console.log('use query string: ' + option.query);
+              setEditingQuery(option.query);
+              makeQuery(true, option.query);
             }}
+            loadMoreSuggestions={() =>
+              setPageContext({
+                ...pageContext,
+                suggestedQueries: Object.values(queries),
+              })
+            }
+            hasMoreSuggestions={
+              pageContext.suggestedQueries.length !==
+              Object.values(queries).length
+            }
           />
+        </div>
+        <SearchBox
+          value={editingQuery}
+          onSearch={(regen: boolean) => makeQuery(regen, editingQuery)}
+          onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
+            if (event.target.value.endsWith('\n')) {
+              makeQuery(false, editingQuery);
+            } else {
+              setEditingQuery(event.target.value);
+            }
+          }}
+        />
       </div>
     </div >
   );

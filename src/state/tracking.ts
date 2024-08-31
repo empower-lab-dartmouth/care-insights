@@ -24,6 +24,11 @@ export type NewUserRequest = {
     userType: string,
 }
 
+export type UpdateRatingForQuery = {
+    type: 'update-rating-for-query'
+    query: QueryRecord,
+}
+
 export type ToggleTranscript = {
     type: 'toggle-transcript',
     programEventId: string,
@@ -71,7 +76,7 @@ type ManualEventCreated = {
     event: ProgramEvent
 }
 
-export type TrackingEvent = JumpToTimeInInTranscript | ToggleTranscript | NewUserRequest | ClickedDetails| BasicEvent | EventWithContext | DebuggingEvent | ManualEventCreated | ClickOnCitation | FeedbackCreated;
+export type TrackingEvent = UpdateRatingForQuery | JumpToTimeInInTranscript | ToggleTranscript | NewUserRequest | ClickedDetails| BasicEvent | EventWithContext | DebuggingEvent | ManualEventCreated | ClickOnCitation | FeedbackCreated;
 
 export const reportTrackingEvent = async (e: TrackingEvent, username: string, pageState: PageState) => {
     console.log('tracking event');

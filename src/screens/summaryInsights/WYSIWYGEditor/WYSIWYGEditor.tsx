@@ -1,4 +1,4 @@
-import React, { ReactNode, useReducer } from 'react';
+import React, { ReactNode, useContext, useEffect, useReducer, useState } from 'react';
 import '@mdxeditor/editor/style.css';
 import '@tailwindcss/typography';
 import {
@@ -22,17 +22,19 @@ import Markdown from 'react-markdown'
 import { useLocation } from 'react-router-dom';
 import { SetterOrUpdater, useRecoilState, useRecoilValue } from 'recoil';
 import { careRecipientsInfoState, expandedProgramRowState, feedbackModalState, pageContextState } from '../../../state/recoil';
-import { Button, ButtonGroup, Group, Stack } from "@mantine/core"
+import { Button, ButtonGroup, Group, Text, Stack, SegmentedControl } from "@mantine/core"
 import { GenericJsxEditor, JsxComponentDescriptor, NestedLexicalEditor, insertJsx$, jsxPlugin, usePublisher } from "@mdxeditor/editor"
 import { MenuButton } from "../../../components/UserShell"
 import { MessageCircleQuestion, MessageSquareText, SquarePlay } from "lucide-react"
 import { replaceKeyInURI } from "../../videoAnalysis/programEventsTable/StreamGraph/utils"
-import { CRProgramEvents, FeedbackContent, FeedbackEventTypes, FeedbackModifier, ProgramEventIndex } from '../../../state/types';
+import { CRProgramEvents, FeedbackContent, FeedbackEventTypes, FeedbackModifier, LikertScale, ProgramEventIndex, Reviews } from '../../../state/types';
 import { DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG } from '../../../state/globals';
 import { filter } from 'd3';
 import { IconThumbDown, IconThumbUp } from '@tabler/icons-react';
 import { QueryRecord } from '../../../state/queryingTypes';
 import { sampleAvoidQuery, sampleDoQuery, sampleRedirectQuery, sampleSymptomsQuery } from '../../../state/fetching';
+import { AuthContext } from '../../../state/context/auth-context';
+import { reportTrackingEvent } from '../../../state/tracking';
 
 const inputStyles = {
   'width': '100%',
@@ -116,6 +118,7 @@ type WYSIWYGEditorProps = {
   longform: boolean;
   query: QueryRecord;
   hideFeedback: boolean;
+  updateRating: (key: keyof Reviews, value: LikertScale | undefined) => void
 };
 
 const cleanLink = (t: string) => t.replaceAll('\\cite{', '').replaceAll('}', '').trim();
@@ -375,6 +378,7 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   longform,
   query,
   hideFeedback,
+  updateRating,
 }) => {
   // NOTE: All this force updating is required to get the MDX
   // editor to load the proper content.
@@ -383,10 +387,118 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   // ref hook.
   const [, forceUpdate] = useReducer(x => x + 1, 0);
   const { pathname } = useLocation();
+  const { currentUser } = useContext(AuthContext);
   const pageState = useRecoilValue(pageContextState);
   const [_, setFeedbackModal] = useRecoilState(feedbackModalState);
   const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
   const CRName = careRecipientsInfo[pageState.selectedCR] ? careRecipientsInfo[pageState.selectedCR].name : 'NONE';
+  const includeRating = true;//location.search.includes('review=true');
+  const scale: { label: LikertScale, value: LikertScale }[] = [
+    { label: 'Strongly disagree', value: 'Strongly disagree' },
+    { label: 'Disagree', value: 'Disagree' },
+    { label: 'Agree', value: 'Agree' },
+    { label: 'Strongly agree', value: 'Strongly agree' },
+    { label: 'N/A', value: 'N/A' },
+  ];
+
+  const getColor = (key: LikertScale) => {
+    switch (key) {
+      case 'Agree':
+        return 'green';
+      case 'Strongly agree':
+        return 'darkGreen';
+      case 'Disagree':
+        return 'red';
+      case 'Strongly disagree':
+        return 'darkRed'
+      default:
+        return 'grey';
+    }
+  }
+  const getRating: () => Reviews = () => {
+    if (query.reviews === undefined) {
+      return {
+        'infoIsActionable': 'N/A',
+        'infoIsCorrect': 'N/A',
+        'infoIsMissing': 'N/A',
+      }
+    } else {
+      if (query.reviews[currentUser?.email as string] === undefined) {
+        return {
+          'infoIsActionable': 'N/A',
+          'infoIsCorrect': 'N/A',
+          'infoIsMissing': 'N/A',
+        }
+      } else {
+        return query.reviews[currentUser?.email as string];
+      }
+    }
+  }
+  const [rating, setRating] = useState<Reviews>(getRating());
+  // useEffect(() => {
+  //   setRating(getRating());
+  // }, [query]);
+  const ratingControls = <>
+    {includeRating ? <Stack style={{backgroundColor: '#F1F1F1', borderRadius: 25,color: 'darkBlue', padding: 20}}>
+      <div >
+        <Text size="sm" fw={500} mb={3}>
+          The generated summary is accurate.
+        </Text>
+        <SegmentedControl
+          color={getColor(rating.infoIsCorrect)}
+          value={rating.infoIsCorrect}
+          onChange={(value) => {
+            updateRating('infoIsCorrect', value as LikertScale);
+            if (value !== undefined) {
+              setRating({
+                ...rating,
+                'infoIsCorrect': value as LikertScale,
+              });
+            }
+          }}
+          data={scale}
+        />
+      </div>
+      <div>
+        <Text size="sm" fw={500} mb={3}>
+          The generated summary includes all the important information.
+        </Text>
+        <SegmentedControl
+          color={getColor(rating.infoIsMissing)}
+          value={rating.infoIsMissing}
+          onChange={(value) => {
+            updateRating('infoIsMissing', value as LikertScale);
+            if (value !== undefined) {
+              setRating({
+                ...rating,
+                'infoIsMissing': value as LikertScale,
+              });
+            }
+          }}
+          data={scale}
+        />
+      </div>
+      <div>
+        <Text size="sm" fw={500} mb={3}>
+          The generated summary is appropriately concise and actionable.
+        </Text>
+        <SegmentedControl
+          color={getColor(rating.infoIsActionable)}
+          value={rating.infoIsActionable}
+          onChange={(value) => {
+            updateRating('infoIsActionable', value as LikertScale);
+            if (value !== undefined) {
+              setRating({
+                ...rating,
+                'infoIsActionable': value as LikertScale,
+              });
+            }
+          }}
+          data={scale}
+        />
+      </div>
+    </Stack> : <></>}</>;
+
   const getFeedbackType: (query: QueryRecord) => FeedbackEventTypes = (query) => {
     switch (query.query) {
       case sampleAvoidQuery(CRName): {
@@ -417,28 +529,38 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   if (readOnly) {
     if (longform) {
       if (DEEP_LINKS_TO_PROGRAM_EVENTS_FLAG) {
-        return addCitations(markdown, pageState.selectedCRProgramEvents, getFeedbackType(query), query, setFeedbackModal, false, longform);
+        return <>
+          {addCitations(markdown, pageState.selectedCRProgramEvents, getFeedbackType(query), query, setFeedbackModal, false, longform)}
+          {ratingControls}
+        </>;
       } else {
         return markdown;
       }
     } else {
       return (
-        wrapAsLink(markdown, pathname, pageState.selectedCR, getFeedbackType(query), query, setFeedbackModal, false, longform));
+        <>
+          {wrapAsLink(markdown, pathname, pageState.selectedCR, getFeedbackType(query), query, setFeedbackModal, false, longform)}
+          {ratingControls}
+        </>
+      );
     }
   }
   return (
-    <div className='z-10'>
-      <TextField
-        id='outlined-basic'
-        multiline
-        value={markdown}
-        onChange={(
-          event: React.ChangeEvent<HTMLInputElement>
-        ) => {
-          onChange(event.target.value);
-        }}
-        sx={inputStyles}
-      />
+    <div>
+      <div className='z-10'>
+        <TextField
+          id='outlined-basic'
+          multiline
+          value={markdown}
+          onChange={(
+            event: React.ChangeEvent<HTMLInputElement>
+          ) => {
+            onChange(event.target.value);
+          }}
+          sx={inputStyles}
+        />
+      </div>
+      {ratingControls}
     </div>
   );
 };
