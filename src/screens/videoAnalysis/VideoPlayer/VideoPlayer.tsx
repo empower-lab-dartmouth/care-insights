@@ -188,7 +188,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
                       {includeRating ? <Stack style={{backgroundColor: '#F1F1F1', borderRadius: 25,color: 'darkBlue', padding: 20}}>
                         <div>
                           <Text size="sm" fw={500} mb={3}>
-                            The summary is accurate.
+                            The summary accurately describes moments.
                           </Text>
                           <SegmentedControl
                             color={getColor(rating.infoIsCorrect)}
@@ -201,7 +201,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
                         </div>
                         <div>
                           <Text size="sm" fw={500} mb={3}>
-                            The summary includes the most important information.
+                            The summary points out the meaningful moments of engagement.
                           </Text>
                           <SegmentedControl
                             color={getColor(rating.infoIsMissing)}
