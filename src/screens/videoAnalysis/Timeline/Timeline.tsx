@@ -51,11 +51,10 @@ function titleCase(str: string) {
 }
 
 const EventProperties: React.FC<EventPropertiesProps> = ({ programEvent }) => {
+  const showSessionID = location.search.includes('showSessionID=true');
   const caregiverNotes = programEvent.manualEvents === undefined ? [] : programEvent.manualEvents.filter((v) => v.type === 'note').map((v) => v.value);
   return <div className='border rounded-md border-dashed p-3 mr-4 mb-4'>
-    {/* <Center> */}
-    {"session ID: "}
-    {programEvent.uuid}
+    {showSessionID ? `Session ID: ${programEvent.uuid}` : <></>}
     <Group>
       <div>
         <Text className='font-semibold text-1xl text-primary'>{titleCase(programEvent.therapyEffectiveness)}</Text>
