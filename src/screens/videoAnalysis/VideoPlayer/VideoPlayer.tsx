@@ -55,7 +55,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const showAdminControls = (dev || IS_ADMIN) && videoApprovalRequriedForSite;
   const videoHasBeenApproved = (programEvent.videoApproved != undefined && programEvent.videoApproved == true);
   const videoNotApproved = videoApprovalRequriedForSite && !userHasPermissions && !videoHasBeenApproved;
-  const includeRating = true;//location.search.includes('review=true');
+  const includeRating = !location.search.includes('review=false');
   const scale: { label: LikertScale, value: LikertScale }[] = [
     { label: 'Strongly disagree', value: 'Strongly disagree' },
     { label: 'Disagree', value: 'Disagree' },

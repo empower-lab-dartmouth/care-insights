@@ -392,7 +392,7 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   const [_, setFeedbackModal] = useRecoilState(feedbackModalState);
   const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
   const CRName = careRecipientsInfo[pageState.selectedCR] ? careRecipientsInfo[pageState.selectedCR].name : 'NONE';
-  const includeRating = true;//location.search.includes('review=true');
+  const includeRating = !location.search.includes('review=false');
   const scale: { label: LikertScale, value: LikertScale }[] = [
     { label: 'Strongly disagree', value: 'Strongly disagree' },
     { label: 'Disagree', value: 'Disagree' },

@@ -179,6 +179,14 @@ export type Reviews = {
   infoIsActionable: LikertScale;
 }
 
+export type ManualEvent = {
+    type: 'NoteEvent'
+    value: string,
+} | {
+    type: string,
+    value: string
+}
+
 export type MusicProgramEvent = {
     type: 'music-event',
     facilityId: string,
@@ -197,6 +205,7 @@ export type MusicProgramEvent = {
     meaningfulMoments: Record<string, MeaningfulMoment>,
     transcript: TranscriptSegment[],
     reviews?: Record<string, Reviews>
+    manualEvents?: ManualEvent[]
 } & CommonEventFields
 
 export type ManualEntryEvent = {

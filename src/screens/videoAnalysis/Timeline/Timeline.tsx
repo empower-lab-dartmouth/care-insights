@@ -37,8 +37,79 @@ import { setRemoteProgramEvent } from '../../../state/setting';
 import CommonRowControls from '../CommonRowControls/CommonRowControls';
 import MovieIcon from '@mui/icons-material/Movie';
 import HideSourceIcon from '@mui/icons-material/HideSource';
-import { Avatar } from '@mantine/core';
+import { Avatar, Center, Divider, Group, Text } from '@mantine/core';
 import { IconArrowBounce, IconCornerRightDown, IconCornerRightUp, IconMoodNervous, IconPlayerPlay } from '@tabler/icons-react';
+
+type EventPropertiesProps = {
+  programEvent: MusicProgramEvent
+}
+
+function titleCase(str: string) {
+  return str.toLowerCase().split(' ').map(function (word: string) {
+    return (word.charAt(0).toUpperCase() + word.slice(1));
+  }).join(' ');
+}
+
+const EventProperties: React.FC<EventPropertiesProps> = ({ programEvent }) => {
+  const caregiverNotes = programEvent.manualEvents === undefined ? [] : programEvent.manualEvents.filter((v) => v.type === 'note').map((v) => v.value);
+  return <div className='border rounded-md border-dashed p-3 mr-4 mb-4'>
+    {/* <Center> */}
+    {"session ID: "}
+    {programEvent.uuid}
+    <Group>
+      <div>
+        <Text className='font-semibold text-1xl text-primary'>{titleCase(programEvent.therapyEffectiveness)}</Text>
+        <Text className='text-gray-500 text-sm mt-1'>{"Therapy effectiveness"}</Text>
+      </div>
+      <Divider orientation="vertical" />
+      <div>
+        <Text className='font-semibold text-1xl text-primary'>{titleCase(programEvent.preTestMood)}</Text>
+        <Text className='text-gray-500 text-sm mt-1'>{"Pre-session mood"}</Text>
+      </div>
+      <Divider orientation="vertical" />
+      <div>
+        <Text className='font-semibold text-1xl text-primary'>{titleCase(programEvent.postTestMood)}</Text>
+        <Text className='text-gray-500 text-sm mt-1'>{"Post-session mood"}</Text>
+      </div>
+      <Divider orientation="vertical" />
+      <div>
+        <Text className='font-semibold text-1xl text-primary'>{titleCase(programEvent.symptom)}</Text>
+        <Text className='text-gray-500 text-sm mt-1'>{"Symptoms treated"}</Text>
+      </div>
+      <Divider orientation="vertical" />
+      <div>
+        <Text className='font-semibold text-1xl text-primary'>{titleCase(programEvent.strategy)}</Text>
+        <Text className='text-gray-500 text-sm mt-1'>{"Therapy strategy"}</Text>
+      </div>
+      <Divider orientation="vertical" />
+      <div>
+        <Text className='font-semibold text-1xl text-primary'>{titleCase(programEvent.caregiverName)}</Text>
+        <Text className='text-gray-500 text-sm mt-1'>{"Caregiver name"}</Text>
+      </div>
+      <Divider orientation="vertical" />
+      <div>
+        <Text className='font-semibold text-1xl text-primary'>{"Music Therapy"}</Text>
+        <Text className='text-gray-500 text-sm mt-1'>{"Therapy type"}</Text>
+      </div>
+      <Divider orientation="vertical" />
+    </Group>
+    {caregiverNotes.length > 0 ?
+      <div>
+        <Divider orientation="horizontal" />
+        <Stack>
+          <Center>
+            <Text className='font-semibold text-1xl text-primary'>{"Caregiver notes"}</Text>
+          </Center>
+          <Center>
+            <Text className='text-gray-500 text-sm mt-1'>{caregiverNotes.join('\n')}</Text>
+          </Center>
+        </Stack> 
+      </div>: <></>
+      }
+    {/* </Center> */}
+  </div>
+}
+
 
 const inputStyles = {
   'width': '100%',
@@ -114,13 +185,13 @@ function icon(moment: MeaningfulMoment) {
     case 'song':
       return (
         // <TimelineDot>
-          <Avatar
-            variant='light'
-            // size={0}
-            src={moment.albumCover}
-            alt='Album cover'
-          />
-          ///* <MusicNoteIcon /> */
+        <Avatar
+          variant='light'
+          // size={0}
+          src={moment.albumCover}
+          alt='Album cover'
+        />
+        ///* <MusicNoteIcon /> */
         // </TimelineDot>
       );
     case 'programEvent':
@@ -407,7 +478,7 @@ const EventsTimeline: React.FC<TimelineProps> = props => {
             {Object.values(localEvents)
               .sort((b, a) => a.startTime - b.startTime)
               .map(e => (
-                <TimelineItem key={e.startTime} style={conditionalBackground(e.startTime/1000, playedSeconds, videoStarted)}>
+                <TimelineItem key={e.startTime} style={conditionalBackground(e.startTime / 1000, playedSeconds, videoStarted)}>
                   <TimelineOppositeContent
                     sx={{
                       'm': 'auto 0',
@@ -483,6 +554,7 @@ const EventsTimeline: React.FC<TimelineProps> = props => {
           />
           {toggleShowVideoButton}
         </Stack>
+        <EventProperties programEvent={programEvent} />
         <Timeline
           sx={{
             [`& .${timelineOppositeContentClasses.root}`]: {
@@ -493,7 +565,7 @@ const EventsTimeline: React.FC<TimelineProps> = props => {
           {Object.values(events)
             .sort((a, b) => a.startTime - b.startTime)
             .map(e => (
-              <TimelineItem onClick={() => seekTo(Math.max(0, (e.startTime / 1000) - 20))} key={e.startTime} style={conditionalBackground(e.startTime /1000, playedSeconds, videoStarted)}>
+              <TimelineItem onClick={() => seekTo(Math.max(0, (e.startTime / 1000) - 20))} key={e.startTime} style={conditionalBackground(e.startTime / 1000, playedSeconds, videoStarted)}>
                 <TimelineOppositeContent
                   sx={{
                     'm': 'auto 0',
