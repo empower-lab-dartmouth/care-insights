@@ -480,7 +480,7 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
       </div>
       <div>
         <Text size="sm" fw={500} mb={3}>
-        The summary is concise and actionable.
+        The summary is useful.
         </Text>
         <SegmentedControl
           color={getColor(rating.infoIsActionable)}
