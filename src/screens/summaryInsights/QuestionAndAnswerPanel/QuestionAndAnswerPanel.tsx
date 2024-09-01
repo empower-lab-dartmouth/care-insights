@@ -26,7 +26,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import LoopIcon from '@mui/icons-material/Loop';
 import CancelIcon from '@mui/icons-material/Cancel';
-import WYSIWYGEditor from '../WYSIWYGEditor/WYSIWYGEditor';
+import WYSIWYGEditor, { cleanStringOfCitations } from '../WYSIWYGEditor/WYSIWYGEditor';
 import { PageState, Reviews } from '../../../state/types';
 import { delayThenDo } from '../../../state/sampleData';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
@@ -239,7 +239,7 @@ const QuestionAndAnswerPanel: React.FC = () => {
         {editingQuery && (
           <div className='flex flex-col gap-2'>
             <Title order={5}>{editingQuery || editedResponse === 'loading' || editingQuery === '<loading>' || editedResponse === DEFAULT_QUERY_RESPONSE_MESSAGE ? 'Editing question:' : 'You asked:'}</Title>
-            <Text style={{ color: 'blue' }}>{editingQuery}</Text>
+            <Text style={{ color: 'blue' }}>{cleanStringOfCitations(editingQuery)}</Text>
           </div>
         )}
 
