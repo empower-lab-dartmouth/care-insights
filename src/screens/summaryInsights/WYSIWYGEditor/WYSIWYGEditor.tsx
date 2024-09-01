@@ -461,7 +461,7 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
       </div>
       <div>
         <Text size="sm" fw={500} mb={3}>
-        The summary includes the most important information.
+        The summary points out the important information.
         </Text>
         <SegmentedControl
           color={getColor(rating.infoIsMissing)}
