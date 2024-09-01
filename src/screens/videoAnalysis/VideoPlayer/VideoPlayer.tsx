@@ -214,7 +214,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
                         </div>
                         <div>
                           <Text size="sm" fw={500} mb={3}>
-                            The summary looks like the observations of a caregiver.
+                            The summary is a useful description of the video.
                           </Text>
                           <SegmentedControl
                             color={getColor(rating.infoIsActionable)}
