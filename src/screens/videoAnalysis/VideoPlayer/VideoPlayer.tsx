@@ -16,7 +16,7 @@ import Transcript from '../Transcript/Transcript';
 import { StreamGraphPageViewsDemo } from '../programEventsTable/StreamGraph/StreamGraphPageViewsDemo';
 import PlayMux from './MuxPlayer';
 import { AuthContext } from '../../../state/context/auth-context';
-import { expandedProgramRowState, pageContextState } from '../../../state/recoil';
+import { expandedProgramRowState, hideFeedbackState, pageContextState } from '../../../state/recoil';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { QuickInfo } from '../../summaryInsights/CareInsights';
 import { Center, Group, SegmentedControl, Switch, Text } from '@mantine/core';
@@ -55,7 +55,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const showAdminControls = (dev || IS_ADMIN) && videoApprovalRequriedForSite;
   const videoHasBeenApproved = (programEvent.videoApproved != undefined && programEvent.videoApproved == true);
   const videoNotApproved = videoApprovalRequriedForSite && !userHasPermissions && !videoHasBeenApproved;
-  const includeRating = !location.search.includes('review=false');
+  const [hideFeedbackChecked, setHideFeedback] = useRecoilState(hideFeedbackState);
+
+  const includeRating = !hideFeedbackChecked;//
   const scale: { label: LikertScale, value: LikertScale }[] = [
     { label: 'Strongly disagree', value: 'Strongly disagree' },
     { label: 'Disagree', value: 'Disagree' },

@@ -61,7 +61,7 @@ export const formatExtendedAttributesAsInfoBox: (extendedAttributes: ExtendedAtt
           case 'gender':
             return {
               label: 'Gender',
-              value: value == 'M' ? 'Male' : 'Female'
+              value: value == 'M' ? 'Male' : (value == 'F' ? 'Female' : 'Not specified'),
             };
           case 'yearOfBirth':
             return {

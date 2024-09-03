@@ -24,6 +24,11 @@ export const feedbackModalState = atom<false | FeedbackContent>({
   default: false,
 });
 
+export const hideFeedbackState = atom<boolean>({
+  key: 'hide-feedback-button',
+  default: true,
+});
+
 export const expandedProgramRowState = atom<ProgramEventIndex | undefined>({
   key: 'expanded-program-row',
   default: undefined,

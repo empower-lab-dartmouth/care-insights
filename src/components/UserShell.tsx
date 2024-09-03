@@ -1,4 +1,4 @@
-import { AppShell, Avatar, UnstyledButton, Text } from '@mantine/core';
+import { AppShell, Avatar, UnstyledButton, Text, Switch } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -9,7 +9,7 @@ import { IconLogout, IconMenu2, IconQuestionMark, IconX } from '@tabler/icons-re
 import { useCookies } from 'react-cookie';
 import SessionTracker from '../Tracker';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { careRecipientsInfoState, expandedProgramRowState, extededAttributesState, pageContextState, queriesForCurrentCGState } from '../state/recoil';
+import { careRecipientsInfoState, expandedProgramRowState, extededAttributesState, hideFeedbackState, pageContextState, queriesForCurrentCGState } from '../state/recoil';
 import { QueryRecord } from '../state/queryingTypes';
 import { askQuery } from '../state/querying';
 import { setCareRecipientInfo, setRemoteQueryRecord } from '../state/setting';
@@ -101,7 +101,7 @@ export const MenuButton = ({
   const search = s ? s : s2;
   return (
     <Link to={{ pathname: path, search }} onClick={() => {
-      if (programEventIndex !== undefined)  {
+      if (programEventIndex !== undefined) {
         reportTrackingEvent({
           type: 'citation',
           index: programEventIndex
@@ -174,6 +174,7 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
   const [_, setCRs] = useRecoilState(careRecipientsInfoState);
   const [extendedAttributes, setExtendedAttributes] = useRecoilState(extededAttributesState);
   const [pageContext, setPageContext] = useRecoilState(pageContextState);
+  const [hideFeedback, setHideFeedback] = useRecoilState(hideFeedbackState);
 
 
   return (
@@ -201,6 +202,12 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
               </div>
             </div>
             <div className='flex items-center gap-2'>
+              <Switch
+                labelPosition="left"
+                label="Hide feedback"
+                checked={hideFeedback}
+                onChange={(event) => setHideFeedback(event.currentTarget.checked)}
+              />
               <Text>{formatUsername(currentUser?.email)}</Text>
               <Avatar radius='xl' size='md' color='blue'>
                 {currentUser?.email ? currentUser.email[0].toUpperCase() : ''}

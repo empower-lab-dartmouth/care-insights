@@ -21,7 +21,7 @@ import { TextField, Typography } from '@mui/material';
 import Markdown from 'react-markdown'
 import { useLocation } from 'react-router-dom';
 import { SetterOrUpdater, useRecoilState, useRecoilValue } from 'recoil';
-import { careRecipientsInfoState, expandedProgramRowState, feedbackModalState, pageContextState } from '../../../state/recoil';
+import { careRecipientsInfoState, expandedProgramRowState, feedbackModalState, hideFeedbackState, pageContextState } from '../../../state/recoil';
 import { Button, ButtonGroup, Group, Text, Stack, SegmentedControl } from "@mantine/core"
 import { GenericJsxEditor, JsxComponentDescriptor, NestedLexicalEditor, insertJsx$, jsxPlugin, usePublisher } from "@mdxeditor/editor"
 import { MenuButton } from "../../../components/UserShell"
@@ -392,7 +392,9 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   const [_, setFeedbackModal] = useRecoilState(feedbackModalState);
   const careRecipientsInfo = useRecoilValue(careRecipientsInfoState);
   const CRName = careRecipientsInfo[pageState.selectedCR] ? careRecipientsInfo[pageState.selectedCR].name : 'NONE';
-  const includeRating = !location.search.includes('review=false');
+  const [hideFeedbackChecked, setHideFeedback] = useRecoilState(hideFeedbackState);
+
+  const includeRating = !hideFeedbackChecked;
   const scale: { label: LikertScale, value: LikertScale }[] = [
     { label: 'Strongly disagree', value: 'Strongly disagree' },
     { label: 'Disagree', value: 'Disagree' },
