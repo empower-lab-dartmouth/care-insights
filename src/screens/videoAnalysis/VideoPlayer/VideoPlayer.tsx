@@ -38,7 +38,7 @@ type VideoPlayerProps = {
 const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   const { videoSrc, setProgramEvent, programEvent, setMeaningfulMoments } =
     props;
-  const ref = React.useRef<ReactPlayer>(null);
+  const forwardedRef = React.useRef<ReactPlayer>(null);
   const { currentUser } = useContext(AuthContext);
   const { search } = useLocation();
   const dev = search.includes('dev=true');
@@ -131,10 +131,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
 
   const onReady = React.useCallback(() => {
     if (!isReady) {
-      if (ref.current !== null) {
+      if (forwardedRef.current !== null) {
         const timeToStart = programEventIndex !== undefined && programEventIndex.programEventId === programEvent.uuid && programEventIndex.videoTimestamp !== undefined ? programEventIndex.videoTimestamp / 1000 : 0;
         if (timeToStart !== 0) {
-          ref.current.seekTo(timeToStart, "seconds");
+          forwardedRef.current.seekTo(timeToStart, "seconds");
         }
         setIsReady(true);
       }
@@ -147,7 +147,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
   }
 
   const seekTo = (x: number) => {
-    ref.current?.seekTo(x);
+    forwardedRef.current?.seekTo(x);
   }
   return (
     <>
@@ -190,7 +190,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
                       {includeRating ? <Stack style={{backgroundColor: '#F1F1F1', borderRadius: 25,color: 'darkBlue', padding: 20}}>
                         <div>
                           <Text size="sm" fw={500} mb={3}>
-                            The summary is accurate.
+                            This information is accurate.
                           </Text>
                           <SegmentedControl
                             color={getColor(rating.infoIsCorrect)}
@@ -203,7 +203,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
                         </div>
                         <div>
                           <Text size="sm" fw={500} mb={3}>
-                            The summary points out the meaningful moments of engagement.
+                            This information includes the details that I care about.
                           </Text>
                           <SegmentedControl
                             color={getColor(rating.infoIsMissing)}
@@ -216,7 +216,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
                         </div>
                         <div>
                           <Text size="sm" fw={500} mb={3}>
-                            The summary is a useful description of the video.
+                            This information is easy to use.
                           </Text>
                           <SegmentedControl
                             color={getColor(rating.infoIsActionable)}
@@ -231,7 +231,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = props => {
                       <ErrorBoundary
                         FallbackComponent={ErrorFallback}>
                         <ReactPlayer
-                          ref={ref}
+                          ref={forwardedRef}
                           onReady={onReady}
                           onProgress={({
                             played,

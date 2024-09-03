@@ -444,7 +444,7 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
     {includeRating ? <Stack style={{backgroundColor: '#F1F1F1', borderRadius: 25,color: 'darkBlue', padding: 20}}>
       <div >
         <Text size="sm" fw={500} mb={3}>
-        The summary is accurate.
+        This information is accurate.
         </Text>
         <SegmentedControl
           color={getColor(rating.infoIsCorrect)}
@@ -463,7 +463,7 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
       </div>
       <div>
         <Text size="sm" fw={500} mb={3}>
-        The summary points out the important information.
+        This information includes the details that I care about.
         </Text>
         <SegmentedControl
           color={getColor(rating.infoIsMissing)}
@@ -482,7 +482,7 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
       </div>
       <div>
         <Text size="sm" fw={500} mb={3}>
-        The summary is useful.
+        This information is easy to use.
         </Text>
         <SegmentedControl
           color={getColor(rating.infoIsActionable)}
