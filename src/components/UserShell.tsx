@@ -137,13 +137,16 @@ const MenuButtons = () => {
       <div className='flex flex-col gap-2'>
         <SessionTracker />
         <MenuButton path='/info' icon={<NotepadText size={18} />}>
-          Snapshot
+          Essentials
+        </MenuButton>
+        <MenuButton path='/reels' icon={<NotepadText size={18} />}>
+          Reels
         </MenuButton>
         <MenuButton path='/questions' icon={<MessageCircleQuestion size={18} />}>
-          Details
+          Explanations
         </MenuButton>
         <MenuButton path='/program-events' icon={<SquarePlay size={18} />}>
-          Program events
+          Archives
         </MenuButton>
         <MenuButton path='/support' icon={<Info size={18} />}>
           Onboarding
@@ -198,16 +201,16 @@ const UserShell = ({ children }: { children: React.ReactNode }) => {
               </UnstyledButton>
               <div className='hidden lg:flex gap-2 items-center'>
                 <img src='logo-circle.svg' />
-                <h1 id='logo'>Care Insights</h1>
+                <h1 id='logo'>CareInsights</h1>
               </div>
             </div>
             <div className='flex items-center gap-2'>
-              <Switch
+              {/* <Switch
                 labelPosition="left"
                 label="Hide feedback"
                 checked={hideFeedback}
                 onChange={(event) => setHideFeedback(event.currentTarget.checked)}
-              />
+              /> */}
               <Text>{formatUsername(currentUser?.email)}</Text>
               <Avatar radius='xl' size='md' color='blue'>
                 {currentUser?.email ? currentUser.email[0].toUpperCase() : ''}

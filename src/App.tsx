@@ -35,6 +35,7 @@ import { useCookies } from 'react-cookie';
 import { Button } from '@mui/material';
 import { updateCache } from './state/globals';
 import SupportPage from './state/SupportPage';
+import ReelsPage from './screens/reels/ReelsPage';
 
 const defaultFormFields = {
   email: '',
@@ -195,7 +196,7 @@ const App = () => {
           }
         />
 
-<Route
+        <Route
           path='/support'
           element={
             <RequireAuth>
@@ -214,6 +215,14 @@ const App = () => {
           }
         />
 
+        <Route
+          path='/reels'
+          element={
+            <RequireAuth>
+              <ReelsPage />
+            </RequireAuth>
+          }
+        />
         <Route path='*' element={<FallBack />} />
       </Routes>
     </CookiesProvider>

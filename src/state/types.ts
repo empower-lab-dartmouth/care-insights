@@ -4,6 +4,15 @@ import { QueryRecord } from "./queryingTypes"
 export type UserUUID = string
 export type EventUUID = string
 
+export type Reel = {
+    videoSrc: string
+    programEventID: string
+    startTime: number
+    uuid: string,
+    description: string,
+    type: MomentType | 'programEvent' | 'song'
+}
+
 type Location = {
     name: string
     latitude: number
@@ -127,7 +136,11 @@ export type DescriptiveMoment = {
     type: MomentType
 }
 
-export type MeaningfulMoment = DescriptiveMoment | ProgramEventMoment | SongEventMoment;
+export type CommonMomentFields = {
+    removedFromReels?: boolean
+}
+
+export type MeaningfulMoment = CommonMomentFields & (DescriptiveMoment | ProgramEventMoment | SongEventMoment);
 
 export type CRAutoselectOption = {
     label: string,

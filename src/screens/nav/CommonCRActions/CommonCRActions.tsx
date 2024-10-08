@@ -19,7 +19,7 @@ import { useLocation } from 'react-router-dom';
 import FeedbackModal from '../../summaryInsights/AddEventModal/FeedbackModal';
 
 type CommonCRActionsProps = {
-  page: 'details' | 'program-events' | 'care-team' | 'snapshot';
+  page: 'details' | 'program-events' | 'care-team' | 'snapshot' | 'reels';
 };
 
 function convertToTitleCase(input: string) {

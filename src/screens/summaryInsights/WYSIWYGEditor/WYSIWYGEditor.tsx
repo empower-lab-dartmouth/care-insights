@@ -316,7 +316,7 @@ const addCitations = (text: string, programEvents: CRProgramEvents, type: Feedba
         className='text-green-600/75 hover:text-green-600/75 border-green-600/75'
         size='xs'
       >
-        Useful?
+        True?
       </Button><Button
         leftSection={<IconThumbDown className='text-red-600/75' />}
         onClick={async () => {
