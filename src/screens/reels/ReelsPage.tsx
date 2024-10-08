@@ -107,8 +107,7 @@ const ReelsPage = () => {
               setMomentIndex(n);
               seekTo(meaningfulMoments[n].startTime / 1000);
             }} total={meaningfulMoments.length - 1} />
-            <h4>{progress}</h4>
-            <h4>{meaningfulMoments[momentIndex].startTime}</h4>
+            <h4>{meaningfulMoments[momentIndex].description}</h4>
           </>}
       </>
     </UserShell >
